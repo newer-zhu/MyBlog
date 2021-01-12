@@ -14,15 +14,28 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("blog")
+@RequestMapping("/blog")
 @Slf4j
 public class BlogController {
+
     @Autowired
     BlogService blogService;
 
-    @GetMapping("getpages")
+    @GetMapping("/getpages")
     public int getPages(String userId){
         return blogService.getPagesByUserId(userId);
+
+    }
+
+    @GetMapping("/delblogbyid")
+    public Result delBlogById(@RequestParam("blogId") String blogId){
+        try {
+            blogService.delBlog(blogId);
+            return Result.success(null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Result.fail(500,"删除时出错", null);
     }
 
     @GetMapping("/getbyuserid")
@@ -79,26 +92,7 @@ public class BlogController {
         }
     }
 
-    @GetMapping("/getColumnByUserId/{userId}")
-    public Result getColumnByUserId(@PathVariable("userId") String userId){
-        log.info("查询userId={}的博客分栏", userId);
-        List<Blog_Column> columnsName = blogService.getColumnsByUserId(userId);
-        if (columnsName != null){
-            return Result.success(columnsName);
-        }else {
-            return Result.fail("还未创建分栏");
-        }
-    }
 
-    @RequestMapping("blogToColumn")
-    public Result BlogToColumn(@RequestParam("blogId") String blogId, @RequestParam("cid") String cid){
-        log.info("为bid={},cid={}博客添加分类",blogId,cid);
-        try {
-            blogService.blogToColumn(blogId, cid);
-            return Result.success("ok");
-        }catch (Exception e){
-            log.error("分类错误");
-            return Result.fail("error");
-        }
-    }
+
+
 }

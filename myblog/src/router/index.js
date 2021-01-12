@@ -3,7 +3,8 @@ import VueRouter from 'vue-router';
 import Index from 'views/Index';
 import Register from 'views/Register';
 import Login from 'views/Login';
-import BlogEdit from 'views/BlogEdit'
+import BlogEdit from 'views/BlogEdit';
+import BlogDetail from "views/BlogDetail";
 
 Vue.use(VueRouter)
 
@@ -28,6 +29,11 @@ Vue.use(VueRouter)
     name: 'Login',
     component: Login
   },
+    {
+      path: '/blogdetail/:blogId',
+      name: 'BlogDetail',
+      component: BlogDetail
+    },
     {
       path: '/blogedit',
       name: 'BlogEdit',

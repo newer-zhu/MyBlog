@@ -36,10 +36,12 @@
                             <div class="grid-content bg-purple">
                                 <el-timeline>
                                     <el-timeline-item v-for="(card,index) in this.blogs" :timestamp="card.createdAt" placement="top">
-                                        <el-card shadow="hover">
-                                            <el-link :underline="false" type="primary"><h3>{{card.title}}</h3></el-link>
-                                            <p>{{card.summary}}</p>
-                                        </el-card>
+                                        <router-link :to="{name: 'BlogDetail', params:{blogId:card.id}}">
+                                            <el-card shadow="hover">
+                                                <h3>{{card.title}}</h3>
+                                                <p>{{card.summary}}</p>
+                                            </el-card>
+                                        </router-link>
                                     </el-timeline-item>
                                 </el-timeline>
                             </div>
@@ -83,6 +85,7 @@
         components: {Footer,Navibar},
         data() {
             return{
+                userId: 0,
                 blogs: [],
                 columns: [],
                 activities: [{
@@ -91,30 +94,24 @@
                     size: 'large',
                     type: 'primary',
                     icon: 'el-icon-more'
-                }, {
-                    content: '支持自定义颜色',
-                    timestamp: '2018-04-03 20:46',
-                    color: '#0bbd87'
-                }, {
-                    content: '支持自定义尺寸',
-                    timestamp: '2018-04-03 20:46',
-                    size: 'large'
-                }, {
-                    content: '默认样式的节点',
-                    timestamp: '2018-04-03 20:46'
-                }]
+                }],
             };
+        },
+        methods: {
+            createWebSocket(){
+                let websocket = new WebSocket('ws://127.0.0.1:9000/timeline/'+this.userId)
+
+            }
         },
         created() {
             const _this = this;
-            const userId = this.$store.getters.getUser.id;
-            this.$axios("/blog/getbyuserid?userId="+userId).then((res) => {
+            this.userId = this.$store.getters.getUser.id;
+            this.$axios("/blog/getbyuserid?userId="+_this.userId).then((res) => {
                 _this.blogs = res.data.data;
                 // console.log(_this.blogs);
             })
-            this.$axios("/blog/getColumnByUserId/"+userId).then((res)=>{
+            this.$axios("/column/getcolumnbyuserid/"+_this.userId).then((res)=>{
                 _this.columns = res.data.data;
-                // console.log(res.data.data);
             })
         }
 

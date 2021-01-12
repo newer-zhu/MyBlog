@@ -69,7 +69,7 @@
                 this.$router.push("/login");
             },
             toIndex() {
-                this.$router.push("/");
+                this.$router.push("/home");
             },
             logOut(){
                 console.log(this.$store.getters.getUser);

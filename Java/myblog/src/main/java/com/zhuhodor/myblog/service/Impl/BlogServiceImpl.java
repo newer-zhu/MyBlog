@@ -47,18 +47,5 @@ public class BlogServiceImpl implements BlogService {
         return blogMapper.findBlogById(id);
     }
 
-    @Override
-    public boolean createBlogColumn(Blog_Column blog_column) {
-        return blogMapper.createBlogColumn(blog_column);
-    }
 
-    @Override
-    public boolean blogToColumn(String blog_id, String column_id) {
-        return blogMapper.blogToColumn(blog_id, column_id);
-    }
-
-    @Override
-    public List<Blog_Column> getColumnsByUserId(String userId) {
-        return blogMapper.getColumnsByUserId(userId);
-    }
 }
