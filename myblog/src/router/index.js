@@ -3,18 +3,19 @@ import VueRouter from 'vue-router';
 import Index from 'views/Index';
 import Register from 'views/Register';
 import Login from 'views/Login';
-import BlogEdit from 'views/BlogEdit';
-import BlogDetail from "views/BlogDetail";
+import BlogEdit from 'views/Blog/BlogEdit';
+import BlogDetail from "views/Blog/BlogDetail";
+import ListDetail from "views/ListDetail";
 
 Vue.use(VueRouter)
 
   const routes = [
-  {
+    {
     path: '/',
     name: 'Login',
     component: Login
   },
-  {
+    {
     path: '/register',
     name: 'Register',
     component: Register
@@ -24,7 +25,7 @@ Vue.use(VueRouter)
       name: 'Index',
       component: Index
     },
-  {
+    {
     path: '/login',
     name: 'Login',
     component: Login
@@ -44,6 +45,12 @@ Vue.use(VueRouter)
       name: 'BlogEdit',
       component: BlogEdit
     },
+    {
+      path: '/listdetail',
+      name: 'ListDetail',
+      component: ListDetail
+    }
+
 
   // {
     // path: '/about',

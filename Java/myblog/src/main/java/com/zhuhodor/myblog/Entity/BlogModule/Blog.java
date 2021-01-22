@@ -1,4 +1,4 @@
-package com.zhuhodor.myblog.Entity;
+package com.zhuhodor.myblog.Entity.BlogModule;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

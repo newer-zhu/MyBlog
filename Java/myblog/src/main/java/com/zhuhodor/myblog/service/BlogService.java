@@ -1,7 +1,6 @@
 package com.zhuhodor.myblog.service;
 
-import com.zhuhodor.myblog.Entity.Blog;
-import com.zhuhodor.myblog.Entity.Blog_Column;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

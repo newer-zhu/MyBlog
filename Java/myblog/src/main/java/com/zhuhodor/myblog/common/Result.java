@@ -6,10 +6,12 @@ import java.io.Serializable;
 
 //返回的实体类
 @Data
-public class Result implements Serializable {
+public class Result<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int code;
     private String msg;
-    private Object data;
+    private T data;
 
     public static Result success(int code, String msg, Object data){
         Result r = new Result();

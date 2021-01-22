@@ -6,31 +6,35 @@
             </el-header>
 
             <el-container class="main">
-                <el-aside class="aside">
-                    <div class="block">
-                        <el-timeline>
-                            <el-timeline-item
-                                    v-for="(activity, index) in activities"
-                                    :key="index"
-                                    :icon="activity.icon"
-                                    :type="activity.type"
-                                    :color="activity.color"
-                                    :size="activity.size"
-                                    :timestamp="activity.timestamp">
-                                {{activity.content}}
-                            </el-timeline-item>
-                        </el-timeline>
-                    </div>
+                <el-aside class="aside" width="400px">
+                    <el-row :gutter="2">
+                        <el-col :span="18"><el-input></el-input></el-col>
+                        <el-col :span="6"><el-button type="primary" icon="el-icon-search"/></el-col>
+                    </el-row>
+<!--                    <div class="block">-->
+<!--                        <el-timeline>-->
+<!--                            <el-timeline-item-->
+<!--                                    v-for="(activity, index) in activities"-->
+<!--                                    :key="index"-->
+<!--                                    :icon="activity.icon"-->
+<!--                                    :type="activity.type"-->
+<!--                                    :color="activity.color"-->
+<!--                                    :size="activity.size"-->
+<!--                                    :timestamp="activity.timestamp">-->
+<!--                                {{activity.content}}-->
+<!--                            </el-timeline-item>-->
+<!--                        </el-timeline>-->
+<!--                    </div>-->
                 </el-aside>
 
                 <el-main>
 <!--                    走马灯-->
                    <el-carousel class="carousel" :interval="4000" type="card" height="250px">
-                        <el-carousel-item v-for="item in 6" :key="item">
-                            <h3 class="medium">{{ item }}</h3>
+                        <el-carousel-item v-for="item in imgSrc" :key="item">
+                            <el-image :src="item"></el-image>
                         </el-carousel-item>
-                    </el-carousel>
 
+                    </el-carousel>
                     <el-row :gutter="20">
                         <el-col :span="16">
                             <div class="grid-content bg-purple">
@@ -51,13 +55,13 @@
                             <div >
                                 <el-card shadow="hover">
                                     <div slot="header" class="clearfix">
-                                        <span>博客分类</span>
+                                        <span><i class="el-icon-notebook-2"></i> 博客分类</span>
                                         <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
                                     </div>
                                     <div v-for="(column, index) in this.columns" :key="column.c_name" class="text item">
                                         <el-row type="flex">
-                                            <el-col :span="18"><h2>{{column.c_name}}</h2></el-col>
-                                            <el-col :span="6"><el-link type="danger">删除</el-link></el-col>
+                                            <el-col :span="18"><h2>{{column.c_name+' ('+column.count+')'}}</h2></el-col>
+                                            <el-col :span="6" ><el-link type="danger" style="text-underline: none" @click="delColumn(column.id)">删除</el-link></el-col>
                                         </el-row>
                                     </div>
                                 </el-card>
@@ -95,12 +99,45 @@
                     type: 'primary',
                     icon: 'el-icon-more'
                 }],
+                imgSrc: [require('@/assets/img/view1.jpg'),require('@/assets/img/view2.jpg'),require('@/assets/img/view3.jpg')]
             };
         },
         methods: {
             createWebSocket(){
                 let websocket = new WebSocket('ws://127.0.0.1:9000/timeline/'+this.userId)
 
+            },
+            success(msg) {
+                this.$message({
+                    message: msg,
+                    type: 'success'
+                });
+            },
+            error(msg){
+                this.$message({
+                    message: msg,
+                    type: 'error'
+                });
+            },
+            delColumn(column_id){
+                this.$confirm('此操作将永久删除分栏, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios.get("/column/delcolumnbyid/"+column_id).then((res) =>{
+                        if (res.data.code === 200){
+                            this.success("删除成功")
+                        }else {
+                            this.error(res.data.msg)
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             }
         },
         created() {

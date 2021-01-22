@@ -1,27 +1,46 @@
 <template>
-    <div>
-        <el-container>
-            <el-header>
-                <Navibar/>
-            </el-header>
+    <div  class="login_container">
+        <!--                粒子特效-->
+        <vue-particles
+                color="#475669"
+                :particleOpacity="0.7"
+                :particlesNumber="80"
+                shapeType="circle"
+                :particleSize="4"
+                linesColor="#dedede"
+                :linesWidth="1"
+                :lineLinked="true"
+                :lineOpacity="0.4"
+                :linesDistance="150"
+                :moveSpeed="3"
+                :hoverEffect="true"
+                hoverMode="grab"
+                :clickEffect="true"
+                clickMode="push"
+                class="background-img">
+        </vue-particles>
+        <div>
+            <el-form :rules="rules" ref="form" label-position="left" :model="form" label-width="80px" class="login">
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="form.username"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input type="password" v-model="form.password"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('form')">登录</el-button>
+                    <el-button type="success" @click="toRegister" plain>注册</el-button>
+                    <el-button @click="resetForm('form')">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
 
-            <el-main class="main">
+        <!--        <el-container>-->
+<!--            <el-main class="main">-->
 
-                <el-form :rules="rules" ref="form" label-position="left" :model="form" label-width="80px" class="login">
-                    <el-form-item label="用户名" prop="username">
-                        <el-input v-model="form.username"></el-input>
-                    </el-form-item>
-                    <el-form-item label="密码" prop="password">
-                        <el-input type="password" v-model="form.password"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="submitForm('form')">登录</el-button>
-                        <el-button type="success" @click="toRegister" plain>注册</el-button>
-                        <el-button @click="resetForm('form')">重置</el-button>
-                    </el-form-item>
-                </el-form>
-            </el-main>
-        </el-container>
+
+<!--            </el-main>-->
+<!--        </el-container>-->
     </div>
 </template>
 
@@ -87,8 +106,22 @@
 
 <style scoped>
     .login{
-        margin: 0 auto;
-        width: 400px;
-        padding-top: 200px;
+        border-radius: 5px;
+        position: absolute;
+        left: 45%;
+        top: 50%;
+        /*text-align: center;*/
+        /*background-color: #99a9bf;*/
+        transform: translate(-50%, -50%);
+        /*width: 380px;*/
+        /*height: 220px;*/
+    }
+    .background-img{
+        background-image: url("../assets/img/earth.jpg");
+        max-width: 100%;
+        height: 845px;
+        /*background-position: center;*/
+        background-repeat: no-repeat;
+        /*background-attachment: fixed;*/
     }
 </style>

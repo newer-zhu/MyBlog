@@ -3,27 +3,34 @@
         <el-header><Navibar/></el-header>
 
         <el-main>
-            <div class="blogDetail">
-                <h2>{{blog.title}}</h2>
-                <el-link icon="el-icon-delete" @click="delBlog">删除</el-link>
-                <br/>
-                <router-link :to="{name: 'BlogEdit', params:{blogId:blog.id}}">
-                    <el-link v-if="ownBlog" icon="el-icon-edit">编辑</el-link>
-                </router-link>
-                <h3>{{blog.summary}}</h3>
-                <el-divider/>
-                <div v-html="blog.content" class="markdown-body"></div>
-            </div>
+            <el-row>
+                <el-col :span="20">
+                    <div class="blogDetail">
+                        <h2>{{blog.title}}</h2>
+                        <el-link icon="el-icon-delete" @click="delBlog">删除</el-link>
+                        <br/>
+                        <router-link :to="{name: 'BlogEdit', params:{blogId:blog.id}}">
+                            <el-link v-if="ownBlog" icon="el-icon-edit">编辑</el-link>
+                        </router-link>
+                        <h3>{{blog.summary}}</h3>
+                        <el-divider/>
+                        <div class="markdown-body">
+                            <VueMarkdown :source="blog.content"></VueMarkdown>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
         </el-main>
     </div>
 </template>
 
 <script>
     import Navibar from 'components/common/Navibar'
-    import "github-markdown-css/github-markdown.css"
+    import 'github-markdown-css/github-markdown.css'
+    import VueMarkdown from 'vue-markdown'
     export default {
         name: "BlogDetail",
-        components: {Navibar},
+        components: {Navibar,VueMarkdown},
         data(){
             return {
                 blog: {

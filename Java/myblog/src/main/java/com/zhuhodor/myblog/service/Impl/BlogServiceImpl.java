@@ -1,7 +1,6 @@
 package com.zhuhodor.myblog.service.Impl;
 
-import com.zhuhodor.myblog.Entity.Blog;
-import com.zhuhodor.myblog.Entity.Blog_Column;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.mapper.BlogMapper;
 import com.zhuhodor.myblog.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,6 @@
 package com.zhuhodor.myblog.mapper;
 
-import com.zhuhodor.myblog.Entity.Blog;
-import com.zhuhodor.myblog.Entity.Blog_Column;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 

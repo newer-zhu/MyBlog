@@ -1,7 +1,6 @@
 package com.zhuhodor.myblog.controller;
 
-import com.zhuhodor.myblog.Entity.Blog;
-import com.zhuhodor.myblog.Entity.Blog_Column;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.service.BlogService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +29,7 @@ public class BlogController {
     @GetMapping("/delblogbyid")
     public Result delBlogById(@RequestParam("blogId") String blogId){
         try {
+            log.info("用户删除了id为{}的博客",blogId);
             blogService.delBlog(blogId);
             return Result.success(null);
         }catch (Exception e){

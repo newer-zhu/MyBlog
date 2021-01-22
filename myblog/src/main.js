@@ -1,20 +1,20 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router'
 import store from './store'
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-import axios from './axios';
-import VueQuillEditor from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
-import 'github-markdown-css'
-
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import VueParticles from 'vue-particles'
+import router from './router'
+import axios from './axios'
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+// import sendEvent from "./Js/timeline"
+Vue.use(ElementUI);
+Vue.use(mavonEditor);
+Vue.use(VueParticles)
+// Vue.prototype.$sendEvent = sendEvent
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
-Vue.use(ElementUI);
-Vue.use(VueQuillEditor);
 new Vue({
   router,
   store,
