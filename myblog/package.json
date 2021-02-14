@@ -8,9 +8,11 @@
     "dev": "vue-cli-service serve"
   },
   "dependencies": {
+    "bright-comment": "^1.5.7",
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
     "github-markdown-css": "^4.0.0",
+    "highlight.js": "^10.5.0",
     "mavon-editor": "^2.9.1",
     "qs": "^6.9.6",
     "vue": "^2.6.11",

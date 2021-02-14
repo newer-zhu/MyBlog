@@ -34,7 +34,7 @@ public class UserController {
     @Autowired
     JwtUtil jwtUtil;
 
-    //登录接口
+//    登录接口
     @CrossOrigin
     @PostMapping("/login")
     public Result login(@Validated @RequestBody LoginDao loginDao, HttpServletResponse response) {
@@ -52,8 +52,12 @@ public class UserController {
         return Result.success(MapUtil.builder().put("id", user.getId())
                 .put("username", user.getUsername())
                 .put("email", user.getEmail())
-                .put("createdAt", user.getCreatedAt())
-                .put("birthday", user.getBirthday())
+                .put("createAt", user.getCreateAt())
+                .put("college", user.getCollege())
+                .put("major", user.getMajor())
+                .put("grade", user.getGrade())
+                .put("avatar", user.getAvatar())
+                .put("createAt", user.getCreateAt())
                 .put("description", user.getDescription()).map());
     }
 
@@ -67,7 +71,7 @@ public class UserController {
         //不允许用户名重复
         if (userService.findUserByName(user.getUsername()) == null){
             LocalDate now = LocalDate.now();
-            user.setCreatedAt(now);
+            user.setCreateAt(now);
             try {
                 userService.creatUser(user);
                 return Result.success(200,"注册成功",user);

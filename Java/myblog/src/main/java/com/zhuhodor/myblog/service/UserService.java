@@ -6,6 +6,8 @@ import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.mapper.UserMapper;
 import com.zhuhodor.myblog.service.Impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,14 +15,16 @@ import java.util.List;
 @Service
 public interface UserService {
 
-    public User findUserById(int id);
+    @Cacheable(key = "'id'+#p0")
+    User findUserById(int id);
 
-    public void creatUser(User user);
+    @CachePut(key = "'id'+#p0.id")
+    void creatUser(User user);
 
-    public User findUserByName(String name);
+    User findUserByName(String name);
 
-    public List<Role> findRolesByUserName(String username);
+    List<Role> findRolesByUserName(String username);
 
-    public List<Permission> findPermissionsByRoleId(String id);
+    List<Permission> findPermissionsByRoleId(String id);
 
 }

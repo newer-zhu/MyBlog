@@ -40,7 +40,7 @@ public class JwtFilter extends AuthenticatingFilter {
         HttpServletRequest request =(HttpServletRequest) servletRequest;
         String jwt = request.getHeader("Authorization");
         if (StringUtils.isEmpty(jwt))
-            return true;//拦截，继续处理
+            return true;//拦截
         else {
             //校验jwt
             Claims claim = jwtUtil.getClaimByToken(jwt);

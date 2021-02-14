@@ -6,7 +6,8 @@ import Login from 'views/Login';
 import BlogEdit from 'views/Blog/BlogEdit';
 import BlogDetail from "views/Blog/BlogDetail";
 import ListDetail from "views/ListDetail";
-
+import ProjectDetail from "views/ProjectDetail"
+import StartProject from '../views/StartProject'
 Vue.use(VueRouter)
 
   const routes = [
@@ -23,7 +24,16 @@ Vue.use(VueRouter)
     {
       path: '/home',
       name: 'Index',
-      component: Index
+      component: Index,
+      children: [{
+        path: 'listDetail/:columnId',
+        components: {listDetail: ListDetail}
+      }]
+    },
+    {
+      path: '/startproject',
+      name: 'StartProject',
+      component: StartProject
     },
     {
     path: '/login',
@@ -41,15 +51,20 @@ Vue.use(VueRouter)
       component: BlogEdit
     },
     {
+      path: '/projectdetail',
+      name: 'ProjectDetail',
+      component: ProjectDetail
+    },
+    {
       path: '/blogedit/:blogId',
       name: 'BlogEdit',
       component: BlogEdit
     },
-    {
-      path: '/listdetail',
-      name: 'ListDetail',
-      component: ListDetail
-    }
+    // {
+    //   path: '/listdetail/:columnId',
+    //   name: 'ListDetail',
+    //   component: ListDetail
+    // },
 
 
   // {

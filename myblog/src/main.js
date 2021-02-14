@@ -8,6 +8,7 @@ import router from './router'
 import axios from './axios'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import './plugins/hljs'
 // import sendEvent from "./Js/timeline"
 Vue.use(ElementUI);
 Vue.use(mavonEditor);
@@ -15,6 +16,7 @@ Vue.use(VueParticles)
 // Vue.prototype.$sendEvent = sendEvent
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
+
 new Vue({
   router,
   store,

@@ -16,8 +16,8 @@ public interface UserMapper {
     @Select("select * from user where id = #{id}")
     public User findUserById(int id);
 
-    @Insert("insert into user (username,password,email,createdAt,birthday,description,salt,avatar) " +
-            "values (#{username},#{password},#{email},#{createdAt},#{birthday},#{description},#{salt},#{avatar}) ")
+    @Insert("insert into user (username,password,email,createAt,college,major,grade,description,salt,avatar) " +
+            "values (#{username},#{password},#{email},#{createAt},#{college},#{major},#{grade},#{description},#{salt},#{avatar}) ")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     public void creatUser(User user);
 

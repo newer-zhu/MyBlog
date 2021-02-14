@@ -7,24 +7,13 @@
 
             <el-container class="main">
                 <el-aside class="aside" width="400px">
-                    <el-row :gutter="2">
-                        <el-col :span="18"><el-input></el-input></el-col>
-                        <el-col :span="6"><el-button type="primary" icon="el-icon-search"/></el-col>
+                    <el-row>
+                        <el-col>
+                            <el-input placeholder="请输入搜索内容" v-model="input" class="input-with-select">
+                                <el-button  style="color: #409EFF" slot="append" icon="el-icon-search"></el-button>
+                            </el-input>
+                        </el-col>
                     </el-row>
-<!--                    <div class="block">-->
-<!--                        <el-timeline>-->
-<!--                            <el-timeline-item-->
-<!--                                    v-for="(activity, index) in activities"-->
-<!--                                    :key="index"-->
-<!--                                    :icon="activity.icon"-->
-<!--                                    :type="activity.type"-->
-<!--                                    :color="activity.color"-->
-<!--                                    :size="activity.size"-->
-<!--                                    :timestamp="activity.timestamp">-->
-<!--                                {{activity.content}}-->
-<!--                            </el-timeline-item>-->
-<!--                        </el-timeline>-->
-<!--                    </div>-->
                 </el-aside>
 
                 <el-main>
@@ -33,22 +22,12 @@
                         <el-carousel-item v-for="item in imgSrc" :key="item">
                             <el-image :src="item"></el-image>
                         </el-carousel-item>
-
                     </el-carousel>
+
                     <el-row :gutter="20">
                         <el-col :span="16">
-                            <div class="grid-content bg-purple">
-                                <el-timeline>
-                                    <el-timeline-item v-for="(card,index) in this.blogs" :timestamp="card.createdAt" placement="top">
-                                        <router-link :to="{name: 'BlogDetail', params:{blogId:card.id}}">
-                                            <el-card shadow="hover">
-                                                <h3>{{card.title}}</h3>
-                                                <p>{{card.summary}}</p>
-                                            </el-card>
-                                        </router-link>
-                                    </el-timeline-item>
-                                </el-timeline>
-                            </div>
+                            <router-view name="listDetail"/>
+<!--                            <ListDetail/>-->
                         </el-col>
 
                         <el-col :span="8">
@@ -56,13 +35,20 @@
                                 <el-card shadow="hover">
                                     <div slot="header" class="clearfix">
                                         <span><i class="el-icon-notebook-2"></i> 博客分类</span>
-                                        <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+                                        <el-button @click="isShow" style="float: right; padding: 3px 0" type="text">删除</el-button>
                                     </div>
                                     <div v-for="(column, index) in this.columns" :key="column.c_name" class="text item">
                                         <el-row type="flex">
-                                            <el-col :span="18"><h2>{{column.c_name+' ('+column.count+')'}}</h2></el-col>
-                                            <el-col :span="6" ><el-link type="danger" style="text-underline: none" @click="delColumn(column.id)">删除</el-link></el-col>
+                                            <el-col :span="18">
+                                                <router-link :to="{path: '/home/listDetail/'+column.id}">
+                                                    <h2 :style="randColor">{{column.cname+' ('+column.count+')'}}</h2>
+                                                </router-link>
+                                            </el-col>
+                                            <el-col :span="6">
+                                                <el-checkbox v-show="isShowDel" v-model="checkList" style="margin-top: 20px;" :label="column.id">{{''}}</el-checkbox>
+                                            </el-col>
                                         </el-row>
+                                        <el-divider/>
                                     </div>
                                 </el-card>
                             </div>
@@ -84,28 +70,61 @@
 <script>
     import Footer from "components/common/Footer"
     import Navibar from "components/common/Navibar";
+    import ListDetail from "./ListDetail"
     export default {
+        // inject:['reload'],
         name: "Index",
-        components: {Footer,Navibar},
+        components: {ListDetail, Footer,Navibar},
         data() {
             return{
+                input: '',
                 userId: 0,
                 blogs: [],
                 columns: [],
-                activities: [{
-                    content: '支持使用图标',
-                    timestamp: '2018-04-12 20:46',
-                    size: 'large',
-                    type: 'primary',
-                    icon: 'el-icon-more'
-                }],
-                imgSrc: [require('@/assets/img/view1.jpg'),require('@/assets/img/view2.jpg'),require('@/assets/img/view3.jpg')]
-            };
+                imgSrc: [require('@/assets/img/view1.jpg'),require('@/assets/img/view2.jpg'),require('@/assets/img/view3.jpg')],
+                isShowDel: true,//是否显示删除专栏复选框
+                checkList: [],
+                randColor: {//分栏字体显示
+                    color: this.getColor(),
+                    fontSize: '20px'
+                }
+            }
         },
         methods: {
             createWebSocket(){
                 let websocket = new WebSocket('ws://127.0.0.1:9000/timeline/'+this.userId)
 
+            },
+            getColor(){
+                let r = Math.floor(Math.random()*255);
+                let g = Math.floor(Math.random()*255);
+                let b = Math.floor(Math.random()*255);
+                return 'rgba('+ r +','+ g +','+ b +',1)';
+            },
+            //删除分栏的函数
+            isShow(){
+                if (this.checkList.length != 0){
+                    this.$confirm('此操作将永久删除分栏, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$axios.post("/column/delcolumnbyid", this.checkList).then((res) =>{
+                            if (res.data.code === 200){
+                                this.success("删除成功")
+                                this.$router.go(0)
+                            }else {
+                                this.error(res.data.msg)
+                            }
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
+                }
+              this.isShowDel = !this.isShowDel;
             },
             success(msg) {
                 this.$message({
@@ -119,28 +138,9 @@
                     type: 'error'
                 });
             },
-            delColumn(column_id){
-                this.$confirm('此操作将永久删除分栏, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$axios.get("/column/delcolumnbyid/"+column_id).then((res) =>{
-                        if (res.data.code === 200){
-                            this.success("删除成功")
-                        }else {
-                            this.error(res.data.msg)
-                        }
-                    })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
-            }
         },
         created() {
+            this.isShowDel = false;
             const _this = this;
             this.userId = this.$store.getters.getUser.id;
             this.$axios("/blog/getbyuserid?userId="+_this.userId).then((res) => {
@@ -149,6 +149,7 @@
             })
             this.$axios("/column/getcolumnbyuserid/"+_this.userId).then((res)=>{
                 _this.columns = res.data.data;
+                console.log(_this.columns);
             })
         }
 

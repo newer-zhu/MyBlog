@@ -10,10 +10,10 @@ import lombok.experimental.Accessors;
 /**
  * 博客分栏
  */
-public class Blog_Column {
+public class BlogColumn {
     private Integer id;
-    private int user_id;
-    private String c_name;
+    private int userId;
+    private String cName;
 
     private int count;
 }

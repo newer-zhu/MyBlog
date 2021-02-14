@@ -33,14 +33,14 @@ public class User implements Serializable {
     private String password;
     @Email(message = "邮箱格式不正确")
     private String email;
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",shape = JsonFormat.Shape.STRING)
-    @PastOrPresent
-    private LocalDate birthday;
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",shape = JsonFormat.Shape.STRING)
-    @PastOrPresent
-    private LocalDate createdAt;
+    private String major;
+    private String college;
     private String description;
-
+    private String grade;
     private List<Role> roles;
+
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",shape = JsonFormat.Shape.STRING)
+    @PastOrPresent
+    private LocalDate createAt;
 
 }

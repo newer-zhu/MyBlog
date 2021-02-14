@@ -1,19 +1,29 @@
 <template>
     <div>
         <div>
-            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+            <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" background-color="#545c64"
+                     text-color="#fff" active-text-color="#ffd04b">
                 <el-menu-item index="1" @click="toIndex">首页</el-menu-item>
                 <el-submenu index="2">
-                    <template slot="title">我的工作台</template>
+                    <template slot="title">发布</template>
                     <el-menu-item @click="writeBlog" index="2-1">写博客</el-menu-item>
-                    <el-menu-item index="2-2">选项2</el-menu-item>
-                    <el-menu-item index="2-3">选项3</el-menu-item>
+                    <el-menu-item index="2-2">发起项目</el-menu-item>
+                    <el-menu-item index="2-3">提问</el-menu-item>
                 </el-submenu>
                 <el-menu-item index="3">消息中心</el-menu-item>
                 <el-menu-item index="4" @click="drawer = true">个人中心</el-menu-item>
-                <el-menu-item index="5" >个人简历</el-menu-item>
-                <el-menu-item index="6" v-if="this.$store.getters.getUser == null" @click="toLogin">登录/注册</el-menu-item>
-                <el-menu-item index="7" v-else @click="logOut">退出</el-menu-item>
+                <el-menu-item index="5" >求职</el-menu-item>
+                <el-menu-item index="6">探索</el-menu-item>
+                <el-menu-item index="7">圈子</el-menu-item>
+                <el-menu-item index="8" style="width: 400px">
+                    <el-input
+                            placeholder="请输入内容"
+                            v-model="input">
+                        <i slot="prefix" class="el-input__icon el-icon-search"></i>
+                    </el-input>
+                </el-menu-item>
+                <!--                <el-menu-item index="6" v-if="this.$store.getters.getUser == null" @click="toLogin">登录/注册</el-menu-item>-->
+                <el-menu-item index="9" @click="logOut">退出</el-menu-item>
             </el-menu>
 
         </div>
@@ -22,16 +32,25 @@
         <el-drawer
                 title="我是标题"
                 :visible.sync="drawer"
+                size="30%"
                 :with-header="false">
             <!--                头像-->
             <div class="drawer">
                 <div class="block avatar">
                     <el-avatar :size="75" alt="avatar"  :src="circleUrl"></el-avatar>
                     <h2>{{user.username}}</h2>
+                    <h4 style="text-align: center">{{user.description}}</h4>
                 </div>
-                <div>
-                    <h4>{{user.description}}</h4>
-                </div>
+                <el-row>
+                    <el-col :span="10" :offset="2">
+                        <label style="color: indigo;font-weight: bold">大学</label><el-divider direction="vertical"></el-divider>
+                        <p style="display: inline-block">{{user.college}}</p>
+                    </el-col>
+                    <el-col :span="12">
+                        <label style="color: indigo; font-weight: bold">专业</label><el-divider direction="vertical"></el-divider>
+                        <p style="display: inline-block">{{user.major}}</p>
+                    </el-col>
+                </el-row>
             </div>
 
             <span>我来啦!</span>
@@ -57,8 +76,11 @@
                 user: {
                     username: '',
                     description: '',
-                    avatar: ''
-                }
+                    avatar: '',
+                    college: '',
+                    major: ''
+                },
+                input: '',
             };
         },
         methods: {

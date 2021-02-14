@@ -1,10 +1,9 @@
 <template>
-    <div  class="login_container">
-        <!--                粒子特效-->
+    <div>
         <vue-particles
                 color="#475669"
                 :particleOpacity="0.7"
-                :particlesNumber="80"
+                :particlesNumber="100"
                 shapeType="circle"
                 :particleSize="4"
                 linesColor="#dedede"
@@ -19,6 +18,7 @@
                 clickMode="push"
                 class="background-img">
         </vue-particles>
+        <!--                粒子特效-->
         <div>
             <el-form :rules="rules" ref="form" label-position="left" :model="form" label-width="80px" class="login">
                 <el-form-item label="用户名" prop="username">
@@ -34,13 +34,6 @@
                 </el-form-item>
             </el-form>
         </div>
-
-        <!--        <el-container>-->
-<!--            <el-main class="main">-->
-
-
-<!--            </el-main>-->
-<!--        </el-container>-->
     </div>
 </template>
 
@@ -53,7 +46,7 @@
             return {
                 form: {
                     username: 'zhua',
-                    password: '000000',
+                    password: '111111',
                 },
                 rules: {
                     username: [
@@ -82,7 +75,6 @@
 
                             _this.$store.commit('SET_TOKEN', jwt)
                             _this.$store.commit('SET_USERINFO', userInfo)
-                            // console.log(this.$store.getters.getUser)
                             if (res.data.code === 200){
                                 _this.$router.push("/home")
                                 _this.$message.success("登录成功")
@@ -118,10 +110,16 @@
     }
     .background-img{
         background-image: url("../assets/img/earth.jpg");
-        max-width: 100%;
-        height: 845px;
+        /*width: 100%;*/
+        /*height: calc(100% - 100px);*/
+        /*position: absolute;*/
         /*background-position: center;*/
-        background-repeat: no-repeat;
+        /*background-repeat: no-repeat;*/
         /*background-attachment: fixed;*/
+    }
+    #particles-js{
+        width: 100%;
+        height: 100%;
+        position: absolute;
     }
 </style>
