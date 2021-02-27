@@ -3,6 +3,7 @@ package com.zhuhodor.myblog.service.Impl;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.crypto.digest.MD5;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhuhodor.myblog.Entity.Permission;
 import com.zhuhodor.myblog.Entity.Role;
 import com.zhuhodor.myblog.Entity.User;
@@ -24,7 +25,7 @@ import java.util.List;
 @Component
 @Slf4j
 @CacheConfig(cacheNames = "user")
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService{
     @Autowired
     private UserMapper userMapper;
 

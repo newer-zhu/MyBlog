@@ -19,9 +19,6 @@
                 class="background-img">
         </vue-particles>
         <el-container>
-<!--            <el-header>-->
-<!--                <Navibar/>-->
-<!--            </el-header>-->
 
             <el-main class="main">
                 <el-upload
@@ -71,11 +68,8 @@
 </template>
 
 <script>
-    import Footer from "components/common/Footer"
-    import Navibar from "components/common/Navibar";
     export default {
         name: "Register",
-        components: {Navibar,Footer},
         data() {
             return {
                 imageUrl: '',
@@ -104,17 +98,17 @@
                         { required: false, message: '请填写个人简介', trigger: 'blur' }
                     ],
                     college: [
-                        { required: false, message: '请填写个人简介', trigger: 'blur' }
+                        { required: true, message: '请填写学校', trigger: 'blur' }
                     ],
                     major: [
-                        { required: false, message: '请填写个人简介', trigger: 'blur' }
+                        { required: true, message: '请填写专业', trigger: 'blur' }
                     ],
                     grade: [
-                        { required: false, message: '请填写个人简介', trigger: 'blur' }
+                        { required: true, message: '请填写年级', trigger: 'blur' }
                     ],
                     email: [
                         { required: false, message: '请输入邮箱', trigger: 'blur' },
-                        { min: 6, max: 30, message: '长度在 6 到 30 个字符', trigger: 'blur' }
+                        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
                     ]
                 }
             };
@@ -126,7 +120,6 @@
                     if (valid) {
                         _this.$axios.post("/user/register",this.form).then((res)=>{
                             let user = res.data.data;
-                            console.log(user);
                             if (res.data.code === 200)
                                 _this.$router.replace("/login")
                         })

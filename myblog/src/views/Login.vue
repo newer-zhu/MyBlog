@@ -38,10 +38,8 @@
 </template>
 
 <script>
-    import Navibar from 'components/common/Navibar'
     export default {
         name: "Login",
-        components: {Navibar},
         data() {
             return {
                 form: {
@@ -70,10 +68,10 @@
                     if (valid) {//点击登录后的逻辑
                         this.$axios.post("/user/login",this.form).then((res) => {
                             // console.log(res)
-                            const jwt = res.headers['authorization']
+                            const jwt = res.headers['authorization'];
                             const userInfo = res.data.data
 
-                            _this.$store.commit('SET_TOKEN', jwt)
+                            _this.$store.commit('SET_TOKEN', jwt);
                             _this.$store.commit('SET_USERINFO', userInfo)
                             if (res.data.code === 200){
                                 _this.$router.push("/home")

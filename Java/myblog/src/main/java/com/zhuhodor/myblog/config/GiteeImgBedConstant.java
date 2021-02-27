@@ -8,7 +8,7 @@ import java.util.Date;
  * 图床常量类
  */
 public interface GiteeImgBedConstant {
-    //    https://gitee.com/zhubug/image-bed
+    //https://gitee.com/zhubug/image-bed
     //私人令牌
     String TOKEN = "8f3b87dbddef4a8b5a029f4c9b6647d2";
 

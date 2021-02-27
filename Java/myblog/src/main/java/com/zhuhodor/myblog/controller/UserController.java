@@ -2,18 +2,16 @@ package com.zhuhodor.myblog.controller;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.digest.MD5;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
+import com.zhuhodor.myblog.Entity.Project;
 import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.common.Result;
-import com.zhuhodor.myblog.dao.LoginDao;
+import com.zhuhodor.myblog.vo.LoginVo;
 import com.zhuhodor.myblog.service.UserService;
 import com.zhuhodor.myblog.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.security.SecurityUtil;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,21 +25,17 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/user")
 @Slf4j
-public class UserController {
+public class UserController extends BaseController{
     @Autowired
     private UserService userService;
 
-    @Autowired
-    JwtUtil jwtUtil;
-
-//    登录接口
     @CrossOrigin
     @PostMapping("/login")
-    public Result login(@Validated @RequestBody LoginDao loginDao, HttpServletResponse response) {
-        User user = userService.findUserByName(loginDao.getUsername());
+    public Result login(@Validated @RequestBody LoginVo loginVo, HttpServletResponse response) {
+        User user = userService.findUserByName(loginVo.getUsername());
         Assert.notNull(user, "用户不存在");
         //密码校验
-        Md5Hash md5Hash = new Md5Hash(loginDao.getPassword(), user.getSalt());
+        Md5Hash md5Hash = new Md5Hash(loginVo.getPassword(), user.getSalt());
         if (!user.getPassword().equals(md5Hash.toHex())){
             return Result.fail("密码不正确");
         }
@@ -61,11 +55,17 @@ public class UserController {
                 .put("description", user.getDescription()).map());
     }
 
-    @RequestMapping("/{id}")
+    @GetMapping("/{id}")
     public Result getUserById(@PathVariable("id") int id){
+        log.info("查找id为{}的用户信息", id);
         return Result.success(userService.findUserById(id));
     }
 
+    /**
+     * 注册新用户
+     * @param user
+     * @return
+     */
     @PostMapping("/register")
     public Result register(@RequestBody @Validated User user){
         //不允许用户名重复
@@ -85,6 +85,11 @@ public class UserController {
         }
     }
 
+    public Result getUserInfo(String userId){
+        int count = blogService.count(new QueryWrapper<Blog>().eq("userId", userId));
+        int pros = projectService.count(new QueryWrapper<Project>().eq("start_user", userId));
+        return null;
+    }
     //用户登出
 //    @RequestMapping("/logout")
 //    public Result logout(){

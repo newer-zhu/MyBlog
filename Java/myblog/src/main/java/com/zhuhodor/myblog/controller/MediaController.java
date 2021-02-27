@@ -24,9 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/media")
 @Slf4j
-public class MediaController {
-    @Autowired
-    BlogService blogService;
+public class MediaController extends BaseController{
 
     @PostMapping("/saveimg")
     public Result<Map<String, Object>> saveImg(@RequestParam(value = "imgFile", required = true) MultipartFile imgFile) throws Exception {
@@ -36,12 +34,9 @@ public class MediaController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         String trueFileName = imgFile.getOriginalFilename();
-
         assert trueFileName != null;
         String suffix = trueFileName.substring(trueFileName.lastIndexOf("."));
-
         String fileName = System.currentTimeMillis() + "_" + IdUtil.randomUUID() + suffix;
-
         String paramImgFile = Base64.encode(imgFile.getBytes());
 
         //转存到gitee
@@ -49,13 +44,13 @@ public class MediaController {
         paramMap.put("access_token", GiteeImgBedConstant.TOKEN);
         paramMap.put("message", GiteeImgBedConstant.CREATE_REPOS_MESSAGE);
         paramMap.put("content", paramImgFile);
-
+        //存放路径
         String targetDir = GiteeImgBedConstant.IMG_FILE_DEST_PATH + fileName;
+        //请求路径
         String requestUrl = String.format(GiteeImgBedConstant.CREATE_REPOS_URL, GiteeImgBedConstant.OWNER,
                 GiteeImgBedConstant.REPO_NAME, targetDir);
-
         System.out.println(requestUrl);
-
+        //上传图片
         String resultJson = HttpUtil.post(requestUrl, paramMap);
 
         JSONObject jsonObject = JSONUtil.parseObj(resultJson);
@@ -70,6 +65,17 @@ public class MediaController {
         result.setData(resultMap);
 
         return result;
+    }
+
+    @GetMapping("/delimg/{url}")
+    public Result delImag(@PathVariable("url") String url){
+        HashMap<String, String> paramMap = new HashMap<>();
+        paramMap.put("access_token", GiteeImgBedConstant.TOKEN);
+        paramMap.put("message", "delImg");
+        paramMap.put("path", url);
+        String requestUrl = String.format(GiteeImgBedConstant.CREATE_REPOS_URL, GiteeImgBedConstant.OWNER,
+                GiteeImgBedConstant.REPO_NAME);
+        return Result.success("delete OK!");
     }
 
     @PostMapping("/fileupload")

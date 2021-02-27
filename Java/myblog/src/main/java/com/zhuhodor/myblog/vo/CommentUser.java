@@ -1,4 +1,4 @@
-package com.zhuhodor.myblog.dao;
+package com.zhuhodor.myblog.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

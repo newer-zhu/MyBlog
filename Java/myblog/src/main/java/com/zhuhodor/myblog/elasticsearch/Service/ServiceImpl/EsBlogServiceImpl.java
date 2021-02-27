@@ -8,14 +8,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.MultiSearchRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -23,60 +33,44 @@ public class EsBlogServiceImpl implements EsBlogService {
     @Autowired
     RestHighLevelClient restHighLevelClient;
 
-    /**
-     * 往Es中插入博客
-     * @param blog
-     */
+
     @Override
-    public void insertBlog(EsBlog blog) {
-        log.info("插入博客 {} 到ES",blog.getId());
-        IndexRequest indexRequest = new IndexRequest("blog", "_doc", blog.getId())
-                .source("id", blog.getId(),
-                        "content", blog.getContent(),
-                        "createdAt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(blog.getCreatedAt()).toString(),
-                        "summary", blog.getSummary(),
-                        "title", blog.getTitle(),
-                        "userId", blog.getUserId(),
-                        "isFile", blog.getIsFile(),
-                        "tags", blog.getTags());
+    public List<EsBlog> searchBlog(String query) {
+        SearchRequest searchRequest = new SearchRequest("blog");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, "title", "summary"))
+                .sort(new ScoreSortBuilder().order(SortOrder.DESC))
+                .from(0)
+                .size(5)
+                .highlighter(new HighlightBuilder().field("*").requireFieldMatch(false).preTags("<span style='color: red'>")
+                        .postTags("</span>"));
+        searchRequest.source(searchSourceBuilder);
         try {
-            IndexResponse response = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+            SearchResponse response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    /**
-     * 删除Es中的博客
-     * @param id
-     */
     @Override
-    public void delBlog(String id){
-        DeleteRequest deleteRequest = new DeleteRequest("blog", "_doc", id);
+    public String findBlogByString(String query) {
+        MultiSearchRequest request = new MultiSearchRequest();
+        SearchRequest first = new SearchRequest();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.query(QueryBuilders.matchQuery("title", query));
+        first.source(builder);
+        request.add(first);
+        SearchRequest second = new SearchRequest();
+        builder.clearRescorers();
+        builder.query(QueryBuilders.matchQuery("summary", query));
+        second.source(builder);
+        request.add(second);
         try {
-            restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
+            restHighLevelClient.msearch(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 更新Es中的博客
-     */
-    @Override
-    public void updateBlog(EsBlog blog){
-        UpdateRequest updateRequest = new UpdateRequest("blog", "_doc", blog.getId()).doc(
-                "content", blog.getContent(),
-                "createdAt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(blog.getCreatedAt()).toString(),
-                "summary", blog.getSummary(),
-                "title", blog.getTitle(),
-                "userId", blog.getUserId(),
-                "isFile", blog.getIsFile(),
-                "tags", blog.getTags());
-        try {
-            restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return "s";
     }
 }

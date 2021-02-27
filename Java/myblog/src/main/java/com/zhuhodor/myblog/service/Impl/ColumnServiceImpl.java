@@ -1,10 +1,10 @@
 package com.zhuhodor.myblog.service.Impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhuhodor.myblog.Entity.BlogModule.BlogColumn;
 import com.zhuhodor.myblog.mapper.ColumnMapper;
 import com.zhuhodor.myblog.service.ColumnService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @Transactional
-public class ColumnServiceImpl implements ColumnService {
+public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, BlogColumn> implements ColumnService{
 
     @Autowired
     ColumnMapper columnMapper;
@@ -28,8 +28,8 @@ public class ColumnServiceImpl implements ColumnService {
     }
 
     @Override
-    public void delBlogInColumn(String blogId) {
-        columnMapper.delBlogInColumn(blogId);
+    public void delBlogInColumn(String blogId, String columnId) {
+        columnMapper.delBlogInColumn(blogId, columnId);
     }
 
 
@@ -39,8 +39,8 @@ public class ColumnServiceImpl implements ColumnService {
     }
 
     @Override
-    public BlogColumn getColumnByBlogId(String blogId) {
-        return columnMapper.getColumnByBlogId(blogId);
+    public BlogColumn getColumnByBlogId(String blogId, String userId) {
+        return columnMapper.getColumnByBlogId(blogId, userId);
     }
 
     @Override

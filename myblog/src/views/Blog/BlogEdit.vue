@@ -12,11 +12,9 @@
                                 <el-form-item label="标题" prop="title">
                                     <el-input  v-model = "blogForm.title"></el-input>
                                 </el-form-item>
-                            </el-col>
-                            <el-col :span="20">
-                                <el-form-item label="介绍" prop="summary">
-                                    <el-input type="textarea" show-word-limit
-                                              maxlength="30" v-model="blogForm.summary"></el-input>
+                                <el-form-item label="摘要" prop="summary">
+                                    <el-input type="textarea"
+                                              maxlength="100" v-model="blogForm.summary"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -60,7 +58,7 @@
                     </el-form-item>
                 </el-main>
                 <div style="text-align: center;margin-bottom: 50px">
-                    <el-button type="primary" @click="dialogVisible = true">立即发布</el-button>
+                    <el-button type="primary" @click="updateBlog('blogForm')">立即发布</el-button>
                     <el-button @click="resetForm('blogForm')">重置</el-button>
                 </div>
 
@@ -69,6 +67,7 @@
                         :visible.sync="dialogVisible"
                         width="30%"
                 >
+                    <span style="color: #409EFF; padding-bottom: 10px" class="el-icon-question">标签可多选，分类仅能选一类</span>
                     <el-row>
                         <span>
                         标签(可自定义)
@@ -79,10 +78,10 @@
                                     multiple
                                     placeholder="输入自定义标签">
                             <el-option
-                                    v-for="item in pushTags"
-                                    :key="item.id"
-                                    :label="item.tagName"
-                                    :value="item.tagName">
+                                    v-for="(item, index) in pushTags"
+                                    :key="index"
+                                    :label="item"
+                                    :value="item">
                             </el-option>
                           </el-select>
                     </span>
@@ -91,9 +90,6 @@
                     <el-row>
                         <span>
                         请选择分类(可选)
-                            <!--                        <el-checkbox-group v-model="afterList">-->
-                            <!--                            <el-checkbox v-for="l in columns" :label="l.id">{{l.c_name}}</el-checkbox>-->
-                            <!--                        </el-checkbox-group>-->
                           <el-select v-model="selectColumn" placeholder="请选择">
                             <el-option
                                     v-for="item in columns"
@@ -104,9 +100,8 @@
                           </el-select>
                     </span>
                     </el-row>
-
                     <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
+                        <el-button @click="cancel">算了</el-button>
                         <el-button type="primary" @click="submitForm('blogForm')">确 定</el-button>
                     </span>
                 </el-dialog>
@@ -136,12 +131,7 @@
                     isFile: 0,
                     visitors: 0,
                 },
-                event: {
-                    content: '',
-                    time: '',
-                    level: '',
-                    url: ''
-                },//事件
+                projectId: '',
                 markdownOption: {
                     bold: true, // 粗体
                     italic: true, // 斜体
@@ -187,7 +177,7 @@
                     ],
                     summary: [
                         { required: false, message: '请填写摘要', trigger: 'blur' },
-                        { min: 0, max: 50, message: '长度在 0 到 50 个字符', trigger: 'blur'}
+                        { min: 0, max: 100, message: '长度在 0 到 100 个字符', trigger: 'blur'}
                     ]
                 },
                 dialogVisible: false,
@@ -204,7 +194,7 @@
                 this.$refs[formName].resetFields();
             },
             handleImgAdd(pos, file){
-                console.log("开始上传");
+                console.log("开始上传图片");
                 let formData = new FormData();
                 formData.append('imgFile', file);
                 let config = {};
@@ -213,7 +203,9 @@
                     this.$refs.md.$img2Url(pos,res.data.data["resultImgUrl"]);
                 }))
             },
-            imgDel(){},
+            imgDel(pos){
+                console.log(pos);
+            },
             success(msg) {
                 this.$message({
                     message: msg,
@@ -226,67 +218,64 @@
                 }
                 this.$message.error(msg);
             },
-            // sendEvent(e) {
-            //     //e = 1修改博客，2新建博客
-            //     if (e === 1){
-            //         this.event.content = '修改了博客 '+this.blogForm.title.slice(0, 7) + '...'
-            //     }else if (e ==2){
-            //         this.event.content = '新建了博客 '+this.blogForm.title.slice(0, 7) + '...'
-            //     }
-            //     console.log(this.$sendEvent(this.event));
-            // },
-            submitForm(formName) {
+            updateBlog(formName){
                 let _this = this;
                 this.$refs[formName].validate((valid) => {
-                    // let entity, b = _this.beforeList, a = _this.afterList
                     if (valid) {
-                        //新建的博客
-                        let newBlog = {};
                         //修改博客
                         if (this.$route.params.blogId){
                             _this.$axios.post("/blog/modifyblog",this.blogForm).then((res)=>{
+                                _this.blogForm = res.data.data.blog;
+                                _this.columns = res.data.data.columns;
+                                _this.pushTags = res.data.data.pushTags;
                                 if (res.data.code === 200){
-                                    //添加博客到分类
-                                    if (!isNaN(_this.selectColumn)){
-                                        _this.$axios.get("/column/blogtocolumn/"+_this.blogForm.id+"/"+_this.selectColumn);
-                                    }
-                                    // _this.sendEvent(1);
                                     this.success('发布成功！');
-                                    _this.$router.push("/home");
+                                    _this.dialogVisible = true;
                                 }
                             })
                         }else {//新建博客
-                            _this.$axios.post("/blog/saveblog",this.blogForm).then((res)=>{
-                                newBlog = res.data.data;
-                                _this.blogForm.id = newBlog.id;
+                            _this.$axios.post("/blog/save?projectId="+_this.projectId,this.blogForm).then((res)=>{
+                                _this.blogForm = res.data.data.blog;
+                                _this.columns = res.data.data.columns;
+                                _this.pushTags = res.data.data.pushTags;
                                 if (res.data.code === 200){
-                                    //这里说明没有更改分栏
-                                    if (!isNaN(_this.selectColumn)){
-                                        _this.$axios.get("/column/blogtocolumn/"+newBlog.id+"/"+_this.selectColumn);
-                                    }
-                                    // _this.sendEvent(2);
-                                    this.success('发布成功');
-                                    _this.$router.push("/blogdetail/"+newBlog.id);
+                                    this.success('发布成功！');
+                                    _this.dialogVisible = true;
                                 }
                             })
-                        }
-                        if (_this.tags.length != 0){
-                            //把自己创建的blog标签对象化
-                            for (let tag in _this.tags){
-                                let t =_this.tags[tag]
-                                if (t.id == undefined){
-                                    _this.tags[tag] = {id: 0, tagName: t, number: 0, image: ''}
-                                    console.log(t);
-                                }
-                            }
-                            console.log(_this.tags)
-                            _this.$axios.post("/tag/blogtotags/"+_this.blogForm.id, _this.tags).then(res => {
-                                console.log(res.data.data);})
                         }
                     } else {
                         this.error('发布失败，请稍后再试');
                         console.log('error submit!!');
                         return false;
+                    }
+                });
+
+            },
+            cancel(){
+                this.dialogVisible = false;
+                this.$router.replace({
+                    name: "BlogDetail",
+                    params: {
+                        blogId: _this.blogForm.id
+                    }
+                });
+            },
+            submitForm() {
+                let _this = this;
+                //添加博客到分类
+                if (!isNaN(_this.selectColumn)) {
+                    _this.$axios.get("/column/blogtocolumn/" + _this.blogForm.id + "?columnId=" + _this.selectColumn);
+                }
+                //给博客打标签
+                if (_this.tags.length != 0){
+                    _this.$axios.post("/tag/blogtotags/"+_this.blogForm.id, _this.tags).then(res => {
+                        console.log(res.data.data);})
+                }
+                this.$router.replace({
+                    name: "BlogDetail",
+                    params: {
+                        blogId: _this.blogForm.id
                     }
                 });
             },
@@ -299,6 +288,7 @@
         created() {
             const userId = this.$store.getters.getUser.id;
             this.blogForm.userId = userId;
+            this.projectId = this.$route.params.projectId;
             const blogId = this.$route.params.blogId;
             this.$axios("/column/getcolumnbyuserid/"+userId).then((res)=> {
                 this.columns = res.data.data;
@@ -306,7 +296,7 @@
 
             if (blogId){
                 //博客回显
-                this.$axios.get("/blog/getbyid/" + blogId).then(res => {
+                this.$axios.get("/blog/" + blogId).then(res => {
                     const blog = res.data.data;
                     if (blog){
                         this.blogForm.id = blogId;
@@ -318,20 +308,13 @@
                     }
                 });
                 //获取标签列表
-                this.$axios.get("/tag/getbyblogid/" + blogId).then(res => {
-                    this.pushTags = res.data.data;
-                });
+                // this.$axios.get("/tag/getbyblogid/" + blogId).then(res => {
+                //     this.pushTags = res.data.data;
+                // });
                 //获取分栏列表
-                this.$axios("/column/getcolumnbyuserid/"+userId).then((res)=> {
-                    this.columns = res.data.data;
-                })
-                //已选分栏
-                this.$axios("/column/getcolumnbyblogid/"+blogId).then((res)=> {
-                    let select = res.data.data['cname']
-                    if (select != null){
-                        this.selectColumn = select;
-                    }
-                })
+                // this.$axios("/column/getcolumnbyuserid/"+userId).then((res)=> {
+                //     this.columns = res.data.data;
+                // })
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.zhuhodor.myblog.service.Impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.mapper.BlogMapper;
 import com.zhuhodor.myblog.service.BlogService;
@@ -13,12 +13,10 @@ import java.util.List;
 
 @Transactional
 @Component
-public class BlogServiceImpl implements BlogService {
+public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements BlogService {
 
     @Autowired
     BlogMapper blogMapper;
-    @Autowired
-    RedisUtils redisUtils;
 
     @Override
     public List<Blog> findBlogsByUserId(String userId) {
@@ -41,8 +39,12 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public boolean saveBlog(Blog blog) {
-        return blogMapper.saveBlog(blog);
+    public boolean saveBlog(Blog blog, String projectId) {
+        boolean b = blogMapper.saveBlog(blog);
+        if (projectId != "" && !"undefined".equals(projectId)){
+            blogMapper.blogToProject(blog.getId(), projectId);
+        }
+        return b;
     }
 
     @Override

@@ -20,9 +20,7 @@ import java.util.UUID;
 @RestController
 @Slf4j
 @RequestMapping("/web")
-public class WebController {
-    @Autowired
-    private UserService userService;
+public class WebController extends BaseController{
 
     @Autowired
     private WebService webService;

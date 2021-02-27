@@ -5,9 +5,10 @@ import Register from 'views/Register';
 import Login from 'views/Login';
 import BlogEdit from 'views/Blog/BlogEdit';
 import BlogDetail from "views/Blog/BlogDetail";
-import ListDetail from "views/ListDetail";
-import ProjectDetail from "views/ProjectDetail"
-import StartProject from '../views/StartProject'
+import ListDetail from "../views/Blog/ListDetail";
+import ProjectDetail from "../views/Project/ProjectDetail"
+import StartProject from '../views/Project/StartProject'
+import ProjectList from '../views/Project/ProjectList'
 Vue.use(VueRouter)
 
   const routes = [
@@ -21,14 +22,22 @@ Vue.use(VueRouter)
     name: 'Register',
     component: Register
   },
+
     {
       path: '/home',
       name: 'Index',
       component: Index,
       children: [{
-        path: 'listDetail/:columnId',
-        components: {listDetail: ListDetail}
-      }]
+          name: 'ListDetail',
+          path: 'listDetail/:columnId',
+          components: {listDetail: ListDetail}
+        },
+        {
+          name: 'ProjectList',
+          path: 'projectList/:userId/:isFavorite',
+          components: {projectList: ProjectList}
+        }
+      ]
     },
     {
       path: '/startproject',
@@ -51,21 +60,15 @@ Vue.use(VueRouter)
       component: BlogEdit
     },
     {
-      path: '/projectdetail',
-      name: 'ProjectDetail',
-      component: ProjectDetail
-    },
-    {
       path: '/blogedit/:blogId',
       name: 'BlogEdit',
       component: BlogEdit
     },
-    // {
-    //   path: '/listdetail/:columnId',
-    //   name: 'ListDetail',
-    //   component: ListDetail
-    // },
-
+    {
+      path: '/projectdetail/:projectId',
+      name: 'ProjectDetail',
+      component: ProjectDetail
+    },
 
   // {
     // path: '/about',

@@ -1,35 +1,21 @@
 package com.zhuhodor.myblog.controller;
 
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zhuhodor.myblog.Entity.Comment;
 import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.common.Result;
-import com.zhuhodor.myblog.dao.CommentDao;
-import com.zhuhodor.myblog.dao.CommentUser;
-import com.zhuhodor.myblog.service.CommentService;
-import com.zhuhodor.myblog.service.UserService;
+import com.zhuhodor.myblog.vo.CommentVo;
+import com.zhuhodor.myblog.vo.CommentUser;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/comment")
 @Slf4j
-public class CommentController {
-    @Autowired
-    private CommentService commentService;
-
-    @Autowired
-    private UserService userService;
+public class CommentController extends BaseController{
 
     //只支持两级评论
     @GetMapping("/getlistbyblogid/{blogId}")
@@ -38,10 +24,10 @@ public class CommentController {
         //顶层评论
         List<Comment> comments = commentService.selectCommentByBlogId(blogId);
         //返回结果
-        ArrayList<CommentDao> list = new ArrayList<>();
+        ArrayList<CommentVo> list = new ArrayList<>();
         for (Comment c : comments){
             //将查询的评论实体转换成需要的实体
-            CommentDao cD = new CommentDao();
+            CommentVo cD = new CommentVo();
             User commentUser = userService.findUserById(c.getCommentUser());
             cD.setCommentUser(new CommentUser(commentUser.getId(),commentUser.getAvatar(), commentUser.getUsername()));
             User targetUser = userService.findUserById(c.getTargetUser());
@@ -51,10 +37,10 @@ public class CommentController {
             cD.setCreateDate(c.getCreateDate());
 //            第二层评论
             List<Comment> children = commentService.selectChildrenByCommentId(c.getId());
-            List<CommentDao> daos = new ArrayList<>();
+            List<CommentVo> daos = new ArrayList<>();
             for (Comment co : children){
                 //将第二层评论的实体转换成需要的实体类型
-                CommentDao dao = new CommentDao();
+                CommentVo dao = new CommentVo();
                 User cUser = userService.findUserById(co.getCommentUser());
                 dao.setCommentUser(new CommentUser(cUser.getId(), cUser.getAvatar(), cUser.getUsername()));
                 User tUser = userService.findUserById(co.getTargetUser());

@@ -1,5 +1,6 @@
 package com.zhuhodor.myblog.Entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,8 +19,8 @@ import java.util.List;
 @Data
 @Accessors(chain = true)//setter方法返回当前对象
 @EqualsAndHashCode(callSuper = false)
+@TableName("user")
 public class User implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id

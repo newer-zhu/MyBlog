@@ -1,5 +1,6 @@
 package com.zhuhodor.myblog.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhuhodor.myblog.Entity.Permission;
 import com.zhuhodor.myblog.Entity.Role;
 import com.zhuhodor.myblog.Entity.User;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public interface UserService {
+public interface UserService extends IService<User> {
 
     @Cacheable(key = "'id'+#p0")
     User findUserById(int id);
@@ -26,5 +27,4 @@ public interface UserService {
     List<Role> findRolesByUserName(String username);
 
     List<Permission> findPermissionsByRoleId(String id);
-
 }

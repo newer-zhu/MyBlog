@@ -1,7 +1,9 @@
 package com.zhuhodor.myblog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
+import com.zhuhodor.myblog.Entity.Tag;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 @CacheConfig(cacheNames = "blog")
-public interface BlogService {
+public interface BlogService extends IService<Blog>{
     List<Blog> findBlogsByUserId(String userId);
 
     int getPagesByUserId(String userId);
@@ -22,7 +24,7 @@ public interface BlogService {
     @CacheEvict(allEntries = true)
     boolean editBlog(Blog blog);
 
-    boolean saveBlog(Blog blog);
+    boolean saveBlog(Blog blog, String projectId);
 
     @Cacheable(key = "'id'+#p0")
     Blog findBlogById(String id);

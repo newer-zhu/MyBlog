@@ -1,4 +1,4 @@
-package com.zhuhodor.myblog.dao;
+package com.zhuhodor.myblog.vo;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 @Data
-public class LoginDao implements Serializable {
+public class LoginVo implements Serializable {
     @NotBlank(message = "昵称不能为空")
     private String username;
 
