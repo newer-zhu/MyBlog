@@ -6,7 +6,7 @@
                 <el-menu-item index="1" >首页</el-menu-item>
                 <el-submenu index="2">
                     <template slot="title">发布</template>
-                    <el-menu-item @click="writeBlog" index="2-1">写博客</el-menu-item>
+                    <el-menu-item @click="writeBlog" index="2-1">写笔记</el-menu-item>
                     <router-link :to="{name: 'StartProject'}">
                         <el-menu-item index="2-2">发起项目</el-menu-item>
                     </router-link>
@@ -14,15 +14,7 @@
                 <el-menu-item index="3">消息中心</el-menu-item>
                 <el-menu-item index="4" @click="drawer = !drawer">个人中心</el-menu-item>
                 <el-menu-item index="5">圈子</el-menu-item>
-                <el-menu-item index="6" style="width: 400px">
-                    <el-input
-                            placeholder="请输入内容"
-                            v-model="input">
-                        <i slot="prefix" class="el-input__icon el-icon-search"></i>
-                    </el-input>
-                </el-menu-item>
-                <!--                <el-menu-item index="6" v-if="this.$store.getters.getUser == null" @click="toLogin">登录/注册</el-menu-item>-->
-                <el-menu-item index="7" @click="logOut">退出</el-menu-item>
+                <el-menu-item index="6" style="float: right; right: 50px" @click="logOut">退出</el-menu-item>
             </el-menu>
 
         </div>

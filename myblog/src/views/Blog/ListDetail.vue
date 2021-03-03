@@ -75,6 +75,7 @@
                 if (this.columnId === -1){
                     this.$axios("/blog/getpagesbyuserid/"+this.userId).then((res) => {
                         this.page.blogs = res.data.data.blogList;
+                        console.log(this.page.blogs);
                         this.page.total = res.data.data.total;
                     });
                 }else {

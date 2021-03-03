@@ -1,14 +1,13 @@
 package com.zhuhodor.myblog.elasticsearch.Service;
 
-import com.zhuhodor.myblog.elasticsearch.Entity.EsBlog;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
+import com.zhuhodor.myblog.vo.searchRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-@Service
+@Service("esBlogService")
 public interface EsBlogService {
-    List<EsBlog> searchBlog(String query);
+    List<Blog> searchBlog(searchRequest query);
 
-
-    String findBlogByString(String query);
 }

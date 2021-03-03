@@ -1,5 +1,6 @@
 package com.zhuhodor.myblog.Entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    private int id;
+    private Integer id;
     private String salt;
     @NotBlank(message = "昵称不能为空")
     private String username;
@@ -38,7 +39,6 @@ public class User implements Serializable {
     private String college;
     private String description;
     private String grade;
-    private List<Role> roles;
 
     @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",shape = JsonFormat.Shape.STRING)
     @PastOrPresent

@@ -1,6 +1,6 @@
 package com.zhuhodor.myblog.controller;
 
-import com.zhuhodor.myblog.AI.KeywordsExtraction;
+import com.zhuhodor.myblog.AI.TextAnalysis;
 import com.zhuhodor.myblog.elasticsearch.Service.EsBlogRepository;
 import com.zhuhodor.myblog.elasticsearch.Service.EsBlogService;
 import com.zhuhodor.myblog.service.*;
@@ -9,8 +9,6 @@ import com.zhuhodor.myblog.util.RedisUtils;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-
-import javax.annotation.Resource;
 
 @Controller
 public class BaseController {
@@ -48,6 +46,6 @@ public class BaseController {
     EsBlogService esBlogService;
 
     @Autowired
-    KeywordsExtraction keywordsExtraction;
+    TextAnalysis keywordsExtraction;
 
 }

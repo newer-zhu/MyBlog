@@ -135,7 +135,12 @@
                         </el-collapse-item>
                     </el-collapse>
                     <el-tabs style="padding-top: 50px"  type="card" >
-                        <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
+                        <el-tab-pane label="时间动态" name="first">
+                            <div>
+                                <el-calendar v-model="date">
+                                </el-calendar>
+                            </div>
+                        </el-tab-pane>
                         <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
                         <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
                         <el-tab-pane label="定时任务" name="fourth">定时任务补偿</el-tab-pane>
@@ -196,6 +201,7 @@
                     total: 1,
                     currentPage: 1,
                 },
+                date: new Date(),
                 rates: 0,
                 colors: ['#2d9abf', '#F7BA2A', '#FF9900'],
                 drawer: false

@@ -6,12 +6,13 @@ import com.zhuhodor.myblog.mapper.ColumnMapper;
 import com.zhuhodor.myblog.service.ColumnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
-@Transactional
+@Service
 public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, BlogColumn> implements ColumnService{
 
     @Autowired

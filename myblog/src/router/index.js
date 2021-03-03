@@ -9,6 +9,7 @@ import ListDetail from "../views/Blog/ListDetail";
 import ProjectDetail from "../views/Project/ProjectDetail"
 import StartProject from '../views/Project/StartProject'
 import ProjectList from '../views/Project/ProjectList'
+import DisplayList from '../views/DisplayList'
 Vue.use(VueRouter)
 
   const routes = [
@@ -16,13 +17,17 @@ Vue.use(VueRouter)
     path: '/',
     name: 'Login',
     component: Login
-  },
+    },
     {
     path: '/register',
     name: 'Register',
     component: Register
-  },
-
+    },
+    {
+      path: '/display/:querystr',
+      name: 'DisplayList',
+      component: DisplayList
+    },
     {
       path: '/home',
       name: 'Index',

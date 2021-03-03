@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zhuhodor.myblog.Entity.Project;
 import com.zhuhodor.myblog.Entity.Tag;
+import com.zhuhodor.myblog.Entity.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -50,5 +51,8 @@ public class Blog implements Serializable {
 
     @TableField(exist = false)
     private List<Tag> tags;
+
+    @TableField(exist = false)
+    private User user;
 
 }

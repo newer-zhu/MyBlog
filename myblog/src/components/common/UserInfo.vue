@@ -9,7 +9,7 @@
                 :before-close="close"
                 :with-header="false">
             <!--                头像-->
-            <div class="drawer">
+            <div class="drawer" v-if="user != null">
                 <div class="block avatar">
                     <el-avatar :size="75"  :src="user.avatar"></el-avatar>
                     <h2>{{user.username}}</h2>
@@ -45,7 +45,15 @@
             }
         },
         props: ['user', 'drawer'],
+        watch: {
+
+        },
         created() {
+            // if (this.user.grade == null || this.user.grade == undefined){
+            //     this.$axios.get("/user/"+this.user.id).then(res =>{
+            //         this.user = res.data.data;
+            //     })
+            // }
         },
         methods: {
             close(done){

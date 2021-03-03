@@ -20,7 +20,7 @@
                             </el-col>
                             <el-col :span="2">
                                 <router-link :to="{name: 'BlogEdit', params:{blogId:blog.id}}">
-                                    <el-link v-if="ownBlog" icon="el-icon-edit" style="font-size: 18px">编辑</el-link>
+                                    <el-link icon="el-icon-edit" style="font-size: 18px">编辑</el-link>
                                 </router-link>
                             </el-col>
                         </el-row>
@@ -101,8 +101,8 @@
                             </el-tag>
                         </el-link>
                     </div>
-                    <router-link replace :to="{name: 'ProjectDetail', params:{projectId:blog.project.id}}">
-                        <el-card v-show="blog.project != null" shadow="hover" style="border-radius: 4px; margin-top: 5px;">
+                    <router-link v-if="blog.project != null" replace :to="{name: 'ProjectDetail', params:{projectId:blog.project.id}}">
+                        <el-card shadow="hover" style="border-radius: 4px; margin-top: 5px;">
                             <el-row>
                                 <el-col :span="16">
                                     <h3>{{blog.project.projectName}}</h3>
@@ -132,15 +132,16 @@
             return {
                 checkUserId: 1,//当前登录用户Id
                 blog: {
+                    id: '',
                     title: '',
                     summary: '',
                     content: '',
                     userId: '',
-                    id: '',
                     isFile: 0,
                     visitors: 1,
                     tags: [],
-                    project: {}
+                    project: {},
+                    user: {}
                 },
                 columnList: {
                     columnVisible: false,
@@ -237,28 +238,25 @@
             }
         },
         created(){
+            let _this = this;
             this.checkUserId = this.$store.getters.getUser.id;
             const blogId = this.$route.params.blogId;//请求路径上的blogId参数值
-            console.log(blogId);
             if (blogId != undefined){
-                this.$axios.get("/blog/" + blogId).then(res => {
-                    const blog = res.data.data;
-                    if (blog){
-                        this.blog = blog;
-                        //把md格式的数据渲染成css
-                        let  MarkDown = require("markdown-loader")
-                        let md = new MarkDown()
-                        let  res = md.render(this.blog.content)
-                        this.blog.content = res
-                    }
+                this.$axios.get('/blog/' + blogId).then(res => {
+                    this.blog = res.data.data;
+                    this.$axios.get("/comment/getlistbyblogid/" + this.blog.id).then(res => {
+                        this.commentList = res.data.data;
+                        for(let i in this.commentList){
+                            this.commentNum += this.commentList[i]['childrenList'].length + 1;
+                        }
+                    });
                 });
+                // 把md格式的数据渲染成css
+                let  MarkDown = require("markdown-loader");
+                let md = new MarkDown();
+                let  re = md.render(_this.blog.content);
+                this.blog.content = re;
             }
-            this.$axios.get("/comment/getlistbyblogid/" + blogId).then(res => {
-                this.commentList = res.data.data;
-                for(let i in this.commentList){
-                    this.commentNum += this.commentList[i]['childrenList'].length + 1;
-                }
-            })
         }
     }
 </script>

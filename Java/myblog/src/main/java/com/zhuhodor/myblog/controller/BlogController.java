@@ -3,33 +3,15 @@ package com.zhuhodor.myblog.controller;
 import cn.hutool.core.map.MapUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zhuhodor.myblog.AI.KeywordsExtraction;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.elasticsearch.Entity.EsBlog;
-import com.zhuhodor.myblog.service.BlogService;
-import com.zhuhodor.myblog.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.elasticsearch.search.sort.ScoreSortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 
@@ -47,7 +29,7 @@ public class BlogController extends BaseController{
     public Result delBlogById(@RequestParam("blogId") String blogId){
         log.info("用户删除了id为{}的博客",blogId);
         blogService.delBlog(blogId);
-//        esBlogRepository.delete(new EsBlog(blogId));
+        esBlogRepository.delete(new EsBlog(blogId));
         redisUtils.del("blogVisitors:"+blogId);
         return Result.success("删除成功");
     }
@@ -97,6 +79,7 @@ public class BlogController extends BaseController{
         blogService.editBlog(blog);
         EsBlog esBlog = new EsBlog();
         BeanUtils.copyProperties(blog, esBlog);
+//        esBlog.setCreatedAt(blog.getCreatedAt().toString());
         esBlogRepository.save(esBlog);
         return Result.success(MapUtil.builder().put("blog", blog)
                 .put("pushTags", keywordsExtraction.generate(blog.getContent()))
@@ -110,6 +93,7 @@ public class BlogController extends BaseController{
      */
     @GetMapping("/{id}")
     public Result getBlogById(@PathVariable("id") String id){
+        log.info("获取BlogId={}的博客", id);
         Blog blog = blogService.findBlogById(id);
         if (!redisUtils.hasKey("blogVisitors:"+id)){
             redisUtils.set("blogVisitors:"+id, String.valueOf(1));
@@ -118,7 +102,6 @@ public class BlogController extends BaseController{
         }
         if (blog != null){
             blog.setVisitors(Integer.valueOf(redisUtils.get("blogVisitors:"+id)));
-            System.out.println(projectService.getProjectByBlogId(id));
             blog.setProject(projectService.getProjectByBlogId(id));
             blog.setTags(tagService.getTagsbyBlogId(id));
             return Result.success(blog);
@@ -163,10 +146,4 @@ public class BlogController extends BaseController{
                 .put("total", pageInfo.getPages()).map());
     }
 
-
-    @GetMapping("/search/{query}")
-    public Result searchBlog(@PathVariable("query") String query){
-        esBlogService.searchBlog(query);
-        return Result.success(null);
-    }
 }

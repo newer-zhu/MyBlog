@@ -7,11 +7,12 @@ import com.zhuhodor.myblog.mapper.ProjectMapper;
 import com.zhuhodor.myblog.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
+@Service
 public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> implements ProjectService{
 
     @Autowired

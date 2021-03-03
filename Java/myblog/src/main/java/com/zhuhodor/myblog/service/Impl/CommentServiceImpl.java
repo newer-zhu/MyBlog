@@ -8,10 +8,11 @@ import com.zhuhodor.myblog.mapper.CommentMapper;
 import com.zhuhodor.myblog.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService{
 
     @Autowired

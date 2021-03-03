@@ -6,18 +6,7 @@
             </el-header>
 
             <el-container class="main">
-                <el-aside class="aside" width="400px">
-                    <el-row>
-                        <el-col :span="23" :offset="1">
-                            <el-input placeholder="请输入搜索内容" v-model="input">
-                                <el-button  style="color: #409EFF" slot="append" icon="el-icon-search"></el-button>
-                            </el-input>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-
-                    </el-row>
-                </el-aside>
+                <SearchList/>
 
                 <el-main>
                     <el-row :gutter="20">
@@ -153,13 +142,13 @@
 <script>
     import Footer from "components/common/Footer"
     import Navibar from "components/common/Navibar";
-    import ListDetail from "./Blog/ListDetail"
+    import ListDetail from "./Blog/ListDetail";
+    import SearchList from '../components/common/SearchList'
     export default {
         name: "Index",
-        components: {ListDetail, Footer,Navibar},
+        components: {ListDetail, Footer,Navibar, SearchList},
         data() {
             return{
-                input: '',
                 userId: 0,
                 columns: [],
                 projects: [],

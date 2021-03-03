@@ -12,10 +12,18 @@
                                 <el-form-item label="标题" prop="title">
                                     <el-input  v-model = "blogForm.title"></el-input>
                                 </el-form-item>
-                                <el-form-item label="摘要" prop="summary">
-                                    <el-input type="textarea"
-                                              maxlength="100" v-model="blogForm.summary"></el-input>
-                                </el-form-item>
+                                <el-row>
+                                    <el-col :span="22">
+                                        <el-form-item label="摘要" prop="summary">
+                                            <el-input type="textarea" autosize
+                                                       v-model="blogForm.summary"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="2">
+                                        <el-button @click="getSummary" type="success" class="el-icon-help" style="font-size: 15px; margin-left: 15px;margin-bottom: 0px" round>
+                                            {{'一键生成'}}</el-button>
+                                    </el-col>
+                                </el-row>
                             </el-col>
                         </el-row>
                     </el-col>
@@ -175,10 +183,6 @@
                     content: [
                         { required: true, message: '请输入内容', trigger: 'blur' }
                     ],
-                    summary: [
-                        { required: false, message: '请填写摘要', trigger: 'blur' },
-                        { min: 0, max: 100, message: '长度在 0 到 100 个字符', trigger: 'blur'}
-                    ]
                 },
                 dialogVisible: false,
                 selectColumn: '',
@@ -245,8 +249,7 @@
                             })
                         }
                     } else {
-                        this.error('发布失败，请稍后再试');
-                        console.log('error submit!!');
+                        this.error('发布失败，请检查格式');
                         return false;
                     }
                 });
@@ -257,9 +260,14 @@
                 this.$router.replace({
                     name: "BlogDetail",
                     params: {
-                        blogId: _this.blogForm.id
+                        blogId: this.blogForm.id
                     }
                 });
+            },
+            getSummary(){
+                this.$axios.post('/AI/summary', this.blogForm).then(res => {
+                    this.blogForm.summary = res.data.data;
+                })
             },
             submitForm() {
                 let _this = this;
@@ -275,7 +283,7 @@
                 this.$router.replace({
                     name: "BlogDetail",
                     params: {
-                        blogId: _this.blogForm.id
+                        blogId: this.blogForm.id
                     }
                 });
             },
@@ -299,12 +307,7 @@
                 this.$axios.get("/blog/" + blogId).then(res => {
                     const blog = res.data.data;
                     if (blog){
-                        this.blogForm.id = blogId;
-                        this.blogForm.title = blog.title;
-                        this.blogForm.summary = blog.summary;
-                        this.blogForm.content = blog.content;
-                        this.blogForm.isFile = blog.isFile;
-                        this.blogForm.visitors = blog.visitors;
+                        this.blogForm = blog
                     }
                 });
                 //获取标签列表
