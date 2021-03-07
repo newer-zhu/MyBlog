@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -17,6 +18,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     @Autowired
     ProjectMapper projectMapper;
+
+    @Override
+    public List<Date> getBlogTime(String projectId) {
+        return projectMapper.getBlogTime(projectId);
+    }
 
     @Override
     public List<Blog> findBlogsByProjectId(String projectId) {

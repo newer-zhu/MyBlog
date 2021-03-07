@@ -5,11 +5,13 @@ import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 public interface ProjectService extends IService<Project> {
 
+    List<Date> getBlogTime(String projectId);
 
     List<Blog> findBlogsByProjectId(String projectId);
 

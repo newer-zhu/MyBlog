@@ -83,8 +83,21 @@
                                                 size="large"
                                                 placement="top"
                                                 :timestamp="card.createdAt">
-                                            <router-link :to="{name: 'BlogDetail', params: {blogId: card.id, projectId: project.projectId}}">
-                                                <el-card shadow="hover" class="box-card">
+                                            <el-card v-show="page.total == 0" shadow="hover" class="box-card">
+                                                <div slot="header" class="clearfix">
+                                                    <span>{{card.title}}</span>
+                                                </div>
+                                                <el-row>
+                                                    <el-col :span="18">
+                                                        <p>{{card.summary}}</p>
+                                                    </el-col>
+                                                    <el-col :span="6">
+                                                        <p :class="card.isFile ? 'el-icon-folder':'el-icon-reading'"></p>
+                                                    </el-col>
+                                                </el-row>
+                                            </el-card>
+                                            <router-link :to="{name: 'BlogDetail', params: {blogId: card.id, projectId: project.id}}">
+                                                <el-card v-if="page.total != 0" shadow="hover" class="box-card">
                                                     <div slot="header" class="clearfix">
                                                         <span>{{card.title}}</span>
                                                     </div>
@@ -92,8 +105,12 @@
                                                         <el-col :span="18">
                                                             <p>{{card.summary}}</p>
                                                         </el-col>
-                                                        <el-col style="color: #8c939d" :span="6">
-                                                            <i :class="card.isFile ? 'el-icon-folder':'el-icon-reading'"></i>
+                                                        <el-col style="color: #8c939d;" :span="6">
+                                                            <div style="margin-left: 10px;">
+                                                                <i  style="font-size: 20px" :class="card.isFile ? 'el-icon-folder':'el-icon-reading'"></i>
+                                                                <br>
+                                                                <p  style="font-size: 15px" class="el-icon-view">{{card.visitors}}</p>
+                                                            </div>
                                                         </el-col>
                                                     </el-row>
                                                 </el-card>
@@ -135,15 +152,62 @@
                         </el-collapse-item>
                     </el-collapse>
                     <el-tabs style="padding-top: 50px"  type="card" >
-                        <el-tab-pane label="时间动态" name="first">
+                        <el-tab-pane @click="getBlogTime" label="时间动态" name="first">
                             <div>
-                                <el-calendar v-model="date">
+                                <el-calendar v-model="calendar.date">
+                                    <template slot="dateCell" slot-scope="{date, data}">
+                                        <div :class="data.isSelected ? 'is-selected' : ''">
+                                            {{data.day.split('-').slice(1).join('-')}}
+                                        </div>
+                                        <div v-show="calendar.blogTime.indexOf(data.day.toString()) != -1">
+                                            <el-tag style="font-weight: bold; font-size: 18px" type="danger">{{calendar.timeMap[data.day.toString()]}}</el-tag>
+                                        </div>
+                                    </template>
                                 </el-calendar>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
+                        <el-tab-pane label="标签一览" name="second">
+                            <el-progress v-for="i in 5" :percentage="20" ></el-progress>
+                        </el-tab-pane>
                         <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-                        <el-tab-pane label="定时任务" name="fourth">定时任务补偿</el-tab-pane>
+                        <el-tab-pane label="资料编辑" name="fourth">
+                            <el-row>
+                                <el-col>
+                                    <el-form :model="project" ref="dynamicValidateForm" label-width="100px" >
+                                        <el-form-item
+                                                prop="projectName"
+                                                label="项目名"
+                                                :rules="[
+                        { required: true, message: '请输入项目名', trigger: 'blur' },
+                        { min: 3, max: 30, message: '长度在 3 到 30 个字符', trigger: 'blur' }
+                        ]"
+                                        >
+                                            <el-input placeholder="3 到 30 个字符" v-model="project.projectName"></el-input>
+                                        </el-form-item>
+                                        <el-form-item>
+                                        </el-form-item>
+                                        <el-form-item
+                                                v-for="(domain, index) in project.overview"
+                                                :label="'简介' + (index+1)"
+                                                :key="domain.key"
+                                                :prop="'overview.' + index + '.content'"
+                                                :rules="{required: true, message: '简介不能为空', trigger: 'blur'}">
+                                            <i class="el-icon-info" style="color: forestgreen">简介以“标题|内容的形式”，如“项目重点|掌握网络tcp协议的原理”</i>
+                                            <el-input maxlength="50"
+                                                      show-word-limit style="width: 90%; padding-right: 5px"
+                                                      :rows="2" placeholder="简介标题|简介内容"
+                                                      type="textarea" v-model="domain.content"></el-input>
+                                            <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+                                        </el-form-item>
+                                        <el-form-item>
+                                            <el-button type="primary" @click="submitForm('dynamicValidateForm')">修改</el-button>
+                                            <el-button @click="addDomain">新增简介</el-button>
+                                            <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
+                                        </el-form-item>
+                                    </el-form>
+                                </el-col>
+                            </el-row>
+                        </el-tab-pane>
                     </el-tabs>
                     <el-backtop :right="320" :bottom="50">
                         <div
@@ -176,7 +240,7 @@
             return{
                 userId: 0,
                 project: {
-                    projectId: -1,
+                    id: -1,
                     startUser: 0,
                     projectUser: {},
                     projectName: '项目标题',
@@ -198,13 +262,19 @@
                         isFile: 0,
                         visitors: 0,
                     }],
-                    total: 1,
+                    total: 0,
                     currentPage: 1,
                 },
-                date: new Date(),
                 rates: 0,
                 colors: ['#2d9abf', '#F7BA2A', '#FF9900'],
-                drawer: false
+                drawer: false,
+                //日历数据
+                calendar: {
+                    date: new Date(),
+                    blogTime: [],
+                    timeMap: {}
+                }
+
             }
         },
         computed: {
@@ -213,20 +283,25 @@
             }
         },
         methods: {
-            openInfo(){this.drawer = true;},
             loadList(current){
-                this.$axios.get("/project/blogs/"+this.project.projectId+"?page="+current).then(res => {
-                    if (res.data.data.length != 0){
+                this.$axios.get("/project/blogs/"+this.project.id+"?page="+current).then(res => {
+                    if (res.data.data.total != 0){
                         this.page.blogs = res.data.data.blogList;
                         this.page.total = res.data.data.total;
                     }
                 });
             },
+            getBlogTime(){
+                this.$axios.get("/project/blogtime/"+this.project.id).then(res => {
+                    this.calendar.timeMap = res.data.data;
+                    this.calendar.blogTime = Object.keys(res.data.data);
+                })
+            },
             edit(){
                 this.$router.push({
                     name: 'BlogEdit',
                     params: {
-                        projectId: this.project.projectId
+                        projectId: this.project.id
                     }
                 })
             },
@@ -247,7 +322,7 @@
             },
             favorite(){
                 if (this.isFavorite === "info"){
-                    this.$axios.get("project/favorite/"+this.$store.getters.getUser.id+"/"+this.project.projectId).then(res => {
+                    this.$axios.get("project/favorite/"+this.$store.getters.getUser.id+"/"+this.project.id).then(res => {
                         if (res.data.code === 200){
                             this.success(res.data.data);
                             this.isFavorite = "warning"
@@ -256,7 +331,7 @@
                         }
                     })
                 }else {
-                    this.$axios.get("project/cancel/"+this.$store.getters.getUser.id+"/"+this.project.projectId).then(res => {
+                    this.$axios.get("project/cancel/"+this.$store.getters.getUser.id+"/"+this.project.id).then(res => {
                         if (res.data.code === 200){
                             this.success(res.data.data);
                             this.isFavorite = "info"
@@ -265,6 +340,34 @@
                         }
                     })
                 }
+            },
+
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.$axios.post("/project/overview", this.project).then(res => {
+                            this.success(res.data.data);
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            removeDomain(item) {
+                let index = this.project.overview.indexOf(item)
+                if (index !== -1) {
+                    this.project.overview.splice(index, 1)
+                }
+            },
+            addDomain() {
+                this.project.overview.push({
+                    content: '',
+                    key: Date.now()
+                });
             }
         },
         created(){
@@ -272,12 +375,12 @@
             this.$axios.get("/project/"+this.$route.params.projectId).then(res => {
                 this.project = res.data.data;
                 this.loadList(1);
-                this.$axios.get("/project/isfavorite/"+this.userId+"/"+this.project.projectId).then(res => {
+                this.getBlogTime();
+                this.$axios.get("/project/isfavorite/"+this.userId+"/"+this.project.id).then(res => {
                     if (res.data.data === true)
                         this.isFavorite = 'warning';
                     else
                         this.isFavorite = 'info';
-                    console.log(res.data.data);
                 });
             });
         },
@@ -292,8 +395,8 @@
     .el-carousel__item:nth-child(2n+1) {
         background-color: #d3dce6;
     }
-    .text {
-        font-size: 14px;
+    .colorBlock{
+        color: red;
     }
 
     .item {

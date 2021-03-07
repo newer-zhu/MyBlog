@@ -49,9 +49,22 @@ public class TagController extends BaseController{
         return Result.success("添加标签成功");
     }
 
+    /**
+     * 获取所有标签
+     * @return
+     */
     @GetMapping("/tags")
     public Result getTags(){
         List<Tag> tags = tagService.list();
         return Result.success(tags);
+    }
+
+    @GetMapping("/blogs/{tagId}")
+    public Result getBlogs(@PathVariable("tagId") String tagId){
+        return Result.success(tagService.findBlogsByTagId(tagId));
+    }
+
+    public Result getTagsByProjectId(String projectId){
+        return Result.success(null);
     }
 }

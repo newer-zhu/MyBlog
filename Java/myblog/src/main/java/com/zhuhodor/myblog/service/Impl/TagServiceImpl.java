@@ -1,6 +1,7 @@
 package com.zhuhodor.myblog.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Comment;
 import com.zhuhodor.myblog.Entity.Tag;
 import com.zhuhodor.myblog.mapper.CommentMapper;
@@ -34,5 +35,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     @Override
     public boolean blogIntoTags(String blogId, String tagId) {
         return tagMapper.blogIntoTags(blogId, tagId);
+    }
+
+    @Override
+    public List<Blog> findBlogsByTagId(String tagId) {
+        return tagMapper.findBlogsByTagId(tagId);
     }
 }

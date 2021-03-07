@@ -1,6 +1,7 @@
 package com.zhuhodor.myblog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Tag;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -22,4 +23,7 @@ public interface TagMapper extends BaseMapper<Tag> {
 
     @Insert("INSERT INTO blog_tag VALUES(#{blogId}, #{tagId})")
     boolean blogIntoTags(String blogId, String tagId);
+
+    @Select("SELECT b.* FROM `blog` b, `blog_tag` bt WHERE bt.blog_id = b.id AND bt.tag_id = #{tagId}")
+    List<Blog> findBlogsByTagId(String tagId);
 }

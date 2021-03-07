@@ -1,6 +1,7 @@
 package com.zhuhodor.myblog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Tag;
 import org.springframework.stereotype.Service;
 
@@ -14,4 +15,6 @@ public interface TagService extends IService<Tag> {
     boolean removeBlogsInTag(String blogId);
 
     boolean blogIntoTags(String blogId, String tagId);
+
+    List<Blog> findBlogsByTagId(String tagId);
 }

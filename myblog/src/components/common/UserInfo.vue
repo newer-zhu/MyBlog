@@ -41,19 +41,12 @@
         name: "UserInfo",
         data(){
             return{
-
             }
         },
         props: ['user', 'drawer'],
         watch: {
-
         },
         created() {
-            // if (this.user.grade == null || this.user.grade == undefined){
-            //     this.$axios.get("/user/"+this.user.id).then(res =>{
-            //         this.user = res.data.data;
-            //     })
-            // }
         },
         methods: {
             close(done){

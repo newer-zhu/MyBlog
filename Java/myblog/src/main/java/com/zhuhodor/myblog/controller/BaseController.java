@@ -2,7 +2,8 @@ package com.zhuhodor.myblog.controller;
 
 import com.zhuhodor.myblog.AI.TextAnalysis;
 import com.zhuhodor.myblog.elasticsearch.Service.EsBlogRepository;
-import com.zhuhodor.myblog.elasticsearch.Service.EsBlogService;
+import com.zhuhodor.myblog.elasticsearch.Service.EsProjectRepository;
+import com.zhuhodor.myblog.elasticsearch.Service.EsService;
 import com.zhuhodor.myblog.service.*;
 import com.zhuhodor.myblog.util.JwtUtil;
 import com.zhuhodor.myblog.util.RedisUtils;
@@ -43,7 +44,10 @@ public class BaseController {
     RestHighLevelClient restHighLevelClient;
 
     @Autowired
-    EsBlogService esBlogService;
+    EsService esBlogService;
+
+    @Autowired
+    EsProjectRepository esProjectRepository;
 
     @Autowired
     TextAnalysis keywordsExtraction;

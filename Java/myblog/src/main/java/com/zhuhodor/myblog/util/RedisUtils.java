@@ -6,6 +6,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -71,7 +72,36 @@ public class RedisUtils {
         redisTemplate.delete(key);
     }
 
+    //zset
 
+    /**
+     * 增加得分
+     * @param key
+     * @param val
+     * @param score
+     */
+    public void zincr(String key, String val, Double score){
+        redisTemplate.opsForZSet().incrementScore(key, val, score);
+    }
+
+    /**
+     * 倒序排序显示分数
+     * @param key
+     * @param start
+     * @param end
+     */
+    public Set revRangeWithScore(String key, Long start, Long end){
+        Set<ZSetOperations.TypedTuple<String>> typedTuples = redisTemplate.opsForZSet().reverseRangeWithScores(key, start, end);
+        return typedTuples;
+    }
+
+    /**
+     * 删除key的所有
+     * @param key
+     */
+    public void zremAll(String key){
+        redisTemplate.opsForZSet().removeRange(key, 0, -1);
+    }
 
     // String（字符串）
 

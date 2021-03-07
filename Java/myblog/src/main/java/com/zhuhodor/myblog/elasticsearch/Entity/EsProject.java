@@ -10,9 +10,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,12 +30,15 @@ public class EsProject {
     private Integer startUser;
 
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
+    private String overview;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String projectName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private String createAt;
+    @Field(pattern = "yyyy-MM-dd HH:mm:ss", type = FieldType.Date, format = DateFormat.year_month_day)
+    @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss", timezone ="GMT+8")
+    private Date createAt;
 
     @Field(type = FieldType.Integer)
     private Integer rates;
-
 }

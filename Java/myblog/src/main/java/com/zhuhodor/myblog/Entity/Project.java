@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -25,7 +26,7 @@ public class Project implements Serializable {
     private String projectName;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Timestamp createAt;
+    private Date createAt;
 
     private Integer rates;
 

@@ -2,12 +2,14 @@ package com.zhuhodor.myblog.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
 import com.zhuhodor.myblog.common.Result;
+import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
 import com.zhuhodor.myblog.vo.OverviewVo;
 import com.zhuhodor.myblog.vo.ProjectVo;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +17,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -43,7 +48,7 @@ public class ProjectController extends BaseController{
             }
         }
         return Result.success(MapUtil.builder()
-                .put("projectId", project.getId())
+                .put("id", project.getId())
                 .put("startUser", project.getStartUser())
                 .put("projectUser", userService.findUserById(project.getStartUser()))
                 .put("overview", vos)
@@ -74,6 +79,7 @@ public class ProjectController extends BaseController{
      */
     @PostMapping("/create")
     public Result createProject(@RequestBody ProjectVo projectVo){
+        log.info("创建项目");
         Project project = new Project();
         BeanUtils.copyProperties(projectVo, project, "overview");
         StringBuilder sb = new StringBuilder();
@@ -85,8 +91,10 @@ public class ProjectController extends BaseController{
         project.setOverview(sb.toString());
         Timestamp now = new Timestamp(System.currentTimeMillis());
         project.setCreateAt(now);
-        project.setRates(3);
         projectService.save(project);
+        EsProject esProject = new EsProject();
+        BeanUtils.copyProperties(project, esProject);
+        esProjectRepository.save(esProject);
         return Result.success(project);
     }
 
@@ -174,4 +182,33 @@ public class ProjectController extends BaseController{
             return Result.fail("请稍后再试");
     }
 
+    @GetMapping("/blogtime/{projectId}")
+    public Result getBlogTime(@PathVariable("projectId") String projectId){
+        log.info("获取projectId={}的时间线", projectId);
+        List<Date> time = projectService.getBlogTime(projectId);
+        HashMap<String, Integer> map = new HashMap<>();
+        time.forEach(t -> {
+            String format = new SimpleDateFormat("yyyy-MM-dd").format(t);
+            map.put(format, map.getOrDefault(format, 0) + 1);
+        });
+        return Result.success(map);
+    }
+
+    @PostMapping("/overview")
+    public Result updateOverview(@RequestBody ProjectVo projectVo){
+        log.info("更新简介 ==== id = {}", projectVo.getId());
+        Project project = new Project();
+        BeanUtils.copyProperties(projectVo, project, "overview");
+        StringBuilder sb = new StringBuilder();
+//        多条介绍合并成一条String
+        for (OverviewVo s : projectVo.getOverview()){
+            sb.append(s.getContent());
+            sb.append("7&%#");
+        }
+        project.setOverview(sb.toString());
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        project.setCreateAt(now);
+        projectService.updateById(project);
+        return Result.success("更新成功");
+    }
 }

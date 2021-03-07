@@ -10,6 +10,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 public class ProjectVo {
+    private Integer id;
 
     private Integer startUser;
 

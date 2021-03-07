@@ -11,12 +11,11 @@
                 <el-row>
                     <el-col :span="23" :offset="1">
                         <el-input placeholder="请输入搜索内容" v-model="searchRequest.querystr">
-                            <el-button @click="search"  style="color: #409EFF" slot="append" icon="el-icon-search"></el-button>
+                            <el-button @click="search(searchRequest.current)"  style="color: #409EFF" slot="append" icon="el-icon-search"></el-button>
                         </el-input>
                     </el-col>
                     <el-checkbox style="padding: 15px 190px 5px 20px" v-model="onlySelf">仅自己</el-checkbox>
                     时间范围
-<!--                    <el-input  size="small" style="width: 75px;" v-model="searchRequest.range" placeholder="近( )天"></el-input>-->
                     <el-date-picker style="margin-left: 20px"
                             unlink-panels
                             v-model="time"
@@ -29,6 +28,18 @@
                             end-placeholder="结束日期"
                             :picker-options="pickerOptions">
                     </el-date-picker>
+                    <div>
+                        <h3 class="el-icon-search" style="padding-left: 10%; font-weight: bold; color: rgba(133,72,66,0.99)">热搜词榜</h3>
+                        <div @click="searchHeat(w.value)" style="padding-left: 50px" v-for="(w, i) in hotWords">
+                            <el-row>
+                                <el-col :span="4" >
+                                    <p style="font-size: 17px">{{w.value}}</p>
+                                </el-col>
+                                <el-col :span="4"><el-tag style="margin-top: 10px">{{Math.round(w.score * 100) / 100}}</el-tag></el-col>
+                            </el-row>
+                            <div class="link-top"></div>
+                        </div>
+                    </div>
                 </el-row>
                 <el-row>
 
@@ -36,9 +47,24 @@
             </el-aside>
 
             <el-main>
-                <el-row>
+                <el-row :gutter="10">
+                    <el-alert style="height: 40px"
+                            :title="'共找到文章'+page.total+'条,'+'有关项目'+page.projects.length+'条'"
+                            type="success" effect="dark" :closable="false"
+                            show-icon>
+                    </el-alert>
                     <el-col :span="16">
-                        <div  style="border: 1px solid whitesmoke" v-for="(b, i) in page.blogs">
+                        <div v-show="page.blogs.length == 0">
+                            <div style="margin-left: 5px">
+                                <el-row>
+                                    <el-col :span="17">
+                                        <h3 style="color: #282c34">暂无相关文章结果</h3>
+                                        <i>既然没人，赶快补充吧！</i>
+                                    </el-col>
+                                </el-row>
+                            </div>
+                        </div>
+                        <div v-show="page.blogs.length != 0" style="border: 1px solid whitesmoke;border-bottom:2px solid #faeaef;" v-for="(b, i) in page.blogs">
                             <UserInfo :user="b.user" :drawer.sync="drawer"></UserInfo>
                             <div style="margin-left: 5px">
                                 <el-row>
@@ -49,23 +75,45 @@
                                         </router-link>
                                     </el-col>
                                     <el-col style="color: #8c939d" :span="7">
-                                        <p>{{b.createdAt}}</p>
+                                        <p>{{b.createdAt.slice(0, 11)}}</p>
                                         <span style="font-size: 25px" :class="b.isFile ? 'el-icon-folder':'el-icon-document'"></span>
-                                        <el-link @click="drawer = !drawer" v-if="b.user != null" style="display: inline; margin-left: 10px">{{b.user.username}}</el-link>
+                                        作者：<el-link @click="drawer = !drawer" v-if="b.user != null" style="display: inline; margin-left: 10px">{{b.user.username}}</el-link>
                                     </el-col>
                                 </el-row>
                                 <p style="color: #8c939d" v-html="b.content"></p>
                             </div>
                         </div>
-                        <el-pagination
-                                @current-change="handCurrentChange"
-                                style="text-align: center"
-                                layout="prev, pager, next"
-                                :page-count="page.total"
-                                :current-page="page.currentPage"
-                        >
-                        </el-pagination>
                     </el-col>
+                    <el-col :span="8">
+                        <div v-for="(p, i) in page.projects" style="box-shadow:  0 1px 8px 0 rgba(0, 0, 0, 0.1); margin-bottom: 1px">
+                            <UserInfo :user="p.projectUser" :drawer.sync="drawer"></UserInfo>
+                            <div style="margin-left: 5px; padding-bottom: 10px">
+                                <el-row>
+                                    <el-col :span="16">
+                                        <router-link :to="{name: 'ProjectDetail', params:{projectId:p.id}}">
+                                            <h3 v-html="p.projectName"></h3>
+                                        </router-link>
+                                        作者：<el-link @click="drawer = !drawer" v-if="p.projectUser != null" style="display: inline; margin-left: 10px">{{p.projectUser.username}}</el-link>
+                                    </el-col>
+                                    <el-col style="color: #8c939d" :span="8">
+                                        <p>{{p.createAt.slice(0, 11)}}</p>
+                                        <i style="font-size: 25px" class='el-icon-folder-opened'></i>
+                                        <p style="font-size: 18px; color: #409eff; display: inline; margin-left: 15px" class="el-icon-star-on">{{ p.rates }}</p>
+                                    </el-col>
+                                </el-row>
+                            </div>
+                        </div>
+                    </el-col>
+                    <el-pagination
+                            hide-on-single-page
+                            @current-change="handCurrentChange"
+                            style="text-align: center"
+                            layout="prev, pager, next"
+                            :page-size="7"
+                            :total="page.total"
+                            :current-page="page.currentPage"
+                    >
+                    </el-pagination>
                 </el-row>
             </el-main>
         </el-container>
@@ -121,48 +169,63 @@
                 },
                 page: {
                     blogs: [{
-                        title: '今日热点推荐',
-                        summary: '近日，一位来自美国亚利桑那州监狱部门的负责人向新闻网站 KJZZ 举报，其所在监狱的囚犯管理软件存在 Bug ，导致数百名符合释放条件的囚犯被继续关押。实际上，该负责人于一年前就在监狱部门的内部指出该 Bug，但至今没有人采取行动来修复该软件的 Bug。',
-                        content: '假期过半，大家过得如何，吃好喝好了吗？GitHub 很好！本周的 GitHub Trending 又上爆款项目——github1s 装完之后，一秒 GitHub 源码从浏览器变到你的 VS Code 里。此外，remotion 这个让你用 React 编程就能做出有意思视频的项目也是火到爆，一周获得近 5k star。除了项目火爆之外，本周 GitHub 也有个热点事件，便是昨日发生的 Ant Design 被删库事件，据某技术媒体所说为 GitHub 被黑导致“删库跑路”。嗝~ 这个瓜吃得真饱 😃\n' +
-                            '\n',
+                        title: '暂无相关结果',
+                        summary: '既然没人，赶快补充吧！',
+                        content: '',
                         userId: '',
-                        createdAt: '2020-10-31 12:02:33',
+                        createdAt: '',
                         id: '',
                         isFile: 0,
                         visitors: 0,
                     }],
                     total: 1,
                     currentPage: 1,
+                    projects: []
                 },
-
+                hotWords: []
             }
         },
         watch: {
             onlySelf(val){
                 this.searchRequest.userId = this.onlySelf === true? this.userId : '';
+            },
+            time(val){
+                if (this.time != null && this.time != ''){
+                    this.searchRequest.start = this.time[0];
+                    this.searchRequest.end = this.time[1];
+                }else {
+                    this.searchRequest.start = '';
+                    this.searchRequest.end = '';
+                }
             }
         },
         methods: {
-            search(){
-                if (this.time != null){
-                    this.searchRequest.start = this.time[0];
-                    this.searchRequest.end = this.time[1];
-                }
+            search(current){
+
+                this.searchRequest.current = current;
                 this.$axios.post("/search/query", this.searchRequest).then(res => {
-                    this.page.blogs = res.data.data;
+                    this.page.blogs = res.data.data.blogList;
+                    this.page.total = res.data.data.total;
+                    this.page.projects = res.data.data.projects;
                 });
             },
+            searchHeat(word){
+                this.searchRequest.querystr = word;
+                this.searchRequest.current = 1;
+                this.search(1);
+                this.page.currentPage = 1;
+            },
             handCurrentChange(current){
-                this.page.currentPage = current;
-                this.search();
+                this.search(current);
             }
         },
         created() {
             this.userId  = this.$store.getters.getUser.id;
             this.searchRequest.querystr = this.$route.params.querystr;
-            this.$axios.post("/search/query", this.searchRequest).then(res => {
-                this.blogs = res.data.data;
-            });
+            this.search(1);
+            this.$axios.get("/search/words").then(res => {
+                this.hotWords = res.data.data;
+            })
         }
     }
 </script>
@@ -170,5 +233,11 @@
 <style scoped>
     .main{
         padding: 10px;
+    }
+    /*中间的过度的横线*/
+    .link-top {
+        width: 90%;
+        height: 1px;
+        border-top: solid #ACC0D8 1px;
     }
 </style>

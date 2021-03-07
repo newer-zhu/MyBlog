@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-
+@Service
 public interface EsBlogRepository extends ElasticsearchRepository<EsBlog, String> {
 
 }
