@@ -29,8 +29,7 @@ public class BlogController extends BaseController{
     public Result delBlogById(@RequestParam("blogId") String blogId){
         log.info("用户删除了id为{}的博客",blogId);
         blogService.delBlog(blogId);
-        esBlogRepository.delete(new EsBlog(blogId));
-        redisUtils.del("blogVisitors:"+blogId);
+        rabbitTemplate.convertAndSend("blog", "blog.del", new EsBlog(blogId));
         return Result.success("删除成功");
     }
 
@@ -58,9 +57,7 @@ public class BlogController extends BaseController{
         Timestamp now = new Timestamp(System.currentTimeMillis());
         blog.setCreatedAt(now);
         blogService.saveBlog(blog, projectId);
-        EsBlog esBlog = new EsBlog();
-        BeanUtils.copyProperties(blog, esBlog);
-        esBlogRepository.save(esBlog);
+        rabbitTemplate.convertAndSend("blog", "blog.save", blog);
         return Result.success(MapUtil.builder().put("blog", blog)
         .put("pushTags", keywordsExtraction.generate(blog.getContent()))
         .put("columns", columnService.getColumnsByUserId(blog.getUserId())).map());
@@ -77,10 +74,7 @@ public class BlogController extends BaseController{
         Timestamp now = new Timestamp(System.currentTimeMillis());
         blog.setCreatedAt(now);
         blogService.editBlog(blog);
-        EsBlog esBlog = new EsBlog();
-        BeanUtils.copyProperties(blog, esBlog);
-//        esBlog.setCreatedAt(blog.getCreatedAt().toString());
-        esBlogRepository.save(esBlog);
+        rabbitTemplate.convertAndSend("blog", "blog.upgrade", blog);
         return Result.success(MapUtil.builder().put("blog", blog)
                 .put("pushTags", keywordsExtraction.generate(blog.getContent()))
                 .put("columns", columnService.getColumnsByUserId(blog.getUserId())).map());

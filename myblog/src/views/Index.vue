@@ -130,7 +130,6 @@
                     </el-dialog>
                 </el-main>
             </el-container>
-
         </el-container>
 <!--        <div>-->
 <!--            <Footer/>-->
@@ -174,9 +173,6 @@
                 this.$axios.get("/blog/getpagesbyuserid/"+this.userId+"?page="+current).then(res => {
                     this.page.blogs = res.data.data.blogList;
                 })
-            },
-            createWebSocket(){
-                let websocket = new WebSocket('ws://127.0.0.1:9000/timeline/'+this.userId)
             },
             getColor(){
                 let r = Math.floor(Math.random()*255);
@@ -271,7 +267,9 @@
             },
 
         },
-        created() {
+        mounted(){
+        },
+        created(){
             const _this = this;
             this.userId = this.$store.getters.getUser.id;
             this.isShowList = this.$route.path === '/home';

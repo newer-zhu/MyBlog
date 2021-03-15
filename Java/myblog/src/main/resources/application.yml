@@ -13,11 +13,18 @@ spring:
     password: 20001030
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/myblog?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-
+  rabbitmq:
+    host: 192.168.247.124
+    port: 5672
+    username: zhu
+    password: admin
+    virtual-host: /blog
   redis:
     port: 6379
-    host: 192.168.247.124
+    host: 49.235.92.49
     database: 0
+    password: 20001030
+    timeout: 5000
   cache:
     type: redis
     jedis:

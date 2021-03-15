@@ -15,7 +15,7 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => {
     //在这里对返回的数据进行处理
     let res = response.data
-    if (res.code === 200){
+    if (res.code/100 == 2){
         return response;
     }else{
         Element.Message.error(res.msg)

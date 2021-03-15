@@ -29,6 +29,9 @@
                         <p style="display: inline-block">{{user.grade}}</p>
                     </el-col>
                 </el-row>
+                <div style="text-align: center">
+                    <p class="el-icon-message" style="font-size: 20px; color: #282c34">{{'邮箱： ' + user.email}}</p>
+                </div>
             </div>
 
             <span>我来啦!</span>

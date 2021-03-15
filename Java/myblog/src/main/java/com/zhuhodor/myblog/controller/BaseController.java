@@ -8,6 +8,7 @@ import com.zhuhodor.myblog.service.*;
 import com.zhuhodor.myblog.util.JwtUtil;
 import com.zhuhodor.myblog.util.RedisUtils;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -51,5 +52,8 @@ public class BaseController {
 
     @Autowired
     TextAnalysis keywordsExtraction;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
 }

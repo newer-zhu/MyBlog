@@ -37,6 +37,7 @@
                                 @change="rate"
                                 text-color="#ff9900"
                                 show-score
+                                :disabled="isRate"
                                 :allow-half="true"
                                 v-model="rates"
                                 :colors="colors">
@@ -136,8 +137,22 @@
                                         <el-button  :type="isFavorite" @click="favorite" icon="el-icon-star-off" circle></el-button>
                                     </el-tooltip>
                                     <br>
-                                    <el-tooltip class="item" effect="dark" content="删除" placement="right-start">
-                                        <el-button type="danger" icon="el-icon-delete" circle></el-button>
+                                    <el-tooltip v-show="project.startUser != userId" class="item" effect="dark" content="申请" placement="right-start">
+                                        <el-button  type="warning" @click="request" icon="el-icon-s-promotion" circle></el-button>
+                                    </el-tooltip>
+                                    <br>
+                                    <el-popover
+                                            placement="top"
+                                            width="160"
+                                            v-model="delVisible">
+                                        <p>确定删除吗？</p>
+                                        <div style="text-align: right; margin: 0">
+                                            <el-button size="mini" type="text" @click="delVisible = false">取消</el-button>
+                                            <el-button type="primary" size="mini" @click="delProject">确定</el-button>
+                                        </div>
+                                    </el-popover>
+                                    <el-tooltip v-show="userId == project.startUser" class="item" effect="dark" content="删除" placement="right-start">
+                                        <el-button type="danger"  @click="delVisible = true" icon="el-icon-delete" circle></el-button>
                                     </el-tooltip>
                                     <br>
                                 </el-col>
@@ -151,7 +166,7 @@
                             <div style="font-size: 14px">{{item.content}}</div>
                         </el-collapse-item>
                     </el-collapse>
-                    <el-tabs style="padding-top: 50px"  type="card" >
+                    <el-tabs style="padding-top: 50px" >
                         <el-tab-pane @click="getBlogTime" label="时间动态" name="first">
                             <div>
                                 <el-calendar v-model="calendar.date">
@@ -169,7 +184,28 @@
                         <el-tab-pane label="标签一览" name="second">
                             <el-progress v-for="i in 5" :percentage="20" ></el-progress>
                         </el-tab-pane>
-                        <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
+                        <el-tab-pane label="贡献人员" name="third">
+                            <el-table
+                                    :data="contributors"
+                                    height="250"
+                                    border
+                                    style="width: 100%">
+                                <el-table-column
+                                        prop="date"
+                                        label="日期"
+                                        width="150">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="username"
+                                        label="昵称"
+                                        width="180">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="number"
+                                        label="次数">
+                                </el-table-column>
+                            </el-table>
+                        </el-tab-pane>
                         <el-tab-pane label="资料编辑" name="fourth">
                             <el-row>
                                 <el-col>
@@ -184,24 +220,22 @@
                                         >
                                             <el-input placeholder="3 到 30 个字符" v-model="project.projectName"></el-input>
                                         </el-form-item>
-                                        <el-form-item>
-                                        </el-form-item>
+                                        <el-divider/>
                                         <el-form-item
                                                 v-for="(domain, index) in project.overview"
-                                                :label="'简介' + (index+1)"
+                                                :label="domain.title"
                                                 :key="domain.key"
-                                                :prop="'overview.' + index + '.content'"
                                                 :rules="{required: true, message: '简介不能为空', trigger: 'blur'}">
-                                            <i class="el-icon-info" style="color: forestgreen">简介以“标题|内容的形式”，如“项目重点|掌握网络tcp协议的原理”</i>
+<!--                                            <i class="el-icon-info" style="color: forestgreen">简介以“标题|内容的形式”，如“项目重点|掌握网络tcp协议的原理”</i>-->
                                             <el-input maxlength="50"
                                                       show-word-limit style="width: 90%; padding-right: 5px"
-                                                      :rows="2" placeholder="简介标题|简介内容"
+                                                      :rows="2" placeholder="简介内容"
                                                       type="textarea" v-model="domain.content"></el-input>
-                                            <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+<!--                                            <el-button @click.prevent="removeDomain(domain)">删除</el-button>-->
                                         </el-form-item>
                                         <el-form-item>
                                             <el-button type="primary" @click="submitForm('dynamicValidateForm')">修改</el-button>
-                                            <el-button @click="addDomain">新增简介</el-button>
+<!--                                            <el-button @click="addDomain">新增简介</el-button>-->
                                             <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
                                         </el-form-item>
                                     </el-form>
@@ -248,6 +282,7 @@
                     favorite: 0,
                     overview: [{title: '', content: ''}],
                 },
+                contributors: [],
                 imgSrc: [require('@/assets/img/view1.jpg'),require('@/assets/img/view2.jpg'),require('@/assets/img/view3.jpg')],
                 activeItem: [],
                 isFavorite: "info",
@@ -266,6 +301,7 @@
                     currentPage: 1,
                 },
                 rates: 0,
+                isRate: false,
                 colors: ['#2d9abf', '#F7BA2A', '#FF9900'],
                 drawer: false,
                 //日历数据
@@ -273,8 +309,8 @@
                     date: new Date(),
                     blogTime: [],
                     timeMap: {}
-                }
-
+                },
+                delVisible: false
             }
         },
         computed: {
@@ -306,7 +342,10 @@
                 })
             },
             rate(r){
-                console.log(r);
+                this.$axios.get("/project/rates/"+this.userId+"/"+this.project.id+"/"+r).then(res => {
+                    this.isRate = true;
+                    this.success(res.data.data);
+                })
             },
             success(msg) {
                 this.$message({
@@ -341,7 +380,7 @@
                     })
                 }
             },
-
+            //修改简介
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -352,7 +391,7 @@
                         console.log('error submit!!');
                         return false;
                     }
-                });
+                })
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
@@ -363,17 +402,33 @@
                     this.project.overview.splice(index, 1)
                 }
             },
-            addDomain() {
-                this.project.overview.push({
-                    content: '',
-                    key: Date.now()
+            delProject(){
+                this.$axios.get("/project/delete/"+this.project.id).then(res => {
+                    this.$message.success(res.data.data);
                 });
-            }
+                this.delVisible = false;
+                this.$router.replace({
+                    path: '/home'
+                })
+            },
+            request(){
+                let _this = this;
+                this.$axios.get("/project/request/"+this.userId+"/"+this.project.id).then(res => {
+                    _this.$message.success(res.data.msg);
+                    if (res.data.code == 200 && this.global.ws.readyState == 1){
+                        _this.global.ws.send(this.project.id);
+                    }
+                });
+            },
         },
         created(){
             this.userId = this.$store.getters.getUser.id;
-            this.$axios.get("/project/"+this.$route.params.projectId).then(res => {
+            this.$axios.get("/project/"+this.$route.params.projectId+"?userId="+this.userId).then(res => {
                 this.project = res.data.data;
+                if (res.data.data.userRate != null){
+                    this.isRate = true
+                    this.rates = parseInt(res.data.data.userRate)
+                }
                 this.loadList(1);
                 this.getBlogTime();
                 this.$axios.get("/project/isfavorite/"+this.userId+"/"+this.project.id).then(res => {

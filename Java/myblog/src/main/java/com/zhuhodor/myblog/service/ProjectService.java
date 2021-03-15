@@ -3,6 +3,8 @@ package com.zhuhodor.myblog.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.vo.ProjectVo;
+import com.zhuhodor.myblog.vo.RequestVo;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -26,4 +28,12 @@ public interface ProjectService extends IService<Project> {
     Integer favoriteCount(String projectId);
 
     Project getProjectByBlogId(String blogId);
+
+    boolean request(String userId, String projectId);
+
+    List<RequestVo> findRequestsByUserId(String userId);
+
+    void dealRequest(String projectId, String userId, String res);
+
+    Integer isConfirm(String projectId, String userId);
 }

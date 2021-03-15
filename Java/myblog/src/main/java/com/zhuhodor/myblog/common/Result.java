@@ -21,6 +21,7 @@ public class Result<T> implements Serializable {
         return r;
     }
 
+
     public static Result fail(int code, String msg, Object data){
         Result r = new Result();
         r.setMsg(msg);

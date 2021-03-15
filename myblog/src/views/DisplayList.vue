@@ -53,6 +53,7 @@
                             type="success" effect="dark" :closable="false"
                             show-icon>
                     </el-alert>
+<!--                    文章-->
                     <el-col :span="16">
                         <div v-show="page.blogs.length == 0">
                             <div style="margin-left: 5px">
@@ -84,8 +85,12 @@
                             </div>
                         </div>
                     </el-col>
+<!--                    项目-->
                     <el-col :span="8">
-                        <div v-for="(p, i) in page.projects" style="box-shadow:  0 1px 8px 0 rgba(0, 0, 0, 0.1); margin-bottom: 1px">
+                        <el-card v-show="page.projects.length == 0" style="margin-left: 5px; padding-bottom: 10px; margin-top: 5px">
+                            暂无相关项目
+                        </el-card>
+                        <div v-for="(p, i) in page.projects" style="box-shadow:  0 1px 8px 0 rgba(0, 0, 0, 0.1); margin-bottom: 1px; margin-top: 5px">
                             <UserInfo :user="p.projectUser" :drawer.sync="drawer"></UserInfo>
                             <div style="margin-left: 5px; padding-bottom: 10px">
                                 <el-row>

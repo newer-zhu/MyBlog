@@ -28,7 +28,7 @@ public class Project implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createAt;
 
-    private Integer rates;
+    private Float rates;
 
     private String overview;
 

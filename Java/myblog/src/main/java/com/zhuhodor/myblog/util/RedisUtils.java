@@ -72,6 +72,23 @@ public class RedisUtils {
         redisTemplate.delete(key);
     }
 
+//    set
+    public void sadd(String key, String val){
+        redisTemplate.opsForSet().add(key, val);
+    }
+
+    /**
+     * set的成员数
+     * @param key
+     */
+    public Long snum(String key){
+        return redisTemplate.opsForSet().size(key);
+    }
+
+    public boolean isSetMem(String key, Object val){
+        return redisTemplate.opsForSet().isMember(key, val);
+    }
+
     //zset
 
     /**

@@ -41,4 +41,8 @@ public class EsProject {
 
     @Field(type = FieldType.Integer)
     private Integer rates;
+
+    public EsProject(Integer id){
+        this.id = id;
+    }
 }

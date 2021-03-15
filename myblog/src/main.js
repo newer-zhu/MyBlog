@@ -9,13 +9,14 @@ import axios from './axios'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import './plugins/hljs'
-
+import global from "./Js/global";
 Vue.use(ElementUI);
 Vue.use(mavonEditor);
 Vue.use(VueParticles)
 
-Vue.prototype.$axios = axios
-Vue.config.productionTip = false
+Vue.prototype.$axios = axios;
+Vue.prototype.global = global;
+Vue.config.productionTip = false;
 
 new Vue({
   router,

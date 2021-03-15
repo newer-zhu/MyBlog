@@ -9,7 +9,7 @@
                 <el-row>
                     <router-link :to="{name: 'BlogDetail', params:{blogId:card.id}}">
                         <el-col :span="17">
-                            <h3 style="color: #282c34">{{card.title}}</h3>
+                            <h3 style="color: #282c34; margin-top: 2px">{{card.title}}</h3>
                             <p>{{card.summary}}</p>
                         </el-col>
                     </router-link>
@@ -72,7 +72,7 @@
                 this.isShowDelCol = !this.isShowDelCol;
             },
             loadList(){
-                if (this.columnId === -1){
+                if (this.columnId == -1){
                     this.$axios("/blog/getpagesbyuserid/"+this.userId).then((res) => {
                         this.page.blogs = res.data.data.blogList;
                         console.log(this.page.blogs);
@@ -94,7 +94,7 @@
             '$route'(to, from){
                 this.columnId = to.params.columnId;
                 this.loadList();
-            }
+            },
         },
         created() {
             this.columnId = this.$route.params.columnId;

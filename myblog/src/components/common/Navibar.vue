@@ -11,48 +11,35 @@
                         <el-menu-item index="2-2">发起项目</el-menu-item>
                     </router-link>
                 </el-submenu>
-                <el-menu-item index="3">消息中心</el-menu-item>
+                <el-menu-item @click="connect" index="3">消息中心</el-menu-item>
                 <el-menu-item index="4" @click="drawer = !drawer">个人中心</el-menu-item>
                 <el-menu-item index="5">圈子</el-menu-item>
                 <el-menu-item index="6" style="float: right; right: 50px" @click="logOut">退出</el-menu-item>
             </el-menu>
-
+            <el-drawer
+                    :visible.sync="message"
+                    size="30%"
+                    direction="ltr"
+                    :with-header="false"
+                    :before-close="handleClose">
+                <div>
+                    <div v-show="requests.requestMessages.length == 0">
+                        <p>暂时还没有消息哦</p>
+                    </div>
+                    <div v-for="(r, i) in requests.requestMessages" :key="r.id">
+                        <el-card>
+                            <p>{{'"'+r.username+'"' + "申请成为项目:《"+r.projectName+"》的贡献者"}}</p>
+                            <div style="float: right; margin-bottom: 3px">
+                                <el-button size="small" @click="deal(r.projectId, r.contributorId, 1, i)" icon="el-icon-check" type="primary">同意</el-button>
+                                <el-button size="small" @click="deal(r.projectId, r.contributorId, 0, i)" icon="el-icon-close" type="danger">拒绝</el-button>
+                            </div>
+                        </el-card>
+                    </div>
+                </div>
+            </el-drawer>
         </div>
 <!--        抽屉-->
         <UserInfo :user="this.$store.getters.getUser" :drawer.sync="drawer"></UserInfo>
-<!--        <div>-->
-<!--        <el-drawer-->
-<!--                title="我是标题"-->
-<!--                :visible.sync="drawer"-->
-<!--                size="30%"-->
-<!--                :with-header="false">-->
-<!--            &lt;!&ndash;                头像&ndash;&gt;-->
-<!--            <div class="drawer">-->
-<!--                <div class="block avatar">-->
-<!--                    <el-avatar :size="75" alt="avatar"  :src="circleUrl"></el-avatar>-->
-<!--                    <h2>{{user.username}}</h2>-->
-<!--                    <h4 style="text-align: center">{{user.description}}</h4>-->
-<!--                </div>-->
-<!--                <el-row>-->
-<!--                    <el-col :span="8" :offset="2">-->
-<!--                        <label style="color: indigo;font-weight: bold">大学</label><el-divider direction="vertical"></el-divider>-->
-<!--                        <p style="display: inline-block">{{user.college}}</p>-->
-<!--                    </el-col>-->
-<!--                    <el-col :span="8">-->
-<!--                        <label style="color: indigo; font-weight: bold">专业</label><el-divider direction="vertical"></el-divider>-->
-<!--                        <p style="display: inline-block">{{user.major}}</p>-->
-<!--                    </el-col>-->
-<!--                    <el-col :span="6">-->
-<!--                        <label style="color: indigo; font-weight: bold">年级</label><el-divider direction="vertical"></el-divider>-->
-<!--                        <p style="display: inline-block">{{user.grade}}</p>-->
-<!--                    </el-col>-->
-<!--                </el-row>-->
-<!--            </div>-->
-
-<!--            <span>我来啦!</span>-->
-<!--        </el-drawer>-->
-<!--        </div>-->
-
     </div>
 
 
@@ -69,31 +56,85 @@
                 fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
                 activeIndex: '1',
                 drawer: false,
-                direction: 'rtl',
+                message: false,
                 user: {
                     username: '',
                     description: '',
                     avatar: '',
                     college: '',
                     major: '',
-                    grade: ''
+                    grade: '',
+                    email: ''
                 },
                 input: '',
+                requests:{
+                    nextId: 0,
+                    requestMessages: []
+                }
             };
         },
         methods: {
+            connect(){
+                if (this.global.ws.readyState == 1){
+                    console.log("已经建立连接");
+                }else {
+                    this.localSocket();
+                }
+                this.message = !this.message;
+            },
+            localSocket() {
+                let that = this;
+                if ("WebSocket" in window) {
+                    // if (this.socket!= null || this.socket.readyState == 1){
+                    //     console.log("关闭连接");
+                    //     this.socket.close();
+                    // }
+                    let ws = new WebSocket("ws://localhost:8081/pro/"+that.$store.getters.getUser.id);
+                    that.global.setWs(ws);
+                    // this.socket = ws;
+                    // this.$store.commit("SET_WS", that.ws);
+                    that.global.ws.onopen = function() {
+                        console.log('websocket连接成功');
+                    };
+                    that.global.ws.onmessage = e => {
+                        let reqs = JSON.parse(e.data);
+                        for (let r in reqs){
+                            reqs[r].id = this.requests.nextId++;
+                            this.requests.requestMessages.push(reqs[r]);
+                        }
+                    };
+                    that.global.ws.onclose = function () {
+                        // 关闭 websocket
+                        console.log("连接已关闭...");
+                        //断线重新连接
+                        // setTimeout(() => {
+                        //     that.localSocket();
+                        // }, 2000);
+                    };
+                } else {
+                    // 浏览器不支持 WebSocket
+                    console.log("您的浏览器不支持 WebSocket!");
+                    this.openNotificationWithIcon('error', '浏览器', '您的浏览器不支持显示消息请更换', 1,1)
+                }
+            },
             handleSelect(key, keyPath) {
                 if (key === '1'){
                     this.$router.push("/home")
                 }
             },
             logOut(){
-                console.log(this.$store.getters.getUser);
+                this.global.ws.close();
+                this.socket = '';
                 this.$store.commit('REMOVE_INFO');
                 this.$router.push("/login");
             },
             writeBlog(){
                 this.$router.push("/blogedit")
+            },
+            deal(projectId,contributorId,res, index){
+                this.$axios.get("/project/deal/"+contributorId+"/"+projectId+"?res="+res);
+                this.requests.requestMessages.splice(index, 1);
+                console.log(this.requests.requestMessages);
             }
         },
         created(){

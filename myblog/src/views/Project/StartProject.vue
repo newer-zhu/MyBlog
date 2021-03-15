@@ -28,7 +28,7 @@
                                     :prop="'overview.' + index + '.content'"
                                     :rules="{required: true, message: '简介不能为空', trigger: 'blur'}">
                                 <i class="el-icon-info" style="color: forestgreen">简介以“标题|内容的形式”，如“项目重点|掌握网络tcp协议的原理”</i>
-                                <el-input maxlength="50"
+                                <el-input maxlength="60"
                                           show-word-limit style="width: 90%; padding-right: 5px"
                                           :rows="2" placeholder="简介标题|简介内容"
                                           type="textarea" v-model="domain.content"></el-input>

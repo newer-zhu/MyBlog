@@ -5,9 +5,13 @@ import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
 import com.zhuhodor.myblog.mapper.ProjectMapper;
 import com.zhuhodor.myblog.service.ProjectService;
+import com.zhuhodor.myblog.vo.ProjectVo;
+import com.zhuhodor.myblog.vo.RequestVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -57,5 +61,34 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     @Override
     public Project getProjectByBlogId(String blogId) {
         return projectMapper.getProjectByBlogId(blogId);
+    }
+
+    @Override
+    public boolean request(String userId, String projectId) {
+        if(StringUtils.isEmpty(projectMapper.isRequested(userId, projectId))){
+            projectMapper.request(userId, projectId);
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    @Override
+    public List<RequestVo> findRequestsByUserId(String userId) {
+        return projectMapper.findRequestsByUserId(userId);
+    }
+
+    @Override
+    public void dealRequest(String projectId, String contributorId, String res) {
+        if (res.equals("0")){
+            projectMapper.reject(projectId, contributorId);
+        }else {
+            projectMapper.confirm(projectId, contributorId);
+        }
+    }
+
+    @Override
+    public Integer isConfirm(String projectId, String userId) {
+        return projectMapper.isConfirm(projectId, userId);
     }
 }

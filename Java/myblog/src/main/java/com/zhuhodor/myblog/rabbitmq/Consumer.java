@@ -1,27 +1,94 @@
 package com.zhuhodor.myblog.rabbitmq;
 
-import com.rabbitmq.client.*;
-import com.zhuhodor.myblog.util.RabbitmqUtils;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
+import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.elasticsearch.Entity.EsBlog;
+import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
+import com.zhuhodor.myblog.elasticsearch.Service.EsBlogRepository;
+import com.zhuhodor.myblog.elasticsearch.Service.EsProjectRepository;
+import com.zhuhodor.myblog.util.RedisUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
-
+@Component
+@Slf4j
 public class Consumer {
-    public void consumer() throws IOException, TimeoutException {
-        Connection connection = RabbitmqUtils.getConnection();
-        Channel channel = connection.createChannel();
-        channel.queueDeclare("blog_1",false,false,false,null);
-//        channel.basicPublish("","blog_1", null, "msg".getBytes());
-        channel.basicQos(1);//一次消费一个消息
-        //a0：通道名称 a1：自动确认机制,关闭后可以保证消息不会丢失 a2：回调接口
-        channel.basicConsume("blog_1", false, new DefaultConsumer(channel){
-            @Override
-            public void handleDelivery(String consumerTag, Envelope envelope,
-                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
-                System.out.println(body.toString());
-                //手动确认消息标识，每次确认一个
-                channel.basicAck(envelope.getDeliveryTag(), false);
-            }
-        });
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+    @Autowired
+    EsBlogRepository esBlogRepository;
+    @Autowired
+    EsProjectRepository esProjectRepository;
+    @Autowired
+    RedisUtils redisUtils;
+
+//    @RabbitListener(queuesToDeclare = @Queue(value = "worker"))
+//    public void workerReceive(String message){
+//        System.out.println(message);
+//    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue, exchange = @Exchange(value = "blog", type = "topic"), key = "blog.del")
+    })
+    public void delEsBlog(Message message){
+        EsBlog esBlog = (EsBlog) rabbitTemplate.getMessageConverter().fromMessage(message);
+        log.info("es删除id == {}", esBlog.getId());
+        esBlogRepository.delete(esBlog);
+        redisUtils.del("blogVisitors:"+esBlog.getId());
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue, exchange = @Exchange(value = "blog", type = "topic"), key = "blog.upgrade")
+    })
+    public void esBlogUpgrade(Message message){
+        Blog blog =(Blog) rabbitTemplate.getMessageConverter().fromMessage(message);
+        log.info("更新blog:{}", blog.getTitle());
+        EsBlog esBlog = new EsBlog();
+        BeanUtils.copyProperties(blog, esBlog);
+        esBlogRepository.save(esBlog);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue, exchange = @Exchange(value = "blog", type = "topic"), key = "blog.save")
+    })
+    public void esSaveBlog(Message message){
+        Blog blog =(Blog) rabbitTemplate.getMessageConverter().fromMessage(message);
+        log.info("ES存入博客{}", blog.getTitle());
+        EsBlog esBlog = new EsBlog();
+        BeanUtils.copyProperties(blog, esBlog);
+        esBlogRepository.save(esBlog);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue, exchange = @Exchange(value = "project", type = "topic"), key = "project.save")
+    })
+    public void esSaveProject(Message message){
+        Project project = (Project) rabbitTemplate.getMessageConverter().fromMessage(message);
+        EsProject esProject = new EsProject();
+        BeanUtils.copyProperties(project, esProject);
+        esProjectRepository.save(esProject);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue, exchange = @Exchange(value = "project", type = "topic"), key = "project.del")
+    })
+    public void delEsProject(String message){
+        EsProject esProject = new EsProject(Integer.parseInt(message));
+        esProjectRepository.delete(esProject);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue, exchange = @Exchange(value = "project", type = "topic"), key = "project.upgrade")
+    })
+    public void upgradeEsProject(Message message){
+        Project project = (Project) rabbitTemplate.getMessageConverter().fromMessage(message);
+        EsProject esProject = new EsProject();
+        BeanUtils.copyProperties(project, esProject);
+        esProjectRepository.save(esProject);
     }
 }
