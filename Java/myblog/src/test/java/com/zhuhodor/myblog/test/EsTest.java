@@ -1,5 +1,6 @@
 package com.zhuhodor.myblog.test;
 
+import com.zhuhodor.myblog.Entity.Tag;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -18,12 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootTest
 public class EsTest {
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+
 
     @Test
     void testEs() throws IOException {

@@ -182,11 +182,13 @@
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="标签一览" name="second">
-                            <el-progress v-for="i in 5" :percentage="20" ></el-progress>
+                            99
+                            <el-progress v-for="(tag, i) in 5" :percentage="60" >
+                            </el-progress>
                         </el-tab-pane>
                         <el-tab-pane label="贡献人员" name="third">
                             <el-table
-                                    :data="contributors"
+                                    :data="project.contributors"
                                     height="250"
                                     border
                                     style="width: 100%">
@@ -199,6 +201,10 @@
                                         prop="username"
                                         label="昵称"
                                         width="180">
+                                    <template slot-scope="scope">
+                                        <el-link style="display: inline">{{scope.row.username}}</el-link>
+                                        <el-tag style="margin-left: 15px" v-show="project.startUser == scope.row.userId" size="small" type="danger">发起人</el-tag>
+                                    </template>
                                 </el-table-column>
                                 <el-table-column
                                         prop="number"
@@ -281,8 +287,12 @@
                     rates: 3.7,
                     favorite: 0,
                     overview: [{title: '', content: ''}],
+                    contributors: [],
+                    proTags: {
+                        tags: {},
+                        total: 0
+                    }
                 },
-                contributors: [],
                 imgSrc: [require('@/assets/img/view1.jpg'),require('@/assets/img/view2.jpg'),require('@/assets/img/view3.jpg')],
                 activeItem: [],
                 isFavorite: "info",
@@ -426,11 +436,15 @@
             this.$axios.get("/project/"+this.$route.params.projectId+"?userId="+this.userId).then(res => {
                 this.project = res.data.data;
                 if (res.data.data.userRate != null){
-                    this.isRate = true
-                    this.rates = parseInt(res.data.data.userRate)
+                    this.isRate = true;
+                    this.rates = parseInt(res.data.data.userRate);
                 }
                 this.loadList(1);
                 this.getBlogTime();
+                this.$axios.get("tag/"+this.project.id).then(res => {
+                    this.project.proTags = res.data.data;
+                    console.log(this.project.proTags);
+                });
                 this.$axios.get("/project/isfavorite/"+this.userId+"/"+this.project.id).then(res => {
                     if (res.data.data === true)
                         this.isFavorite = 'warning';

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
 import com.zhuhodor.myblog.vo.RequestVo;
+import com.zhuhodor.myblog.vo.TableVo;
 import org.apache.ibatis.annotations.*;
 import org.springframework.context.annotation.Bean;
 
@@ -38,12 +39,28 @@ public interface ProjectMapper extends BaseMapper<Project> {
     @Select("SELECT b.createdAt FROM blog b, project_blog pb WHERE b.id = pb.blog_id AND pb.project_id = #{projectId} order by b.createdAt DESC")
     List<Date> getBlogTime(String projectId);
 
+    /**
+     * 提交申请
+     * @param userId
+     * @param projectId
+     */
     @Insert("INSERT INTO project_contributor(project_id, contributor_id, confirm) values (#{projectId}, #{userId}, 0)")
     void request(String userId, String projectId);
 
+    /**
+     * 是否已经申请过
+     * @param userId
+     * @param projectId
+     * @return
+     */
     @Select("SELECT project_id from project_contributor WHERE project_id = #{projectId} AND contributor_id = #{userId}")
     String isRequested(String userId, String projectId);
 
+    /**
+     * 获取加入项目申请列表
+     * @param userId
+     * @return
+     */
     @Select("SELECT pc.project_id, pc.contributor_id, p.project_name, u.username FROM project_contributor pc, project p, user u WHERE " +
             "p.id = pc.project_id and p.start_user = u.id and p.start_user = #{userId} and pc.confirm = 0")
     List<RequestVo> findRequestsByUserId(String userId);
@@ -51,9 +68,26 @@ public interface ProjectMapper extends BaseMapper<Project> {
     @Select("SELECT count(*) from project_contributor WHERE project_id = #{projectId} and contributor_id = #{userId}")
     Integer isConfirm(String projectId, String userId);
 
-    @Update("UPDATE project_contributor SET confirm = 1 WHERE project_id = #{projectId} AND contributor_id = #{contributorId}")
-    boolean confirm(String projectId, String contributorId);
+    @Update("UPDATE project_contributor SET confirm = 1, date = #{now} WHERE project_id = #{projectId} AND contributor_id = #{contributorId}")
+    boolean confirm(String projectId, String contributorId, Date now);
 
     @Delete("DELETE FROM project_contributor WHERE project_id = #{projectId} AND contributor_id = #{contributorId} AND confirm = 0")
     boolean reject(String projectId, String contributorId);
+
+    /**
+     * 贡献成员信息表
+     * @param projectId
+     * @return
+     */
+    @Select("SELECT u.id as user_id , u.username, pc.date  FROM `project_contributor` pc, user u WHERE u.id = pc.contributor_id AND pc.project_id = #{projectId}")
+    List<TableVo> contributorTable(String projectId);
+
+    /**
+     * 查询次数
+     * @param projectId
+     * @param userId
+     * @return
+     */
+    @Select("SELECT count(*) FROM project_blog pb, blog b WHERE pb.project_id = #{projectId} AND pb.blog_id = b.id AND b.userId = #{userId}")
+    Integer countNumber(String projectId, String userId);
 }

@@ -123,10 +123,9 @@
                 }
             },
             logOut(){
-                this.global.ws.close();
-                this.socket = '';
                 this.$store.commit('REMOVE_INFO');
                 this.$router.push("/login");
+                this.global.ws.close();
             },
             writeBlog(){
                 this.$router.push("/blogedit")

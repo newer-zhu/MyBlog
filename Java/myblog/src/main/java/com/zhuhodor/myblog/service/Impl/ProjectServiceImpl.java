@@ -7,13 +7,16 @@ import com.zhuhodor.myblog.mapper.ProjectMapper;
 import com.zhuhodor.myblog.service.ProjectService;
 import com.zhuhodor.myblog.vo.ProjectVo;
 import com.zhuhodor.myblog.vo.RequestVo;
+import com.zhuhodor.myblog.vo.TableVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -83,12 +86,21 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         if (res.equals("0")){
             projectMapper.reject(projectId, contributorId);
         }else {
-            projectMapper.confirm(projectId, contributorId);
+            Date now = Calendar.getInstance().getTime();
+            projectMapper.confirm(projectId, contributorId, now);
         }
     }
 
     @Override
     public Integer isConfirm(String projectId, String userId) {
         return projectMapper.isConfirm(projectId, userId);
+    }
+
+    @Override
+    public List<TableVo> contributorTable(String projectId) {
+        List<TableVo> table = projectMapper.contributorTable(projectId);
+        for (TableVo t : table)
+            t.setNumber(projectMapper.countNumber(projectId, String.valueOf(t.getUserId())));
+        return table;
     }
 }

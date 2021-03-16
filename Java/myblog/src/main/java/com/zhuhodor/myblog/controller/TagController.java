@@ -1,13 +1,18 @@
 package com.zhuhodor.myblog.controller;
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Tag;
 import com.zhuhodor.myblog.common.Result;
-import com.zhuhodor.myblog.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/tag")
@@ -64,7 +69,26 @@ public class TagController extends BaseController{
         return Result.success(tagService.findBlogsByTagId(tagId));
     }
 
-    public Result getTagsByProjectId(String projectId){
-        return Result.success(null);
+    /**
+     * 获取项目标签
+     * @param projectId
+     * @return
+     */
+    @GetMapping("/{projectId}")
+    public Result getTagsByProjectId(@PathVariable("projectId") String projectId){
+        log.info("获取项目{}的标签", projectId);
+        HashMap<Tag, Integer> tagMap = new HashMap<>();
+        List<Blog> blogs = projectService.findBlogsByProjectId(projectId);
+        int total = 0;
+        for (Blog b : blogs){
+            List<Tag> tags = tagService.getTagsbyBlogId(b.getId());
+            for (Tag t : tags){
+                total++;
+                tagMap.put(t, tagMap.getOrDefault(t, 0)+1);
+            }
+        }
+        return Result.success(MapUtil.builder()
+                .put("tags", tagMap)
+                .put("total", total).map());
     }
 }

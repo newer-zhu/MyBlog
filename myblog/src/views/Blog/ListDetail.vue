@@ -1,8 +1,10 @@
 <template>
     <div>
         <div style="padding-bottom: 10px">
-            <el-button type="primary" v-if="!isShowDelCol" @click="changeShowDelCol" class="el-icon-delete">管理</el-button>
-            <el-button type="info" v-else @click="changeShowDelCol">取消</el-button>
+            <transition name="el-zoom-in-center">
+                <el-button type="primary" v-if="!isShowDelCol" @click="changeShowDelCol" class="el-icon-delete">管理</el-button>
+                <el-button type="info" @click="changeShowDelCol">取消</el-button>
+            </transition>
         </div>
         <div v-for="(card,index) in this.page.blogs" style="padding-bottom: 5px;">
             <el-card shadow="hover" style="height: 125px;  border-color: #8c939d">
@@ -88,7 +90,8 @@
             delCol(blogId){
                 this.$axios.get("/column/dismiss/"+blogId+"/"+this.columnId);
                 this.loadList();
-            }
+            },
+
         },
         watch: {
             '$route'(to, from){

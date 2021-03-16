@@ -1,7 +1,6 @@
 package com.zhuhodor.myblog.cron;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.service.BlogService;
 import com.zhuhodor.myblog.util.RedisUtils;
@@ -25,8 +24,19 @@ public class ScheduleTask {
     public void saveVisitors(){
         List<Blog> id = blogService.list(new QueryWrapper<Blog>().select("id"));
         id.forEach((i) -> {
-            i.setVisitors(Integer.parseInt(redisUtils.get("blogVisitors:"+i.getId())));
+            String s = redisUtils.get("blogVisitors:" + i.getId());
+            if (s != null){
+                i.setVisitors(Integer.parseInt(s));
+            }
         });
         blogService.updateBatchById(id);
+    }
+
+    /**
+     * 定时清空热搜
+     */
+    @Scheduled(cron = "0 0 7 * * ?")
+    public void removeKeywords(){
+        redisUtils.zremAll("keywords");
     }
 }

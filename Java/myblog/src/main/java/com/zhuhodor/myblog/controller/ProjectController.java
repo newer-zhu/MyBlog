@@ -10,6 +10,7 @@ import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
 import com.zhuhodor.myblog.vo.OverviewVo;
 import com.zhuhodor.myblog.vo.ProjectVo;
+import com.zhuhodor.myblog.vo.TableVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +47,7 @@ public class ProjectController extends BaseController{
             }
         }
         String userRate = redisUtils.hget("userRates:"+projectId, userId);
+        List<TableVo> table = projectService.contributorTable(projectId);
         return Result.success(MapUtil.builder()
                 .put("id", project.getId())
                 .put("startUser", project.getStartUser())
@@ -54,7 +56,8 @@ public class ProjectController extends BaseController{
                 .put("rates",project.getRates())
                 .put("projectName", project.getProjectName())
                 .put("favorite", projectService.favoriteCount(projectId))
-                .put("userRate", userRate).map());
+                .put("userRate", userRate)
+                .put("contributors", table).map());
     }
 
     /**
@@ -92,6 +95,8 @@ public class ProjectController extends BaseController{
         Timestamp now = new Timestamp(System.currentTimeMillis());
         project.setCreateAt(now);
         projectService.save(project);
+        projectService.request(String.valueOf(project.getStartUser()), String.valueOf(project.getId()));
+        projectService.dealRequest(String.valueOf(project.getId()), String.valueOf(project.getStartUser()), "1");
         rabbitTemplate.convertAndSend("project", "project.save", project);
         return Result.success(project);
     }

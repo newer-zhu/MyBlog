@@ -5,6 +5,7 @@ import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
 import com.zhuhodor.myblog.vo.ProjectVo;
 import com.zhuhodor.myblog.vo.RequestVo;
+import com.zhuhodor.myblog.vo.TableVo;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -36,4 +37,6 @@ public interface ProjectService extends IService<Project> {
     void dealRequest(String projectId, String userId, String res);
 
     Integer isConfirm(String projectId, String userId);
+
+    List<TableVo> contributorTable(String projectId);
 }
