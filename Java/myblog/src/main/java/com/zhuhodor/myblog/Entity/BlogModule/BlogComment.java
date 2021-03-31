@@ -1,4 +1,4 @@
-package com.zhuhodor.myblog.Entity;
+package com.zhuhodor.myblog.Entity.BlogModule;
 
 import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -13,7 +13,7 @@ import org.springframework.data.annotation.Id;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("comment")
-public class Comment {
+public class BlogComment {
     @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
     private Integer commentUser;

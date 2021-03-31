@@ -12,8 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableCaching
 @EnableAsync
-@EnableScheduling //开启定时任务
-@ComponentScan(basePackages = {"com.zhuhodor"})
+//@EnableScheduling //开启定时任务
 public class MyblogApplication {
 
     public static void main(String[] args) {

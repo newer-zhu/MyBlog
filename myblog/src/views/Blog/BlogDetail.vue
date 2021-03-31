@@ -4,25 +4,27 @@
 
         <el-main>
             <el-row :gutter="60">
-                <el-col :span="18">
+                <el-col :span="18" >
                     <div class="blogDetail">
                         <el-row>
                             <el-col :span="20">
-                                <h1>{{blog.title}}</h1>
+                                <h1 style="">{{blog.title}}</h1>
                             </el-col>
-                            <el-col :span="2">
+
+                            <el-col :span="4">
                                 <p style="font-size: 20px;color: teal" class="el-icon-view">{{' '+blog.visitors}}</p>
+                                <p class="el-icon-c-scale-to-original" style="font-size: 18px;color: teal">{{' '+ blog.createdAt}}</p>
                             </el-col>
-                        </el-row>
-                        <el-row v-show="ownBlog">
-                            <el-col :offset="20" :span="2">
-                                <el-link icon="el-icon-delete" @click="delBlog" style="font-size: 18px">删除</el-link>
-                            </el-col>
-                            <el-col :span="2">
-                                <router-link :to="{name: 'BlogEdit', params:{blogId:blog.id}}">
-                                    <el-link icon="el-icon-edit" style="font-size: 18px">编辑</el-link>
-                                </router-link>
-                            </el-col>
+                            <el-row v-show="ownBlog">
+                                <el-col :offset="20" :span="2">
+                                    <el-link icon="el-icon-delete" @click="delBlog" style="font-size: 18px">删除</el-link>
+                                </el-col>
+                                <el-col :span="2">
+                                    <router-link :to="{name: 'BlogEdit', params:{blogId:blog.id}}">
+                                        <el-link icon="el-icon-edit" style="font-size: 18px">编辑</el-link>
+                                    </router-link>
+                                </el-col>
+                            </el-row>
                         </el-row>
                         <h3 v-show="blog.isFile == 0">{{blog.summary}}</h3>
                         <el-divider/>
@@ -31,24 +33,23 @@
                             <div v-if="blog.isFile == 1">
                                 <el-row :gutter="10">
                                     <el-col :span="10" >
-                                        <el-card shadow="never" :body-style="{ padding: '0px' }">
-                                            <img src="../../assets/img/filepreview.jpg" class="image">
-                                            <div style="padding: 14px;">
-                                                <div class="bottom clearfix">
-                                                    <!--                                        <time class="time">{{ currentDate }}</time>-->
+                                        <el-card shadow="never">
+                                            <div style="padding: 10px;">
+                                                <p class="el-icon-folder-checked">{{blog.content}}</p>
+                                                <div class="bottom">
                                                     <el-link type="success" :href="link" class="button el-icon-download">下载</el-link>
                                                 </div>
                                             </div>
                                         </el-card>
                                     </el-col>
-                                    <el-col :span="10" style="background-color: antiquewhite">
+                                    <el-col :span="10" style="">
                                         <h2>{{blog.summary}}</h2>
                                     </el-col>
                                 </el-row>
                             </div>
 
 <!--                            正文显示-->
-                            <div class="markdown-body" v-highlight v-else>
+                            <div class="markdown-body" v-highlight v-else >
                                 <el-row style="margin-left: 5px">
                                     <VueMarkdown :source="blog.content"></VueMarkdown>
                                 </el-row>
@@ -73,7 +74,6 @@
                             </el-dialog>
                             <el-button @click="get2Column(-1)" type="danger" class="el-icon-star-off" style="margin-left: 50%">收藏</el-button>
                         </el-row>
-
 <!--                        评论组件-->
                         <el-row>
                             <comment ref="comment"
@@ -82,23 +82,30 @@
                                      :commentList="this.commentList"
                                      @doSend="this.commentSend"
                                      @doChidSend="this.childSend"
-                                     :avatar="require('assets/img/view1.jpg')"
+                                     :avatar="blog.user.avatar"
                             ></comment>
                         </el-row>
                     </div>
                 </el-col>
                 <el-col :span="6">
+                    <div @click="drawer = !drawer" style="text-align: center">
+                        <el-avatar :src="blog.user.avatar" :size="60" />
+                        <p class="el-icon-user-solid" style="font-size: 20px; color: #303133; display: block">{{blog.user.username}}</p>
+                    </div>
+                    <UserInfo :user="blog.user" :drawer.sync="drawer"></UserInfo>
                     <div style="background-color: #faeaef; width: 100%;border-radius: 5px" >
                         <el-link v-for="(t, i) in blog.tags" :underline="false">
-                            <el-tag
-                                    style="margin-left: 6px;margin-top: 6px; font-size: 15px;"
-                                    :key="i"
-                                    :type="tagColor[(i+1)%5]"
-                                    :disable-transitions="true"
-                                    :hit="true"
-                                    effect="dark">
-                                {{ t.tagName }}
-                            </el-tag>
+                            <router-link :to="{name: 'TagDetail', params: {tagId: t.id}}">
+                                <el-tag
+                                        style="margin: 5px 0 5px 5px;font-size: 15px;"
+                                        :key="i"
+                                        :type="tagColor[(i+1)%5]"
+                                        :disable-transitions="true"
+                                        :hit="true"
+                                        effect="dark">
+                                    {{ t.tagName }}
+                                </el-tag>
+                            </router-link>
                         </el-link>
                     </div>
                     <router-link v-if="blog.project != null" replace :to="{name: 'ProjectDetail', params:{projectId:blog.project.id}}">
@@ -125,9 +132,10 @@
     import 'github-markdown-css/github-markdown.css'
     import VueMarkdown from 'vue-markdown'
     import comment from 'bright-comment'
+    import UserInfo from "../../components/common/UserInfo";
     export default {
         name: "BlogDetail",
-        components: {Navibar,VueMarkdown,comment},
+        components: {UserInfo, Navibar,VueMarkdown,comment},
         data(){
             return {
                 checkUserId: 1,//当前登录用户Id
@@ -151,13 +159,16 @@
                 commentList: [],
                 commentNum: 0,
                 ownBlog: true,
-                tagColor: ['', 'info', 'success', 'warning', 'danger']
+                tagColor: ['', 'info', 'success', 'warning', 'danger'],
+                drawer: false
             }
         },
         computed: {
             link(){
                 return "http://localhost:8081/media/filedownload/" + this.blog.id
             },
+        },
+        mounted(){
         },
         methods: {
             delBlog(){
@@ -244,6 +255,7 @@
             if (blogId != undefined){
                 this.$axios.get('/blog/' + blogId).then(res => {
                     this.blog = res.data.data;
+                    console.log(this.blog);
                     this.$axios.get("/comment/getlistbyblogid/" + this.blog.id).then(res => {
                         this.commentList = res.data.data;
                         for(let i in this.commentList){
@@ -256,6 +268,7 @@
                 let md = new MarkDown();
                 let  re = md.render(_this.blog.content);
                 this.blog.content = re;
+
             }
         }
     }
@@ -276,14 +289,6 @@
         padding: 0;
         float: right;
         font-size: 20px;
-    }
-    .clearfix:before,
-    .clearfix:after {
-        display: table;
-        content: "";
-    }
-    .clearfix:after {
-        clear: both
     }
     .markdown-body{
         font-size: 20px;

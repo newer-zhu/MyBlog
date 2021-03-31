@@ -1,9 +1,8 @@
 <template>
     <div>
         <div class="footer">
-            <p class="words">{{claim}}</p>
-            <br>
-            <a class="words" :href="link">有事联系我 tel：17681295923</a>
+            <p class="words">测试期间，多有bug</p>
+            <p style="font-size: 15px;display: inline; position: absolute; right: 10px; bottom: 0px;">copyright@zhuhodor</p>
         </div>
     </div>
 </template>
@@ -14,7 +13,6 @@
         data(){
             return {
                 claim: "Copyright@ZhuHodor",
-                link: '#'
             }
         }
     }
@@ -22,16 +20,16 @@
 
 <style scoped>
     .footer {
-        height: 75px;
-        width: 100%;
-        background-color: rgba(18, 10, 27, 0.36);
-        text-align: center;
-        padding: 25px;
-        position: fixed;
+        height: 60px;
+        background-color: rgba(1, 136, 254, 0.75);
+        margin-top: 80px;
         bottom: 0;
+        position: relative;
     }
     .words{
+        font-size: 20px;
+        color: #fdfdfe;
         text-align: center;
-        vertical-align: middle;
+        padding-top: 20px;
     }
 </style>

@@ -28,8 +28,8 @@ axios.interceptors.response.use(response => {
         error.message = error.response.data.msg
     }
     if(error.response.status === 401){
-        store.commit('REMOVE_INFO')
-        router.push("/login")
+        store.commit('REMOVE_INFO');
+        router.push("/login");
         error.message = "请重新登录"
     }
     if(error.response.status === 403){

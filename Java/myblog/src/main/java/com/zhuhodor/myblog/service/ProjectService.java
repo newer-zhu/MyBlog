@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
-@Service
 public interface ProjectService extends IService<Project> {
 
     List<Date> getBlogTime(String projectId);
@@ -36,7 +35,7 @@ public interface ProjectService extends IService<Project> {
 
     void dealRequest(String projectId, String userId, String res);
 
-    Integer isConfirm(String projectId, String userId);
-
     List<TableVo> contributorTable(String projectId);
+
+    boolean editable(String projectId, String userId);
 }

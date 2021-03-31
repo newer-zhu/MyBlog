@@ -17,7 +17,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 用户模块api
@@ -28,7 +31,6 @@ import java.time.LocalDate;
 public class UserController extends BaseController{
     @Autowired
     private UserService userService;
-
     @CrossOrigin
     @PostMapping("/login")
     public Result login(@Validated @RequestBody LoginVo loginVo, HttpServletResponse response) {
@@ -42,7 +44,7 @@ public class UserController extends BaseController{
         String jwtToken = jwtUtil.generateToken(user.getId());
         response.setHeader("Authorization", jwtToken);
         response.setHeader("Access-control-Expose-Headers", "Authorization");
-
+        log.info("用户=={}==登录", loginVo.getUsername());
         return Result.success(MapUtil.builder().put("id", user.getId())
                 .put("username", user.getUsername())
                 .put("email", user.getEmail())
@@ -70,7 +72,7 @@ public class UserController extends BaseController{
     public Result register(@RequestBody @Validated User user){
         //不允许用户名重复
         if (userService.findUserByName(user.getUsername()) == null){
-            LocalDate now = LocalDate.now();
+            Date now = Calendar.getInstance().getTime();
             user.setCreateAt(now);
             try {
                 userService.creatUser(user);
@@ -90,6 +92,8 @@ public class UserController extends BaseController{
         int pros = projectService.count(new QueryWrapper<Project>().eq("start_user", userId));
         return null;
     }
+
+
     //用户登出
 //    @RequestMapping("/logout")
 //    public Result logout(){

@@ -7,7 +7,6 @@ import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.elasticsearch.Entity.EsBlog;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,6 +94,12 @@ public class BlogController extends BaseController{
             redisUtils.incr("blogVisitors:"+id, 1L);
         }
         if (blog != null){
+            //如果是文件
+            if (blog.getIsFile() == 1){
+                String[] split = blog.getContent().split("\\\\");
+                blog.setContent(split[split.length - 1]);
+            }
+            blog.setUser(userService.findUserById(Integer.parseInt(blog.getUserId())));
             blog.setVisitors(Integer.valueOf(redisUtils.get("blogVisitors:"+id)));
             blog.setProject(projectService.getProjectByBlogId(id));
             blog.setTags(tagService.getTagsbyBlogId(id));
@@ -139,5 +144,6 @@ public class BlogController extends BaseController{
                 .put("blogList", blogList)
                 .put("total", pageInfo.getPages()).map());
     }
+
 
 }

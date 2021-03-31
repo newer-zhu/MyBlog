@@ -14,33 +14,6 @@ import java.util.List;
 @Slf4j
 public class ColumnController extends BaseController{
 
-//    //联系博客到分栏
-//    @PostMapping("/blogtocolumn")
-//    public Result BlogToColumn(@RequestBody ColumnList columnList){
-//        String blogId = columnList.getBlogId();
-//        log.info("为bid={} 博客修改分栏",blogId);
-//        List<String> after = columnList.getAfter();
-//        List<String> before = columnList.getBefore();
-//        System.out.println(after);
-//        System.out.println(before);
-//        try {
-//            for (String a : after){
-//                if (!before.contains(a))
-//                    columnService.blogToColumn(blogId, a);
-//            }
-//            for (String b : before){
-//                if (!after.contains(b))
-//                    columnService.delBlogInColumn(blogId,b);
-//            }
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//            return Result.fail("修改时发送错误");
-//        }
-//        return Result.success(null);
-//    }
-    //联系博客到分栏
-
     /**
      * 博客归类到分栏
      * @param blogId

@@ -6,7 +6,7 @@
         </div>
         <div style="padding-bottom: 10px">
             <el-button type="primary" v-if="!isShowDelPro" @click="changeIsShowDelPro" class="el-icon-delete">管理</el-button>
-            <el-button type="info" v-else @click="changeIsShowDelPro">取消</el-button>
+            <el-button type="info" class="el-icon-circle-close" v-else @click="changeIsShowDelPro">取消</el-button>
         </div>
         <div v-for="(pro,index) in this.page.projects" style="padding-bottom: 5px;">
             <el-card shadow="hover" style="height: 125px;  border-color: #8c939d">
@@ -26,7 +26,7 @@
             </el-card>
         </div>
         <el-pagination
-                style="text-align: center"
+                style="text-align: center; padding-top: 25px"
                 background
                 :hide-on-single-page="true"
                 @current-change="handCurrentChange"

@@ -22,38 +22,43 @@
 
             <el-main class="main">
                 <el-upload
-                            class="avatar-uploader"
-                           name="avatarPic"
-                           action="http://localhost:8081/web/avatarUpload"
-                           accept="image/png,image/gif,image/jpg,image/jpeg"
-                           :drag="true"
-                           :show-file-list="false"
-                           :on-success="handleAvatarSuccess"
-                           :before-upload="beforeAvatarUpload">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                  v-if="form.avatar == ''"
+                  class="avatar-uploader"
+                  name="avatar"
+                  action="http://localhost:8081/media/uploadAvatar"
+                  accept="image/png,image/jpg,image/jpeg"
+                  :drag="false"
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccess"
+                  :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="form.avatar" class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
+                <el-image v-else :src="form.avatar"
+                          style="width: 100px; height: 100px; text-align: center; border-radius: 3px"
+                          fit="cover">
+                </el-image>
                 <div>
                     <el-form :rules="rules" ref="form" label-position="right" :model="form" label-width="80px" class="login">
-                        <el-form-item label="用户名" prop="username">
+                        <el-form-item label="用户名" class="LRItem" prop="username">
                             <el-input v-model="form.username"></el-input>
                         </el-form-item>
-                        <el-form-item label="密码" prop="password">
+                        <el-form-item label="密码" class="LRItem" prop="password">
                             <el-input type="password" v-model="form.password"></el-input>
                         </el-form-item>
-                        <el-form-item label="邮箱" prop="email">
+                        <el-form-item label="邮箱" class="LRItem" prop="email">
                             <el-input type="email" v-model="form.email"></el-input>
                         </el-form-item>
-                        <el-form-item prop="college" label="学校">
+                        <el-form-item prop="college" class="LRItem" label="学校">
                             <el-input v-model="form.college"></el-input>
                         </el-form-item>
-                        <el-form-item prop="major" label="专业">
+                        <el-form-item prop="major" class="LRItem" label="专业">
                             <el-input v-model="form.major"></el-input>
                         </el-form-item>
-                        <el-form-item prop="grade" label="年级">
+                        <el-form-item prop="grade" class="LRItem" label="年级">
                             <el-input v-model="form.grade"></el-input>
                         </el-form-item>
-                        <el-form-item label="自我介绍" prop="description">
+                        <el-form-item label="自我介绍" class="LRItem" prop="description">
                             <el-input type="textarea" v-model="form.description" placeholder="（可选）"></el-input>
                         </el-form-item>
                         <el-form-item>
@@ -74,6 +79,7 @@
             return {
                 imageUrl: '',
                 form: {
+                    avatar: '',
                     username: '',
                     password: '',
                     email: '',
@@ -112,7 +118,7 @@
                     ]
                 }
             };
-            },
+        },
         methods: {
             submitForm(formName) {
                 let _this = this;
@@ -133,7 +139,7 @@
                 this.$refs[formName].resetFields();
             },
             handleAvatarSuccess(res) {
-                console.log(res);
+                this.form.avatar = res.data;
             },
             beforeAvatarUpload(file) {
                 const isJPG = file.type === 'image/jpeg';
@@ -146,9 +152,7 @@
                     this.$message.error('上传头像图片大小不能超过 10MB!');
                 }
                 return isJPG && isLt10M;
-
             },
-
         }
     }
 </script>
@@ -170,6 +174,7 @@
         /*background-color: #99a9bf;*/
         transform: translate(-50%, -50%);
     }
+
     .avatar-uploader .el-upload {
         border: 1px dashed #d9d9d9;
         border-radius: 6px;
@@ -181,8 +186,8 @@
         border-color: #409EFF;
     }
     .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
+        font-size: 50px;
+        color: #1a1b1b;
         width: 178px;
         height: 178px;
         line-height: 178px;
@@ -205,5 +210,11 @@
         width: 100%;
         height: 100%;
         position: absolute;
+    }
+</style>
+
+<style>
+    .LRItem .el-form-item__label{
+        color: #fdfdfe;
     }
 </style>

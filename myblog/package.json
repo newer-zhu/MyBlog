@@ -8,6 +8,7 @@
     "dev": "vue-cli-service serve"
   },
   "dependencies": {
+    "@jiaminghi/data-view": "^2.10.0",
     "bright-comment": "^1.5.7",
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",

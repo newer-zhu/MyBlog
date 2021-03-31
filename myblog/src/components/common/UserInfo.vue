@@ -33,8 +33,6 @@
                     <p class="el-icon-message" style="font-size: 20px; color: #282c34">{{'邮箱： ' + user.email}}</p>
                 </div>
             </div>
-
-            <span>我来啦!</span>
         </el-drawer>
     </div>
 </template>
@@ -44,12 +42,14 @@
         name: "UserInfo",
         data(){
             return{
+
             }
         },
         props: ['user', 'drawer'],
         watch: {
         },
         created() {
+
         },
         methods: {
             close(done){
@@ -64,7 +64,7 @@
     .drawer{
         height: 100%;
         -moz-background-size:100% 100%; background-size:100% 100%;
-        background-image: url("../../assets/img/green.jpg");
+        /*background-image: url("../../assets/img/green.jpg");*/
     }
     .avatar{
         margin: 0 auto;

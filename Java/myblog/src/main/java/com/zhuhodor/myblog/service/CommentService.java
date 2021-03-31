@@ -1,18 +1,20 @@
 package com.zhuhodor.myblog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zhuhodor.myblog.Entity.Comment;
+import com.zhuhodor.myblog.Entity.BlogModule.BlogComment;
+import com.zhuhodor.myblog.Entity.ProjectComment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public interface CommentService extends IService<Comment> {
-    List<Comment> selectCommentByBlogId(int blogId);
+public interface CommentService extends IService<BlogComment> {
+    List<BlogComment> selectCommentByBlogId(int blogId);
 
-    List<Comment> selectChildrenByCommentId(int comment_id);
+    List<BlogComment> selectChildrenByCommentId(int comment_id);
 
     boolean commentToBlog(int commentId, int blogId);
 
     boolean childCommentToParent(int commentId, int targetComment);
+
 }

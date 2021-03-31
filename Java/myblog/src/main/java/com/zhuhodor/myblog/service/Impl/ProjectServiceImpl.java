@@ -1,13 +1,20 @@
 package com.zhuhodor.myblog.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.mapper.ProjectMapper;
 import com.zhuhodor.myblog.service.ProjectService;
+import com.zhuhodor.myblog.service.UserService;
+import com.zhuhodor.myblog.util.MailUtil;
 import com.zhuhodor.myblog.vo.ProjectVo;
 import com.zhuhodor.myblog.vo.RequestVo;
 import com.zhuhodor.myblog.vo.TableVo;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -22,6 +29,8 @@ import java.util.List;
 
 @Service
 public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> implements ProjectService{
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Autowired
     ProjectMapper projectMapper;
@@ -70,6 +79,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     public boolean request(String userId, String projectId) {
         if(StringUtils.isEmpty(projectMapper.isRequested(userId, projectId))){
             projectMapper.request(userId, projectId);
+            rabbitTemplate.convertAndSend("project","project.sendmail", projectId+":"+userId);
             return false;
         }else {
             return true;
@@ -91,10 +101,10 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         }
     }
 
-    @Override
-    public Integer isConfirm(String projectId, String userId) {
-        return projectMapper.isConfirm(projectId, userId);
-    }
+//    @Override
+//    public Integer isConfirm(String projectId, String userId) {
+//        return projectMapper.isConfirm(projectId, userId);
+//    }
 
     @Override
     public List<TableVo> contributorTable(String projectId) {
@@ -102,5 +112,14 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         for (TableVo t : table)
             t.setNumber(projectMapper.countNumber(projectId, String.valueOf(t.getUserId())));
         return table;
+    }
+
+    @Override
+    public boolean editable(String projectId, String userId) {
+        Integer i = projectMapper.editable(projectId, userId);
+        if (null == i|| i == 0)
+            return false;
+        else
+            return true;
     }
 }

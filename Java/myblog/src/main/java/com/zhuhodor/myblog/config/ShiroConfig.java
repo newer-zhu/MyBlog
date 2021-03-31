@@ -32,7 +32,7 @@ public class ShiroConfig {
     public SessionManager sessionManager(RedisSessionDAO redisSessionDAO) {
         org.apache.shiro.web.session.mgt.DefaultWebSessionManager sessionManager = new org.apache.shiro.web.session.mgt.DefaultWebSessionManager();
         // inject redisSessionDAO
-        sessionManager.setSessionDAO(redisSessionDAO);
+//        sessionManager.setSessionDAO(redisSessionDAO);
         return sessionManager;
     }
     @Bean
@@ -41,7 +41,7 @@ public class ShiroConfig {
                                                      RedisCacheManager redisCacheManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(accountRealm);
         securityManager.setSessionManager(sessionManager);
-        securityManager.setCacheManager(redisCacheManager);
+//        securityManager.setCacheManager(redisCacheManager);
         /*
          * 关闭shiro自带的session，详情见文档
          */

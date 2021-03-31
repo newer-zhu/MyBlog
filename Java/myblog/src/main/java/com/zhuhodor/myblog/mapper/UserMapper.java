@@ -39,4 +39,7 @@ public interface UserMapper extends BaseMapper<User> {
             "WHERE r.id = #{id}\n")
     List<Permission> findPermissionsByRoleId(String id);
 
+    @Select("SELECT u.* FROM `user` u, `project` p WHERE u.id = p.start_user AND p.id = #{projectId}")
+    User findUserByProjectId(String projectId);
+
 }

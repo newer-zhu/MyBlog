@@ -6,6 +6,7 @@ import com.zhuhodor.myblog.Entity.Role;
 import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.mapper.UserMapper;
 import com.zhuhodor.myblog.service.Impl.UserServiceImpl;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,4 +28,6 @@ public interface UserService extends IService<User> {
     List<Role> findRolesByUserName(String username);
 
     List<Permission> findPermissionsByRoleId(String id);
+
+    User findUserByProjectId(String projectId);
 }

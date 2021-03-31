@@ -4,12 +4,14 @@ import com.zhuhodor.myblog.AI.TextAnalysis;
 import com.zhuhodor.myblog.elasticsearch.Service.EsBlogRepository;
 import com.zhuhodor.myblog.elasticsearch.Service.EsProjectRepository;
 import com.zhuhodor.myblog.elasticsearch.Service.EsService;
+import com.zhuhodor.myblog.mapper.ProjectPicMapper;
 import com.zhuhodor.myblog.service.*;
 import com.zhuhodor.myblog.util.JwtUtil;
 import com.zhuhodor.myblog.util.RedisUtils;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -33,6 +35,9 @@ public class BaseController {
     ColumnService columnService;
 
     @Autowired
+    ProjectCommentService projectCommentService;
+
+    @Autowired
     JwtUtil jwtUtil;
 
     @Autowired
@@ -48,6 +53,9 @@ public class BaseController {
     EsService esBlogService;
 
     @Autowired
+    ProjectPicMapper projectPicMapper;
+
+    @Autowired
     EsProjectRepository esProjectRepository;
 
     @Autowired
@@ -55,5 +63,7 @@ public class BaseController {
 
     @Autowired
     RabbitTemplate rabbitTemplate;
+
+
 
 }

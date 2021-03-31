@@ -47,6 +47,7 @@
                                 drag
                                 action="http://localhost:8081/media/fileupload/"
                                 :on-success="uploadSuccess"
+                                :on-remove="removeFile"
                                 :on-error="error"
                                 multiple>
                             <i class="el-icon-upload"></i>
@@ -291,6 +292,9 @@
                 console.log(response);
                 this.blogForm.content = response.data;
                 this.success('上传成功！')
+            },
+            removeFile(file, fileList){
+                this.blogForm.content = ''
             }
         },
         created() {

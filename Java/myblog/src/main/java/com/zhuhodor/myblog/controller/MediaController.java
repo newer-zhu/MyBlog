@@ -5,9 +5,13 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zhuhodor.myblog.AI.COS;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.config.GiteeImgBedConstant;
 import com.zhuhodor.myblog.service.BlogService;
+import com.zhuhodor.myblog.vo.PictureVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +30,16 @@ import java.util.UUID;
 @Slf4j
 public class MediaController extends BaseController{
 
+    /**
+     * 保存图片到码云
+     * @param imgFile
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/saveimg")
     public Result<Map<String, Object>> saveImg(@RequestParam(value = "imgFile", required = true) MultipartFile imgFile) throws Exception {
         log.info("开始上传图片");
         Result<Map<String, Object>> result = new Result<Map<String, Object>>();
-
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         String trueFileName = imgFile.getOriginalFilename();
@@ -67,6 +76,11 @@ public class MediaController extends BaseController{
         return result;
     }
 
+    /**
+     * 删除码云里的照片
+     * @param url
+     * @return
+     */
     @GetMapping("/delimg/{url}")
     public Result delImag(@PathVariable("url") String url){
         HashMap<String, String> paramMap = new HashMap<>();
@@ -78,6 +92,11 @@ public class MediaController extends BaseController{
         return Result.success("delete OK!");
     }
 
+    /**
+     * 上传文件
+     * @param file
+     * @return
+     */
     @PostMapping("/fileupload")
     public Result fileUpload(@RequestParam("file") MultipartFile file){
         String filename = file.getOriginalFilename();//获得文件原名 如：abc.txt
@@ -108,9 +127,30 @@ public class MediaController extends BaseController{
         return Result.fail("上传失败");
     }
 
+    /**
+     * 删除文件
+     * @param path
+     * @return
+     */
+    @PostMapping("/deleteFile")
+    public Result delFile(@RequestBody String path){
+        log.info("删除----------》{}", path);
+        File file = new File(path);
+        if (file.delete()){
+            return Result.success("删除成功");
+        }
+        return null;
+    }
+
+    /**
+     * 下载文件
+     * @param blogId
+     * @param response
+     * @return
+     */
     @GetMapping("/filedownload/{blogId}")
     public Result fileDownload(@PathVariable String blogId, HttpServletResponse response){
-        String filePath = blogService.findBlogById(blogId).getContent();
+        String filePath = blogService.getOne(new QueryWrapper<Blog>().eq("id", blogId).select("content")).getContent();
         response.setHeader("content-type", "image/png");
         response.setContentType("application/octet-stream");
         String fileName = filePath.substring(filePath.lastIndexOf('\\') + 1,
@@ -159,5 +199,38 @@ public class MediaController extends BaseController{
             }
         }
         return null;
+    }
+
+    /**
+     * 头像上传
+     * @param avatar
+     * @return
+     */
+    @PostMapping("/uploadAvatar")
+    public Result uploadAvatar(@RequestParam("avatar") MultipartFile avatar){
+        try {
+            return Result.success(COS.uploadAvatar(avatar));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Result.fail("上传失败");
+    }
+
+    /**
+     * 项目图片上传
+     * @param pic
+     * @param projectId
+     * @return
+     */
+    @PostMapping("/uploadProjectPic")
+    public Result uploadPic(@RequestParam("pic") MultipartFile pic, @RequestParam("projectId") String projectId){
+        try {
+            String url = COS.uploadPic(pic);
+            String[] split = url.split("/");
+            return Result.success(new PictureVo(projectId, split[split.length-1], url));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Result.fail("上传失败");
     }
 }

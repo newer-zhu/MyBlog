@@ -3,6 +3,7 @@ package com.zhuhodor.myblog.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.vo.RequestVo;
 import com.zhuhodor.myblog.vo.TableVo;
 import org.apache.ibatis.annotations.*;
@@ -65,21 +66,41 @@ public interface ProjectMapper extends BaseMapper<Project> {
             "p.id = pc.project_id and p.start_user = u.id and p.start_user = #{userId} and pc.confirm = 0")
     List<RequestVo> findRequestsByUserId(String userId);
 
-    @Select("SELECT count(*) from project_contributor WHERE project_id = #{projectId} and contributor_id = #{userId}")
-    Integer isConfirm(String projectId, String userId);
 
+    /**
+     * 同意申请
+     * @param projectId
+     * @param contributorId
+     * @param now
+     * @return
+     */
     @Update("UPDATE project_contributor SET confirm = 1, date = #{now} WHERE project_id = #{projectId} AND contributor_id = #{contributorId}")
     boolean confirm(String projectId, String contributorId, Date now);
 
+    /**
+     * 拒绝申请
+     * @param projectId
+     * @param contributorId
+     * @return
+     */
     @Delete("DELETE FROM project_contributor WHERE project_id = #{projectId} AND contributor_id = #{contributorId} AND confirm = 0")
     boolean reject(String projectId, String contributorId);
+
+    /**
+     * 能否编辑
+     * @param projectId
+     * @param userId
+     * @return
+     */
+    @Select("SELECT confirm from project_contributor WHERE project_id = #{projectId} and contributor_id = #{userId}")
+    Integer editable(String projectId, String userId);
 
     /**
      * 贡献成员信息表
      * @param projectId
      * @return
      */
-    @Select("SELECT u.id as user_id , u.username, pc.date  FROM `project_contributor` pc, user u WHERE u.id = pc.contributor_id AND pc.project_id = #{projectId}")
+    @Select("SELECT u.id as user_id , u.username, pc.date  FROM `project_contributor` pc, user u WHERE u.id = pc.contributor_id AND pc.project_id = #{projectId} AND pc.confirm = 1")
     List<TableVo> contributorTable(String projectId);
 
     /**
@@ -90,4 +111,5 @@ public interface ProjectMapper extends BaseMapper<Project> {
      */
     @Select("SELECT count(*) FROM project_blog pb, blog b WHERE pb.project_id = #{projectId} AND pb.blog_id = b.id AND b.userId = #{userId}")
     Integer countNumber(String projectId, String userId);
+
 }

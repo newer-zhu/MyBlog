@@ -20,8 +20,6 @@ public class RedisUtils {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    // Key（键），简单的key-value操作
-
     public boolean hasKey(String key){
         return redisTemplate.hasKey(key);
     }
@@ -72,7 +70,7 @@ public class RedisUtils {
         redisTemplate.delete(key);
     }
 
-//    set
+//    set 数据结构
     public void sadd(String key, String val){
         redisTemplate.opsForSet().add(key, val);
     }

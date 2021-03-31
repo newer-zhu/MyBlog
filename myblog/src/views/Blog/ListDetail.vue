@@ -1,18 +1,24 @@
 <template>
     <div>
         <div style="padding-bottom: 10px">
-            <transition name="el-zoom-in-center">
-                <el-button type="primary" v-if="!isShowDelCol" @click="changeShowDelCol" class="el-icon-delete">管理</el-button>
-                <el-button type="info" @click="changeShowDelCol">取消</el-button>
-            </transition>
+            <el-row>
+                <el-col :span="2">
+                    <el-button type="primary" v-if="!isShowDelCol" @click="changeShowDelCol" class="el-icon-delete">管理</el-button>
+                    <el-button type="info" class="el-icon-circle-close" v-else @click="changeShowDelCol">取消</el-button>
+                </el-col>
+                <el-col :span="20" :offset="2">
+                </el-col>
+            </el-row>
+
+
         </div>
-        <div v-for="(card,index) in this.page.blogs" style="padding-bottom: 5px;">
-            <el-card shadow="hover" style="height: 125px;  border-color: #8c939d">
+        <div  v-for="(card,index) in this.page.blogs" style="padding-bottom: 1px;">
+            <el-card shadow="hover" style="height: 125px;  border-color: #e3effc">
                 <el-row>
                     <router-link :to="{name: 'BlogDetail', params:{blogId:card.id}}">
                         <el-col :span="17">
                             <h3 style="color: #282c34; margin-top: 2px">{{card.title}}</h3>
-                            <p>{{card.summary}}</p>
+                            <p style="color: #525252">{{card.summary}}</p>
                         </el-col>
                     </router-link>
                     <el-col style="color: #8c939d" :span="7">
@@ -28,7 +34,7 @@
             </el-card>
         </div>
         <el-pagination
-                style="text-align: center"
+                style="text-align: center; padding-top: 25px"
                 background
                 :hide-on-single-page="true"
                 @current-change="handCurrentChange"
@@ -40,8 +46,10 @@
 </template>
 
 <script>
+    import Navibar from "../../components/common/Navibar";
     export default {
         name: "ListDetail",
+        components: {Navibar},
         data(){
             return {
                 page: {
@@ -88,7 +96,15 @@
                 }
             },
             delCol(blogId){
-                this.$axios.get("/column/dismiss/"+blogId+"/"+this.columnId);
+                if (this.columnId == -1){
+                    this.$axios.get("/blog/delblogbyid?blogId="+blogId).then(res => {
+                        this.$message({
+                            message: '删除成功'
+                        });
+                    })
+                }else {
+                    this.$axios.get("/column/dismiss/"+blogId+"/"+this.columnId);
+                }
                 this.loadList();
             },
 

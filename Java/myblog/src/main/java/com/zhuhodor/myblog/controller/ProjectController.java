@@ -6,9 +6,11 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.Entity.ProjectComment;
 import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
 import com.zhuhodor.myblog.vo.OverviewVo;
+import com.zhuhodor.myblog.vo.PictureVo;
 import com.zhuhodor.myblog.vo.ProjectVo;
 import com.zhuhodor.myblog.vo.TableVo;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +59,11 @@ public class ProjectController extends BaseController{
                 .put("projectName", project.getProjectName())
                 .put("favorite", projectService.favoriteCount(projectId))
                 .put("userRate", userRate)
-                .put("contributors", table).map());
+                .put("contributors", table)
+                .put("pictures", projectPicMapper.selectList(new QueryWrapper<PictureVo>().eq("project_id", projectId)))
+                .map());
     }
+
 
     /**
      * 根据用户Id分页获取项目集
@@ -132,6 +137,13 @@ public class ProjectController extends BaseController{
             return Result.fail("删除失败");
     }
 
+    /**
+     * 获取收藏项目
+     * @param userId
+     * @param page
+     * @param limit
+     * @return
+     */
     @GetMapping("/getfavorite/{userId}")
     public Result getFavorite(@PathVariable("userId") String userId,
                               @RequestParam(value = "page", defaultValue = "1", required = false) Integer page,
@@ -261,7 +273,7 @@ public class ProjectController extends BaseController{
     @GetMapping("/request/{userId}/{projectId}")
     public Result request(@PathVariable String userId, @PathVariable String projectId){
         if (projectService.request(userId, projectId)){
-            return Result.success(202,"您已经申请过啦！", null);
+            return Result.success(200,"您已经申请过啦！", null);
         }else {
             return Result.success(200, "请求成功", null);
         }
@@ -279,5 +291,24 @@ public class ProjectController extends BaseController{
         log.info("用户[{}]的请求被处理, 结果为[{}]", userId, res);
         projectService.dealRequest(projectId, userId, res);
         return Result.success("处理成功");
+    }
+
+    /**
+     * 上传图片
+     * @param pics
+     * @return
+     */
+    @PostMapping("/insertPic")
+    public Result insertPic(@RequestBody List<PictureVo> pics){
+        projectPicMapper.delete(new QueryWrapper<PictureVo>().eq("project_id", pics.get(0).getProjectId()));
+        for (PictureVo p : pics){
+            projectPicMapper.insert(p);
+        }
+        return Result.success(null);
+    }
+
+    @GetMapping("/editable/{projectId}/{userId}")
+    public Result editable(@PathVariable("projectId") String projectId, @PathVariable("userId") String userId){
+        return Result.success(projectService.editable(projectId, userId));
     }
 }

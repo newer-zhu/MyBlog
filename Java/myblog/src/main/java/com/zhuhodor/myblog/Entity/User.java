@@ -3,6 +3,10 @@ package com.zhuhodor.myblog.Entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -13,8 +17,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.io.Serializable;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -42,6 +46,6 @@ public class User implements Serializable {
 
     @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",shape = JsonFormat.Shape.STRING)
     @PastOrPresent
-    private LocalDate createAt;
+    private Date createAt;
 
 }

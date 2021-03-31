@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class Consumer {
+public class BlogConsumer {
     @Autowired
     RabbitTemplate rabbitTemplate;
     @Autowired

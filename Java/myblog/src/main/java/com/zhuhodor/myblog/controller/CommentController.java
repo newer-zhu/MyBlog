@@ -1,6 +1,9 @@
 package com.zhuhodor.myblog.controller;
 
-import com.zhuhodor.myblog.Entity.Comment;
+import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zhuhodor.myblog.Entity.BlogModule.BlogComment;
+import com.zhuhodor.myblog.Entity.ProjectComment;
 import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.vo.CommentVo;
@@ -10,8 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+/**
+ * 评论模块
+ */
 @RestController
 @RequestMapping("/comment")
 @Slf4j
@@ -19,13 +26,13 @@ public class CommentController extends BaseController{
 
     //只支持两级评论
     @GetMapping("/getlistbyblogid/{blogId}")
-    public Result<Comment> getListById(@PathVariable("blogId") int blogId){
+    public Result<BlogComment> getListById(@PathVariable("blogId") int blogId){
         log.info("获取blogId={}的评论",blogId);
         //顶层评论
-        List<Comment> comments = commentService.selectCommentByBlogId(blogId);
+        List<BlogComment> comments = commentService.selectCommentByBlogId(blogId);
         //返回结果
         ArrayList<CommentVo> list = new ArrayList<>();
-        for (Comment c : comments){
+        for (BlogComment c : comments){
             //将查询的评论实体转换成需要的实体
             CommentVo cD = new CommentVo();
             User commentUser = userService.findUserById(c.getCommentUser());
@@ -36,9 +43,9 @@ public class CommentController extends BaseController{
             cD.setId(c.getId());
             cD.setCreateDate(c.getCreateDate());
 //            第二层评论
-            List<Comment> children = commentService.selectChildrenByCommentId(c.getId());
+            List<BlogComment> children = commentService.selectChildrenByCommentId(c.getId());
             List<CommentVo> daos = new ArrayList<>();
-            for (Comment co : children){
+            for (BlogComment co : children){
                 //将第二层评论的实体转换成需要的实体类型
                 CommentVo dao = new CommentVo();
                 User cUser = userService.findUserById(co.getCommentUser());
@@ -57,7 +64,7 @@ public class CommentController extends BaseController{
     }
 
     @PostMapping("/parentcomment/{blogId}")
-    public Result parentComment(@RequestBody Comment comment, @PathVariable("blogId") int blogId){
+    public Result parentComment(@RequestBody BlogComment comment, @PathVariable("blogId") int blogId){
         comment.setCreateDate(LocalDateTime.now().toString());
         try {
             commentService.save(comment);
@@ -70,7 +77,7 @@ public class CommentController extends BaseController{
     }
 
     @PostMapping("/childcomment/{targetComment}")
-    public Result childComment(@RequestBody Comment comment, @PathVariable("targetComment") int targetComment){
+    public Result childComment(@RequestBody BlogComment comment, @PathVariable("targetComment") int targetComment){
         comment.setCreateDate(LocalDateTime.now().toString());
         try {
             commentService.save(comment);
@@ -82,4 +89,24 @@ public class CommentController extends BaseController{
         return Result.success("评论成功");
     }
 
+    @PostMapping("/projectComment")
+    public Result projectComment(@RequestBody ProjectComment comment){
+        comment.setTime(DateUtil.date());
+        projectCommentService.save(comment);
+        return Result.success("评论成功");
+    }
+
+    /**
+     * 获取项目评论
+     * @param id
+     * @return
+     */
+    @GetMapping("/project/{projectId}")
+    public Result getProjectComments(@PathVariable("projectId") Integer id){
+        List<ProjectComment> comments = projectCommentService.list(new QueryWrapper<ProjectComment>().eq("project_id", id));
+        for (ProjectComment c : comments){
+            c.setUser(userService.getOne(new QueryWrapper<User>().eq("id", c.getUserId()).select("id", "username")));
+        }
+        return Result.success(comments);
+    }
 }

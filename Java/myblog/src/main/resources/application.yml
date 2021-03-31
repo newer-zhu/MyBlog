@@ -24,18 +24,17 @@ spring:
   redis:
     port: 6379
     host: 49.235.92.49
+#    host: 192.168.247.124
     database: 0
     password: 20001030
     timeout: 5000
-  cache:
-    type: redis
     jedis:
       pool:
         ## 连接池最大连接数（使用负值表示没有限制）
-        #spring.redis.pool.max-active=8
-        max-active: 8
+        #        spring.redis.pool.max-active=8
+        max-active: 200
         ## 连接池最大阻塞等待时间（使用负值表示没有限制）
-        #spring.redis.pool.max-wait=-1
+        #        spring.redis.pool.max-wait=-1
         max-wait: -1
         ## 连接池中的最大空闲连接
         #spring.redis.pool.max-idle=8
@@ -44,6 +43,9 @@ spring:
         #spring.redis.pool.min-idle=0
         min-idle: 0
       timeout: 1200
+  cache:
+    type: redis
+
 
 
 

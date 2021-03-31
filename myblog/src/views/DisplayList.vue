@@ -66,7 +66,6 @@
                             </div>
                         </div>
                         <div v-show="page.blogs.length != 0" style="border: 1px solid whitesmoke;border-bottom:2px solid #faeaef;" v-for="(b, i) in page.blogs">
-                            <UserInfo :user="b.user" :drawer.sync="drawer"></UserInfo>
                             <div style="margin-left: 5px">
                                 <el-row>
                                     <el-col :span="17">
@@ -78,9 +77,10 @@
                                     <el-col style="color: #8c939d" :span="7">
                                         <p>{{b.createdAt.slice(0, 11)}}</p>
                                         <span style="font-size: 25px" :class="b.isFile ? 'el-icon-folder':'el-icon-document'"></span>
-                                        作者：<el-link @click="drawer = !drawer" v-if="b.user != null" style="display: inline; margin-left: 10px">{{b.user.username}}</el-link>
+                                        作者：<el-link @click="getUserInfo(b.user)" v-if="b.user != null" style="display: inline; margin-left: 10px">{{b.user.username}}</el-link>
                                     </el-col>
                                 </el-row>
+
                                 <p style="color: #8c939d" v-html="b.content"></p>
                             </div>
                         </div>
@@ -91,14 +91,13 @@
                             暂无相关项目
                         </el-card>
                         <div v-for="(p, i) in page.projects" style="box-shadow:  0 1px 8px 0 rgba(0, 0, 0, 0.1); margin-bottom: 1px; margin-top: 5px">
-                            <UserInfo :user="p.projectUser" :drawer.sync="drawer"></UserInfo>
                             <div style="margin-left: 5px; padding-bottom: 10px">
                                 <el-row>
                                     <el-col :span="16">
                                         <router-link :to="{name: 'ProjectDetail', params:{projectId:p.id}}">
-                                            <h3 v-html="p.projectName"></h3>
+                                            <h3 style="color: #303133" v-html="p.projectName"></h3>
                                         </router-link>
-                                        作者：<el-link @click="drawer = !drawer" v-if="p.projectUser != null" style="display: inline; margin-left: 10px">{{p.projectUser.username}}</el-link>
+                                        作者：<el-link @click="getUserInfo(p.projectUser)" v-if="p.projectUser != null" style="display: inline; margin-left: 10px">{{p.projectUser.username}}</el-link>
                                     </el-col>
                                     <el-col style="color: #8c939d" :span="8">
                                         <p>{{p.createAt.slice(0, 11)}}</p>
@@ -120,6 +119,7 @@
                     >
                     </el-pagination>
                 </el-row>
+                <UserInfo :user="subUser" :drawer.sync="drawer"></UserInfo>
             </el-main>
         </el-container>
     </div>
@@ -187,7 +187,8 @@
                     currentPage: 1,
                     projects: []
                 },
-                hotWords: []
+                hotWords: [],
+                subUser: {}
             }
         },
         watch: {
@@ -206,7 +207,6 @@
         },
         methods: {
             search(current){
-
                 this.searchRequest.current = current;
                 this.$axios.post("/search/query", this.searchRequest).then(res => {
                     this.page.blogs = res.data.data.blogList;
@@ -222,6 +222,10 @@
             },
             handCurrentChange(current){
                 this.search(current);
+            },
+            getUserInfo(user){
+                this.subUser = user;
+                this.drawer = !this.drawer;
             }
         },
         created() {

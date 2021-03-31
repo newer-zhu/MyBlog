@@ -17,4 +17,6 @@ public interface TagService extends IService<Tag> {
     boolean blogIntoTags(String blogId, String tagId);
 
     List<Blog> findBlogsByTagId(String tagId);
+
+    boolean setBlog2Tags(String blogId, List<String> tags);
 }

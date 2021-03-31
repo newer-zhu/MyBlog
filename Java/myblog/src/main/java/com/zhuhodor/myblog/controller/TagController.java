@@ -1,24 +1,41 @@
 package com.zhuhodor.myblog.controller;
 
+import cn.hutool.core.map.MapBuilder;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Tag;
 import com.zhuhodor.myblog.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/tag")
 @Slf4j
 public class TagController extends BaseController{
 
+    /**
+     * 根据Id获取标签
+     * @param tagId
+     * @return
+     */
+    @GetMapping("/id/{tagId}")
+    public Result getByTagId(@PathVariable("tagId") String tagId){
+        return Result.success(tagService.getOne(new QueryWrapper<Tag>().eq("id", tagId)));
+    }
+
+    /**
+     * 根据博客Id获取所有标签
+     * @param blogId
+     * @return
+     */
     @GetMapping("/getbyblogid/{blogId}")
     public Result<List<Tag>> getTagsByBlogId(@PathVariable("blogId") String blogId){
         List<Tag> tags = tagService.getTagsbyBlogId(blogId);
@@ -35,22 +52,7 @@ public class TagController extends BaseController{
     public Result blogToTags(@PathVariable("blogId") String blogId,
                              @RequestBody List<String> tags){
         log.info("将博客{}归纳进标签", blogId);
-        //解除先前blog和tag的联系
-        tagService.removeBlogsInTag(blogId);
-        for (String t : tags){
-            //将数据库里不存在的tag存入
-            Tag target = tagService.getOne(new QueryWrapper<Tag>().eq("tag_name", t));
-            //没有这个tag
-            if (target == null){
-                Tag tag = new Tag(t);
-                tagService.save(tag);
-                //重新建立blog与tag的联系
-                tagService.blogIntoTags(blogId, String.valueOf(tag.getId()));
-            }else {
-                //重新建立blog与tag的联系,前端自定义的tag是无ID的
-                tagService.blogIntoTags(blogId, String.valueOf(target.getId()));
-            }
-        }
+        tagService.setBlog2Tags(blogId, tags);
         return Result.success("添加标签成功");
     }
 
@@ -64,9 +66,20 @@ public class TagController extends BaseController{
         return Result.success(tags);
     }
 
+    /**
+     * 根据标签Id获取博客
+     * @param tagId
+     * @return
+     */
     @GetMapping("/blogs/{tagId}")
-    public Result getBlogs(@PathVariable("tagId") String tagId){
-        return Result.success(tagService.findBlogsByTagId(tagId));
+    public Result getBlogsByTagId(@PathVariable("tagId") String tagId, @RequestParam("page") Integer page){
+        log.info("获取标签={}的博客", tagId);
+        PageHelper.startPage(page, 1);
+        List<Blog> list = tagService.findBlogsByTagId(tagId);
+        PageInfo<Blog> pageInfo = new PageInfo<>(list);
+        return Result.success(MapUtil.builder()
+                .put("list", list)
+                .put("total", pageInfo.getPages()).map());
     }
 
     /**
@@ -77,18 +90,18 @@ public class TagController extends BaseController{
     @GetMapping("/{projectId}")
     public Result getTagsByProjectId(@PathVariable("projectId") String projectId){
         log.info("获取项目{}的标签", projectId);
-        HashMap<Tag, Integer> tagMap = new HashMap<>();
+        HashMap<String, Integer> tagMap = new HashMap<>();
         List<Blog> blogs = projectService.findBlogsByProjectId(projectId);
-        int total = 0;
         for (Blog b : blogs){
             List<Tag> tags = tagService.getTagsbyBlogId(b.getId());
             for (Tag t : tags){
-                total++;
-                tagMap.put(t, tagMap.getOrDefault(t, 0)+1);
+                tagMap.put(t.getTagName(), tagMap.getOrDefault(t.getTagName(), 0)+1);
             }
         }
-        return Result.success(MapUtil.builder()
-                .put("tags", tagMap)
-                .put("total", total).map());
+        ArrayList<String> res = new ArrayList<>();
+        tagMap.forEach((k, v) -> {
+            res.add(k+":"+v);
+        });
+        return Result.success(res);
     }
 }

@@ -39,8 +39,8 @@ public class EsProject {
     @JsonFormat(pattern ="yyyy-MM-dd HH:mm:ss", timezone ="GMT+8")
     private Date createAt;
 
-    @Field(type = FieldType.Integer)
-    private Integer rates;
+    @Field(type = FieldType.Float)
+    private Float rates;
 
     public EsProject(Integer id){
         this.id = id;

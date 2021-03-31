@@ -9,11 +9,12 @@ import axios from './axios'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import './plugins/hljs'
+import dataV from '@jiaminghi/data-view'
 import global from "./Js/global";
 Vue.use(ElementUI);
 Vue.use(mavonEditor);
-Vue.use(VueParticles)
-
+Vue.use(VueParticles);
+Vue.use(dataV);
 Vue.prototype.$axios = axios;
 Vue.prototype.global = global;
 Vue.config.productionTip = false;

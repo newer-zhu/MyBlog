@@ -10,6 +10,7 @@ import ProjectDetail from "../views/Project/ProjectDetail"
 import StartProject from '../views/Project/StartProject'
 import ProjectList from '../views/Project/ProjectList'
 import DisplayList from '../views/DisplayList'
+import TagDetail from '../views/TagDetail'
 Vue.use(VueRouter)
 
   const routes = [
@@ -74,6 +75,11 @@ Vue.use(VueRouter)
       name: 'ProjectDetail',
       component: ProjectDetail
     },
+    {
+      path: '/tag/:tagId',
+      name: 'TagDetail',
+      component: TagDetail
+    }
 
   // {
     // path: '/about',
@@ -89,6 +95,6 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
-})
+});
 
 export default router

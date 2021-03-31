@@ -1,9 +1,9 @@
 <template>
     <div>
         <div>
-            <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" background-color="#545c64"
+            <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" background-color="#409dfe"
                      text-color="#fff" active-text-color="#ffd04b">
-                <el-menu-item index="1" >首页</el-menu-item>
+                <el-menu-item index="1" style="margin-left: 550px">首页</el-menu-item>
                 <el-submenu index="2">
                     <template slot="title">发布</template>
                     <el-menu-item @click="writeBlog" index="2-1">写笔记</el-menu-item>
@@ -13,7 +13,6 @@
                 </el-submenu>
                 <el-menu-item @click="connect" index="3">消息中心</el-menu-item>
                 <el-menu-item index="4" @click="drawer = !drawer">个人中心</el-menu-item>
-                <el-menu-item index="5">圈子</el-menu-item>
                 <el-menu-item index="6" style="float: right; right: 50px" @click="logOut">退出</el-menu-item>
             </el-menu>
             <el-drawer
@@ -21,10 +20,10 @@
                     size="30%"
                     direction="ltr"
                     :with-header="false"
-                    :before-close="handleClose">
+            >
                 <div>
                     <div v-show="requests.requestMessages.length == 0">
-                        <p>暂时还没有消息哦</p>
+                        <p style="color: #474747;font-size: 20px; text-align: center">暂时还没有消息哦</p>
                     </div>
                     <div v-for="(r, i) in requests.requestMessages" :key="r.id">
                         <el-card>
@@ -52,8 +51,6 @@
         components: {UserInfo},
         data() {
             return {
-                circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-                fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
                 activeIndex: '1',
                 drawer: false,
                 message: false,
@@ -74,6 +71,7 @@
             };
         },
         methods: {
+            // websocket方案
             connect(){
                 if (this.global.ws.readyState == 1){
                     console.log("已经建立连接");
@@ -82,17 +80,24 @@
                 }
                 this.message = !this.message;
             },
+            //传统方案
+            loadMessage(){
+                this.$axios.get("/message/"+this.userId).then(res => {
+                    this.requests.requestMessages = [];
+                    let reqs = res.data.data;
+                    for (let r in reqs){
+                        reqs[r].id = this.requests.nextId++;
+                        this.requests.requestMessages.push(reqs[r]);
+                    }
+                });
+                this.message = !this.message;
+            },
+            //websocket方案
             localSocket() {
                 let that = this;
                 if ("WebSocket" in window) {
-                    // if (this.socket!= null || this.socket.readyState == 1){
-                    //     console.log("关闭连接");
-                    //     this.socket.close();
-                    // }
                     let ws = new WebSocket("ws://localhost:8081/pro/"+that.$store.getters.getUser.id);
                     that.global.setWs(ws);
-                    // this.socket = ws;
-                    // this.$store.commit("SET_WS", that.ws);
                     that.global.ws.onopen = function() {
                         console.log('websocket连接成功');
                     };
@@ -107,9 +112,9 @@
                         // 关闭 websocket
                         console.log("连接已关闭...");
                         //断线重新连接
-                        // setTimeout(() => {
-                        //     that.localSocket();
-                        // }, 2000);
+                        setTimeout(() => {
+                            that.localSocket();
+                        }, 2000);
                     };
                 } else {
                     // 浏览器不支持 WebSocket
@@ -125,7 +130,8 @@
             logOut(){
                 this.$store.commit('REMOVE_INFO');
                 this.$router.push("/login");
-                this.global.ws.close();
+                if (this.global.ws.readyState == 1)
+                    this.global.ws.close();
             },
             writeBlog(){
                 this.$router.push("/blogedit")
@@ -139,6 +145,11 @@
         created(){
             if (this.user.username == ''){
                 this.user = this.$store.getters.getUser;
+            }
+        },
+        computed:{
+            userId(){
+                return this.$store.getters.getUser.id;
             }
         }
     }

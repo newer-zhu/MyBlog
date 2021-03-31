@@ -57,4 +57,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public List<Permission> findPermissionsByRoleId(String id) {
         return userMapper.findPermissionsByRoleId(id);
     }
+
+    @Override
+    public User findUserByProjectId(String projectId) {
+        return userMapper.findUserByProjectId(projectId);
+    }
 }
