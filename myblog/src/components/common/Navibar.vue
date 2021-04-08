@@ -11,7 +11,16 @@
                         <el-menu-item index="2-2">发起项目</el-menu-item>
                     </router-link>
                 </el-submenu>
-                <el-menu-item @click="connect" index="3">消息中心</el-menu-item>
+                <el-menu-item @click="connect" index="3" style="margin-bottom: 0px">
+                    <el-badge v-if="requests.requestMessages.length != 0" :value="requests.requestMessages.length">
+                        <div style="line-height: 30px">
+                            消息中心
+                        </div>
+                    </el-badge>
+                    <div v-else>
+                        消息中心
+                    </div>
+                </el-menu-item>
                 <el-menu-item index="4" @click="drawer = !drawer">个人中心</el-menu-item>
                 <el-menu-item index="6" style="float: right; right: 50px" @click="logOut">退出</el-menu-item>
             </el-menu>
@@ -160,10 +169,5 @@
         margin: 0 auto;
         text-align: center;
         padding: 12px;
-    }
-    .drawer{
-        height: 100%;
-        -moz-background-size:100% 100%; background-size:100% 100%;
-        background-image: url("../../assets/img/green.jpg");
     }
 </style>

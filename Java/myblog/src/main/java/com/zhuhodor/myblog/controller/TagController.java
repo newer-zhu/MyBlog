@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhuhodor.myblog.AI.TextAnalysis;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Tag;
 import com.zhuhodor.myblog.common.Result;
@@ -22,13 +23,27 @@ import java.util.List;
 public class TagController extends BaseController{
 
     /**
-     * 根据Id获取标签
-     * @param tagId
+     *获取标签
+     * @param
      * @return
      */
-    @GetMapping("/id/{tagId}")
-    public Result getByTagId(@PathVariable("tagId") String tagId){
-        return Result.success(tagService.getOne(new QueryWrapper<Tag>().eq("id", tagId)));
+    @PostMapping()
+    public Result getTag(@RequestBody Tag tag){
+        //根据Id查询
+        if (tag.getId() != null){
+            Tag one = tagService.getOne(new QueryWrapper<Tag>().eq("id", tag.getId()));
+            return Result.success(one);
+        }else {//根据名字查询
+            Tag one = tagService.getOne(new QueryWrapper<Tag>().eq("tag_name", tag.getTagName()));
+            if (one != null){
+                return Result.success(one);
+            }else {
+                Tag noTag = new Tag();
+                noTag.setTagName(tag.getTagName());
+                tagService.save(noTag);
+                return Result.success(noTag);
+            }
+        }
     }
 
     /**
@@ -103,5 +118,16 @@ public class TagController extends BaseController{
             res.add(k+":"+v);
         });
         return Result.success(res);
+    }
+
+    /**
+     * 标签关联
+     * @param name
+     * @return
+     */
+    @GetMapping("/relative/{name}")
+    public Result relativeTags(@PathVariable String name){
+        Object relation = TextAnalysis.wordRelation(name);
+        return Result.success(relation);
     }
 }

@@ -4,80 +4,99 @@
             <Navibar/>
         </el-header>
 
-            <el-form @submit.native.prevent :model="blogForm" :rules="this.rules" ref="blogForm" label-width="100px" class="blog-form">
-                <el-row>
-                    <el-col :span="16">
-                        <el-row style="margin-left: 25px">
-                            <el-col :span="20">
-                                <el-form-item label="标题" prop="title">
-                                    <el-input  v-model = "blogForm.title"></el-input>
-                                </el-form-item>
-                                <el-row>
-                                    <el-col :span="22">
-                                        <el-form-item label="摘要" prop="summary">
-                                            <el-input type="textarea" autosize
-                                                       v-model="blogForm.summary"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="2">
-                                        <el-button @click="getSummary" type="success" class="el-icon-help" style="font-size: 15px; margin-left: 15px;margin-bottom: 0px" round>
-                                            {{'一键生成'}}</el-button>
-                                    </el-col>
-                                </el-row>
-                            </el-col>
-                        </el-row>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-switch
-                                style="display: block;"
-                                v-model="type"
-                                active-color="yellow"
-                                inactive-color="blue"
-                                active-text="文件"
-                                inactive-text="文章">
-                        </el-switch>
-                    </el-col>
-                </el-row>
-
-                <el-main>
-                    <el-form-item v-if="type">
-                        <el-upload
-                                name="file"
-                                class="upload-demo"
-                                drag
-                                action="http://localhost:8081/media/fileupload/"
-                                :on-success="uploadSuccess"
-                                :on-remove="removeFile"
-                                :on-error="error"
-                                multiple>
-                            <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                            <div class="el-upload__tip" slot="tip">文件大小不超过100mb，多文件上传请压缩</div>
-                        </el-upload>
-                    </el-form-item>
-                    <el-form-item prop="content" v-else>
-                        <mavon-editor
-                                    :toolbars="markdownOption"
-                                    v-model="blogForm.content"
-                                    @imgAdd = "handleImgAdd"
-                                    @imgDel = "imgDel"
-                                    ref=md
-                                    :ishljs = "true"
-                            />
-                    </el-form-item>
-                </el-main>
-                <div style="text-align: center;margin-bottom: 50px">
-                    <el-button type="primary" @click="updateBlog('blogForm')">立即发布</el-button>
-                    <el-button @click="resetForm('blogForm')">重置</el-button>
-                </div>
-
-                <el-dialog
-                        title="提示"
-                        :visible.sync="dialogVisible"
-                        width="30%"
-                >
-                    <span style="color: #409EFF; padding-bottom: 10px" class="el-icon-question">标签可多选，分类仅能选一类</span>
+        <el-container>
+            <el-main>
+                <el-form @submit.native.prevent :model="blogForm" :rules="this.rules" ref="blogForm" label-width="100px" class="blog-form">
                     <el-row>
+                        <el-col :span="16">
+                            <el-row style="margin-left: 25px">
+                                <el-col :span="20">
+                                    <el-form-item label="标题" prop="title">
+                                        <el-input  v-model = "blogForm.title"></el-input>
+                                    </el-form-item>
+                                    <el-row>
+                                        <el-col :span="22">
+                                            <el-form-item label="摘要" prop="summary">
+                                                <el-input type="textarea" autosize
+                                                          v-model="blogForm.summary"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="2">
+                                            <el-button @click="getSummary" type="success" class="el-icon-help" style="font-size: 15px; margin-left: 15px;margin-bottom: 0px" round>
+                                                {{'一键生成'}}</el-button>
+                                        </el-col>
+                                    </el-row>
+                                </el-col>
+                            </el-row>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-switch
+                              style="display: block;"
+                              v-model="type"
+                              active-color="yellow"
+                              inactive-color="blue"
+                              active-text="文件"
+                              inactive-text="文章">
+                            </el-switch>
+                        </el-col>
+                    </el-row>
+
+                    <el-row>
+<!--                        文件上传-->
+                        <el-form-item v-if="type">
+                            <el-upload
+                              name="file"
+                              class="upload-demo"
+                              drag
+                              action="http://localhost:8081/media/fileupload/"
+                              :on-success="uploadSuccess"
+                              :on-remove="removeFile"
+                              :on-error="error"
+                              multiple>
+                                <i class="el-icon-upload"></i>
+                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                                <div class="el-upload__tip" slot="tip">文件大小不超过100mb，多文件上传请压缩</div>
+                            </el-upload>
+                        </el-form-item>
+<!--                      文章上传-->
+                        <el-form-item prop="content" v-else>
+                            <mavon-editor
+                              :toolbars="markdownOption"
+                              v-model="blogForm.content"
+                              @imgAdd = "handleImgAdd"
+                              @imgDel = "imgDel"
+                              ref=md
+                              :ishljs = "true"
+                            />
+                        </el-form-item>
+                    </el-row>
+                    <div style="text-align: center;margin-bottom: 50px">
+                        <el-button type="primary" @click="updateBlog('blogForm')">立即发布</el-button>
+                        <el-button @click="resetForm('blogForm')">重置</el-button>
+                    </div>
+
+                    <!--                额外表单-->
+                    <el-dialog
+                      title="提示"
+                      :visible.sync="dialogVisible"
+                      width="30%"
+                    >
+                        <span style="color: #409EFF; padding-bottom: 10px" class="el-icon-question">标签可多选，学科仅能选一类</span>
+                        <el-row>
+                        <span>
+                        加入个人分栏(可选)
+                          <el-select v-model="selectColumn" placeholder="请选择">
+                            <el-option
+                              v-for="item in columns"
+                              :key="item.id"
+                              :label="item.cname"
+                              :value="item.id">
+                            </el-option>
+                          </el-select>
+                        </span>
+                        </el-row>
+                        <br>
+                        <el-row>
                         <span>
                         标签(可自定义)
                          <el-select v-model="tags"
@@ -87,34 +106,30 @@
                                     multiple
                                     placeholder="输入自定义标签">
                             <el-option
-                                    v-for="(item, index) in pushTags"
-                                    :key="index"
-                                    :label="item"
-                                    :value="item">
+                              v-for="(item, index) in pushTags"
+                              :key="index"
+                              :label="item"
+                              :value="item">
                             </el-option>
                           </el-select>
-                    </span>
-                    </el-row>
-                    <br>
-                    <el-row>
+                        </span>
+                        </el-row>
+                        <br>
                         <span>
-                        请选择分类(可选)
-                          <el-select v-model="selectColumn" placeholder="请选择">
-                            <el-option
-                                    v-for="item in columns"
-                                    :key="item.id"
-                                    :label="item.cname"
-                                    :value="item.id">
-                            </el-option>
-                          </el-select>
+                    请选择所属学科(可选)
+                     <el-cascader
+                       v-model="option"
+                       :options="options"
+                     ></el-cascader>
                     </span>
-                    </el-row>
-                    <span slot="footer" class="dialog-footer">
+                        <span slot="footer" class="dialog-footer">
                         <el-button @click="cancel">算了</el-button>
                         <el-button type="primary" @click="submitForm('blogForm')">确 定</el-button>
                     </span>
-                </el-dialog>
-            </el-form>
+                    </el-dialog>
+                </el-form>
+            </el-main>
+        </el-container>
     </div>
 
 </template>
@@ -140,7 +155,7 @@
                     isFile: 0,
                     visitors: 0,
                 },
-                projectId: '',
+                projectId: '',//所属项目Id
                 markdownOption: {
                     bold: true, // 粗体
                     italic: true, // 斜体
@@ -185,8 +200,10 @@
                         { required: true, message: '请输入内容', trigger: 'blur' }
                     ],
                 },
-                dialogVisible: false,
+                dialogVisible: false,//额外表单显示
                 selectColumn: '',
+                options: [],//待选的学科
+                option: [],//选择的学科
             }
         },
         watch: {
@@ -244,7 +261,7 @@
                                 _this.columns = res.data.data.columns;
                                 _this.pushTags = res.data.data.pushTags;
                                 if (res.data.code === 200){
-                                    this.success('发布成功！');
+                                    this.$message.success('发布成功！');
                                     _this.dialogVisible = true;
                                 }
                             })
@@ -265,21 +282,27 @@
                     }
                 });
             },
+            //自动生成摘要
             getSummary(){
                 this.$axios.post('/AI/summary', this.blogForm).then(res => {
                     this.blogForm.summary = res.data.data;
                 })
             },
+            //提交文章后的额外表单提交
             submitForm() {
                 let _this = this;
-                //添加博客到分类
+                //添加文章到分类
                 if (!isNaN(_this.selectColumn)) {
                     _this.$axios.get("/column/blogtocolumn/" + _this.blogForm.id + "?columnId=" + _this.selectColumn);
                 }
-                //给博客打标签
+                //给文章打标签
                 if (_this.tags.length != 0){
                     _this.$axios.post("/tag/blogtotags/"+_this.blogForm.id, _this.tags).then(res => {
                         console.log(res.data.data);})
+                }
+                //给文章加入科目分栏
+                if (this.option != ''){
+                    this.$axios.get("/major/insert/"+this.blogForm.id+"/"+this.option[1]);
                 }
                 this.$router.replace({
                     name: "BlogDetail",
@@ -305,7 +328,9 @@
             this.$axios("/column/getcolumnbyuserid/"+userId).then((res)=> {
                 this.columns = res.data.data;
             });
-
+            this.$axios.get("/major").then(res => {
+                this.options = res.data.data;
+            });
             if (blogId){
                 //博客回显
                 this.$axios.get("/blog/" + blogId).then(res => {
@@ -314,14 +339,6 @@
                         this.blogForm = blog
                     }
                 });
-                //获取标签列表
-                // this.$axios.get("/tag/getbyblogid/" + blogId).then(res => {
-                //     this.pushTags = res.data.data;
-                // });
-                //获取分栏列表
-                // this.$axios("/column/getcolumnbyuserid/"+userId).then((res)=> {
-                //     this.columns = res.data.data;
-                // })
             }
         }
     }

@@ -4,10 +4,11 @@
             <el-header>
                 <NaviBar/>
             </el-header>
-            <el-container class="mycontainer">
-                <el-main>
-                    <div style="width: 60%; margin: 0 auto">
-                        <div style="">
+            <el-main>
+                <div  class="my-main">
+                    <div style="width: 60%; margin: 0 auto; padding: 10px 0 30px 0">
+                        <div>
+                            <!--                            页头-->
                             <el-card >
                                 <el-row>
                                     <el-col :span="8">
@@ -21,19 +22,28 @@
                                     </el-col>
                                     <el-col :span="14" :offset="1">
                                         <div style="">
-                                            <h1 style="">
-                                                # {{tag.tagName}}
-                                                <p style="display: inline; color: #606266; font-size: 20px; float: right">{{'约 '+tag.number+' 篇'}}</p>
-                                            </h1>
-
+                                            <el-link :underline="false" target="_blank" :href="attach.Foundin[0].Name"style="font-size: 35px; color: #303133">{{'# '+tag.tagName}}</el-link>
+                                            <p style="display: inline; color: #606266; font-size: 20px; float: right">约 {{tag.number == null? 0:tag.number}} 篇</p>
+                                            <div style="" v-show="attach != null">
+                                                <h5 style="color: #8f9298">相关标签</h5>
+                                                <el-tag @click="toTag(t.Name)" type="info" v-for="(t, i) in attach.Extra" style="margin: 0px 10px 5px 0px">
+                                                    <el-link :underline="false" >
+                                                        {{t.Name}}
+                                                    </el-link>
+                                                </el-tag>
+                                            </div>
                                         </div>
                                     </el-col>
                                 </el-row>
                             </el-card>
+                            <!--                            文章列表-->
                             <div style="background-color: #fdfdfe; border: 1px solid #faeaef; box-shadow: 1px 1px 10px #f8f8f8">
+                                <div v-show="page.total == 0" style="height: 400px">
+                                    <p style="text-align: center; color: #8f9298 ">暂无相关文章</p>
+                                </div>
                                 <div v-for="b in page.list">
                                     <el-row>
-                                        <div v-for="i in 5" style="border-bottom: 1px solid #efefef; height: 120px">
+                                        <div v-for="i in 5" style="border-bottom: 1px solid #efefef; height: 100%">
                                             <el-row>
                                                 <router-link :to="{name: 'BlogDetail', params:{blogId:b.id}}">
                                                     <el-col :span="18"><h2 style="margin-left: 8px;">{{b.title}}</h2></el-col>
@@ -41,28 +51,26 @@
                                                 <el-col :span="6"><p class="el-icon-view" style="margin-top: 20px; font-size: 20px; color: #9899a9">{{ b.visitors}}</p></el-col>
                                             </el-row>
                                             <el-row>
-                                                <el-col :span="18">
-                                                    <p style="margin: 2px 15px;">{{b.summary}}</p>
-                                                </el-col>
-<!--                                                <el-col :span="6">{{b.user.username}}</el-col>-->
+                                                <p style="margin: 2px 15px;">{{b.summary}}</p>
+                                                <!--                                                <el-col :span="6">{{b.user.username}}</el-col>-->
                                             </el-row>
                                         </div>
                                     </el-row>
                                 </div>
                                 <el-pagination
-                                        style="text-align: center; padding-top: 25px"
-                                        background
-                                        :hide-on-single-page="true"
-                                        @current-change="handCurrentChange"
-                                        :current-page="page.currentPage"
-                                        layout="prev, pager, next"
-                                        :page-count="page.total">
+                                  style="text-align: center; padding-top: 25px"
+                                  background
+                                  :hide-on-single-page="true"
+                                  @current-change="handCurrentChange"
+                                  :current-page="page.currentPage"
+                                  layout="prev, pager, next"
+                                  :page-count="page.total">
                                 </el-pagination>
                             </div>
                         </div>
                     </div>
-                </el-main>
-            </el-container>
+                </div>
+            </el-main>
         </el-container>
     </div>
 </template>
@@ -74,9 +82,8 @@
         components: {NaviBar},
         data(){
             return {
-                tag: {
-
-                },
+                tag: {},
+                attach: {},
                 page: {
                     list: [],
                     total: 1,
@@ -86,21 +93,44 @@
         },
         methods: {
             handCurrentChange(current){
-                this.loadPage(current)
+                this.loadPage(current);
             },
             loadPage(page){
+                let _this = this;
                 this.$axios.get("/tag/blogs/"+this.tag.id+"?page="+page).then(res => {
-                    this.page.list = res.data.data.list;
-                    this.page.total = res.data.data.total;
+                    _this.page.list = res.data.data.list;
+                    _this.page.total = res.data.data.total;
                 })
+            },
+            toTag(name){
+                this.$router.push({
+                    name: 'TagDetail',
+                    params: {
+                        tagId: null,
+                        tagName: name
+                    }
+                })
+            },
+            init(){
+                this.tag.id = this.$route.params.tagId;
+                this.tag.tagName = this.$route.params.tagName;
+                this.$axios.post("/tag", this.tag).then(res => {
+                    this.tag = res.data.data;
+                    this.$axios.get("/tag/relative/"+this.tag.tagName).then(res => {
+                        this.attach = JSON.parse(res.data.data);
+                        // console.log(this.attach);
+                    });
+                    this.loadPage(1);
+                });
+            }
+        },
+        watch :{
+            '$route'(to, from){
+                this.init();
             }
         },
         created(){
-            this.tag.id = this.$route.params.tagId;
-            this.$axios.get("/tag/id/"+this.tag.id).then(res => {
-                this.tag = res.data.data;
-            });
-            this.loadPage(1);
+            this.init();
         }
     }
 </script>
@@ -122,13 +152,14 @@
         display: table;
         content: "";
     }
-
     .clearfix:after {
         clear: both
     }
-    .mycontainer {
-        height: 100%;
-        width: 100%;
+    .el-main{
+        padding: 1px 20px;
+    }
+    .my-main {
         background-image: url("../assets/img/tagBack.jpg");
+        height: 100%;
     }
 </style>

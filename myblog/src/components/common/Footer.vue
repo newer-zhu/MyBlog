@@ -22,7 +22,7 @@
     .footer {
         height: 60px;
         background-color: rgba(1, 136, 254, 0.75);
-        margin-top: 80px;
+        margin-top: 180px;
         bottom: 0;
         position: relative;
     }

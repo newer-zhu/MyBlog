@@ -1,5 +1,6 @@
 package com.zhuhodor.myblog.common.exception;
 
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.zhuhodor.myblog.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
@@ -45,6 +46,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = IllegalArgumentException.class)
     public Result handler(IllegalArgumentException e){
         log.error("断言时异常-----------{}",e);
+        return Result.fail(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = TencentCloudSDKException.class)
+    public Result handler(TencentCloudSDKException e){
+        log.error("腾讯云服务异常-----------{}",e);
         return Result.fail(e.getMessage());
     }
 }

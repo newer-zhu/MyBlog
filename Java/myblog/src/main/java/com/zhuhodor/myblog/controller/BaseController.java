@@ -38,6 +38,9 @@ public class BaseController {
     ProjectCommentService projectCommentService;
 
     @Autowired
+    MajorService majorService;
+
+    @Autowired
     JwtUtil jwtUtil;
 
     @Autowired

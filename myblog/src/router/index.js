@@ -76,7 +76,7 @@ Vue.use(VueRouter)
       component: ProjectDetail
     },
     {
-      path: '/tag/:tagId',
+      path: '/tag/:tagId?/:tagName?',
       name: 'TagDetail',
       component: TagDetail
     }

@@ -3,7 +3,7 @@
         <el-header><Navibar/></el-header>
 
         <el-main>
-            <el-row :gutter="60">
+            <el-row :gutter="30">
                 <el-col :span="18" >
                     <div class="blogDetail">
                         <el-row>
@@ -88,39 +88,41 @@
                     </div>
                 </el-col>
                 <el-col :span="6">
-                    <div @click="drawer = !drawer" style="text-align: center">
-                        <el-avatar :src="blog.user.avatar" :size="60" />
-                        <p class="el-icon-user-solid" style="font-size: 20px; color: #303133; display: block">{{blog.user.username}}</p>
+                    <div  style="margin-left: 20px">
+                        <div @click="drawer = !drawer" style="text-align: center">
+                            <el-avatar :src="blog.user.avatar" :size="60" />
+                            <p class="el-icon-user-solid" style="font-size: 20px; color: #303133; display: block">{{blog.user.username}}</p>
+                        </div>
+                        <UserInfo :user="blog.user" :drawer.sync="drawer"></UserInfo>
+                        <div style="background-color: #faeaef; width: 100%;border-radius: 5px" >
+                            <el-link v-for="(t, i) in blog.tags" :underline="false">
+                                <router-link :to="{name: 'TagDetail', params: {tagId: t.id}}">
+                                    <el-tag
+                                      style="margin: 5px 0 5px 5px;font-size: 15px;"
+                                      :key="i"
+                                      :type="tagColor[(i+1)%5]"
+                                      :disable-transitions="true"
+                                      :hit="true"
+                                      effect="dark">
+                                        {{ t.tagName }}
+                                    </el-tag>
+                                </router-link>
+                            </el-link>
+                        </div>
+                        <router-link v-if="blog.project != null" replace :to="{name: 'ProjectDetail', params:{projectId:blog.project.id}}">
+                            <el-card shadow="hover" style="border-radius: 4px; margin-top: 5px;">
+                                <el-row>
+                                    <el-col :span="16">
+                                        <h3>{{blog.project.projectName}}</h3>
+                                        <p style="font-size: 20px; color: #409eff; display: inline" class="el-icon-star-on">{{blog.project.rates}}</p>
+                                    </el-col>
+                                    <el-col style="color: #8c939d" :span="8">
+                                        <p>{{blog.project.createAt}}</p>
+                                    </el-col>
+                                </el-row>
+                            </el-card>
+                        </router-link>
                     </div>
-                    <UserInfo :user="blog.user" :drawer.sync="drawer"></UserInfo>
-                    <div style="background-color: #faeaef; width: 100%;border-radius: 5px" >
-                        <el-link v-for="(t, i) in blog.tags" :underline="false">
-                            <router-link :to="{name: 'TagDetail', params: {tagId: t.id}}">
-                                <el-tag
-                                        style="margin: 5px 0 5px 5px;font-size: 15px;"
-                                        :key="i"
-                                        :type="tagColor[(i+1)%5]"
-                                        :disable-transitions="true"
-                                        :hit="true"
-                                        effect="dark">
-                                    {{ t.tagName }}
-                                </el-tag>
-                            </router-link>
-                        </el-link>
-                    </div>
-                    <router-link v-if="blog.project != null" replace :to="{name: 'ProjectDetail', params:{projectId:blog.project.id}}">
-                        <el-card shadow="hover" style="border-radius: 4px; margin-top: 5px;">
-                            <el-row>
-                                <el-col :span="16">
-                                    <h3>{{blog.project.projectName}}</h3>
-                                    <p style="font-size: 20px; color: #409eff; display: inline" class="el-icon-star-on">{{blog.project.rates}}</p>
-                                </el-col>
-                                <el-col style="color: #8c939d" :span="8">
-                                    <p>{{blog.project.createAt}}</p>
-                                </el-col>
-                            </el-row>
-                        </el-card>
-                    </router-link>
                 </el-col>
             </el-row>
         </el-main>

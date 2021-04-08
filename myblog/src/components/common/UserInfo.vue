@@ -17,20 +17,20 @@
                 </div>
                 <el-row>
                     <el-col :span="8" :offset="2">
-                        <label style="color: indigo;font-weight: bold">大学</label><el-divider direction="vertical"></el-divider>
-                        <p style="display: inline-block">{{user.college}}</p>
+                        <label class="first-text">大学</label><el-divider direction="vertical"></el-divider>
+                        <p class="subText">{{user.college}}</p>
                     </el-col>
                     <el-col :span="8">
-                        <label style="color: indigo; font-weight: bold">专业</label><el-divider direction="vertical"></el-divider>
-                        <p style="display: inline-block">{{user.major}}</p>
+                        <label class="first-text">专业</label><el-divider direction="vertical"></el-divider>
+                        <p class="subText">{{user.major}}</p>
                     </el-col>
                     <el-col :span="6">
-                        <label style="color: indigo; font-weight: bold">年级</label><el-divider direction="vertical"></el-divider>
-                        <p style="display: inline-block">{{user.grade}}</p>
+                        <label class="first-text">年级</label><el-divider direction="vertical"></el-divider>
+                        <p class="subText">{{user.grade}}</p>
                     </el-col>
                 </el-row>
                 <div style="text-align: center">
-                    <p class="el-icon-message" style="font-size: 20px; color: #282c34">{{'邮箱： ' + user.email}}</p>
+                    <p class="el-icon-message" style="font-size: 20px; color: #020209">{{'邮箱： ' + user.email}}</p>
                 </div>
             </div>
         </el-drawer>
@@ -64,11 +64,21 @@
     .drawer{
         height: 100%;
         -moz-background-size:100% 100%; background-size:100% 100%;
-        /*background-image: url("../../assets/img/green.jpg");*/
+        background-image: url("../../assets/img/userInfo.jpg");
     }
     .avatar{
         margin: 0 auto;
         text-align: center;
         padding: 12px;
+    }
+    .subText{
+        display: inline-block;
+        font-weight: 600;
+        font-size: 16px;
+        color: rgba(0, 0, 27, 0.93);
+    }
+    .first-text{
+        color: #1717a1;
+        font-weight: bold
     }
 </style>

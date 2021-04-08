@@ -70,25 +70,21 @@
                             <!--评论侧边-->
                             <el-col :span="6">
                                 <h3 class="el-icon-s-comment" style="font-size: 25px; color: #56595f; font-weight: bold">项目评论</h3>
-                                <div style="">
-<!--                                    <div v-for="(co, i) in project.comments">-->
-
-<!--                                        <el-link style="color: #606266; font-size: 18px">{{co.user.username}}</el-link> <div style="font-size: 12px; color: #8f9298">{{co.time}}</div>-->
-<!--                                        <p style="color: #303133">{{co.comment}}</p>-->
-                                    <div class="infinite-list"
-                                         v-infinite-scroll="load"
-                                         style="overflow: auto;">
-                                        <div class="infinite-list-item" v-for="p in 10"
-                                          style="border-bottom: 2px solid palevioletred;">
-                                            <div>
-                                                <el-link style="color: #606266; font-size: 16px">用户拉拉</el-link> <div style="font-size: 12px; color: #8f9298">2020-10-30 11:03:01</div>
-                                                <p style="color: #303133">牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛你你你你你你你</p> <i class="el-icon-caret-top"></i>
-                                            </div>
-                                        </div>
+                                    <div v-for="(co, i) in project.comments">
+                                        <el-link style="color: #606266; font-size: 18px">{{co.user.username}}</el-link> <div style="font-size: 12px; color: #8f9298">{{co.time}}</div>
+                                        <p style="color: #303133">{{co.comment}}</p>
                                     </div>
-
-
-                                </div>
+<!--                                <div class="infinite-list"-->
+<!--                                     v-infinite-scroll="load"-->
+<!--                                     style="overflow: auto;">-->
+<!--                                    <div class="infinite-list-item" v-for="p in 10"-->
+<!--                                      style="border-bottom: 2px solid palevioletred;">-->
+<!--                                        <div>-->
+<!--                                            <el-link style="color: #606266; font-size: 16px">用户拉拉</el-link> <div style="font-size: 12px; color: #8f9298">2020-10-30 11:03:01</div>-->
+<!--                                            <p style="color: #303133">牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛你你你你你你你</p> <i class="el-icon-caret-top"></i>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
                             </el-col>
                             <el-col :span="18" >
                                 <el-row>
@@ -195,7 +191,7 @@
                                                 {{data.day.split('-').slice(1).join('-')}}
                                             </div>
                                             <div v-show="calendar.blogTime.indexOf(data.day.toString()) != -1">
-                                                <el-tag style="font-weight: bold; font-size: 18px" type="danger">{{calendar.timeMap[data.day.toString()]}}</el-tag>
+                                                <p style="color: rgba(156,44,37,0.85); font-weight: bold">{{calendar.timeMap[data.day.toString()]}} 篇</p>
                                             </div>
                                         </template>
                                     </el-calendar>
@@ -309,6 +305,7 @@
                     </el-col>
                 </el-row>
             </el-main>
+<!--            评论面板-->
             <el-dialog style="width: 1000px; text-align: center; margin: 0 auto" title="个人评论" :visible.sync="isComment">
                 <el-form >
                     <el-form-item>

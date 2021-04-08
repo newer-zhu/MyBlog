@@ -12,6 +12,7 @@ import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.nlp.v20190408.NlpClient;
 import com.tencentcloudapi.nlp.v20190408.models.*;
 import com.zhuhodor.myblog.vo.EntityVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;;import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +22,7 @@ import java.util.List;
  * 文本分析类
  */
 @Component
+@Slf4j
 public class TextAnalysis {
     private static Credential cred;
     private static HttpProfile httpProfile;
@@ -89,17 +91,16 @@ public class TextAnalysis {
     }
 
     //实体信息查询
-    public static void wordRelation(String tag){
+    public static Object wordRelation(String tag){
         DescribeEntityRequest request = new DescribeEntityRequest();
         request.setEntityName(tag);
         try {
             DescribeEntityResponse response = client.DescribeEntity(request);
-            JSONObject jsonObject = JSONUtil.parseObj(response);
-            JSONObject json = jsonObject.getJSONObject("Content");
-            System.out.println(json);
-            System.out.println(DescribeEntityResponse.toJsonString(response));
+            JSONObject object = new JSONObject(response);
+            return object.get("Content");
         } catch (TencentCloudSDKException e) {
-            e.printStackTrace();
+            log.warn("本次查询无返回结果，请尝试其他输入");
+            return null;
         }
     }
 }
