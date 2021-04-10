@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ser.Serializers;
 import com.zhuhodor.myblog.common.Result;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 学科相关控制器
+ */
 @RestController
 @RequestMapping("/major")
 public class MajorController extends BaseController {
@@ -24,5 +27,13 @@ public class MajorController extends BaseController {
             return Result.success(null);
         }
         return null;
+    }
+
+    /**
+     * 热门学科
+     */
+    @GetMapping("/top")
+    public Result top(){
+        return Result.success(majorService.topMajors());
     }
 }

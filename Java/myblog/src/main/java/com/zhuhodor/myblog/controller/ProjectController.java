@@ -307,6 +307,12 @@ public class ProjectController extends BaseController{
         return Result.success(null);
     }
 
+    /**
+     * 有无权限编辑
+     * @param projectId
+     * @param userId
+     * @return
+     */
     @GetMapping("/editable/{projectId}/{userId}")
     public Result editable(@PathVariable("projectId") String projectId, @PathVariable("userId") String userId){
         return Result.success(projectService.editable(projectId, userId));

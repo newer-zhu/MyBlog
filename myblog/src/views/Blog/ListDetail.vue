@@ -1,16 +1,20 @@
 <template>
     <div>
         <div style="padding-bottom: 10px">
-            <el-row>
+            <el-row gutter="90">
                 <el-col :span="2">
                     <el-button type="primary" v-if="!isShowDelCol" @click="changeShowDelCol" class="el-icon-delete">管理</el-button>
                     <el-button type="info" class="el-icon-circle-close" v-else @click="changeShowDelCol">取消</el-button>
                 </el-col>
-                <el-col :span="20" :offset="2">
+                <el-col :span="20">
+                    <el-image :src="require('../../assets/img/longback.png')" style="height: 40px; width: 640px; border-radius: 2px">
+                    </el-image>
                 </el-col>
             </el-row>
-
-
+        </div>
+        <div v-show="page.blogs.length == 0">
+            <el-image :src="require('../../assets/img/empty.png')" class="empty">
+            </el-image>
         </div>
         <div  v-for="(card,index) in this.page.blogs" style="padding-bottom: 1px;">
             <el-card shadow="hover" style="height: 125px;  border-color: #e3effc">

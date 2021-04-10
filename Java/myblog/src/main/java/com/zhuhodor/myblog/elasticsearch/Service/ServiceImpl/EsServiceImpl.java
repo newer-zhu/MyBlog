@@ -143,7 +143,7 @@ public class EsServiceImpl implements EsService {
                 pro.setId((Integer) sourceAsMap.get("id"));
                 pro.setProjectUser(userService.findUserById((Integer) sourceAsMap.get("startUser")));
                 pro.setCreateAt(new SimpleDateFormat("yyyy-MM-dd").parse((String) sourceAsMap.get("createAt")));
-                pro.setRates((Float) sourceAsMap.get("rates"));
+                pro.setRates(Float.valueOf(String.valueOf(sourceAsMap.get("rates"))));
                 resPros.add(pro);
             }
         } catch (Exception e) {

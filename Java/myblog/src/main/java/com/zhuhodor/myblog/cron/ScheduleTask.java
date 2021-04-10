@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.Entity.Tag;
 import com.zhuhodor.myblog.service.BlogService;
+import com.zhuhodor.myblog.service.MajorService;
 import com.zhuhodor.myblog.service.TagService;
 import com.zhuhodor.myblog.util.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class ScheduleTask {
     BlogService blogService;
     @Autowired
     TagService tagService;
+    @Autowired
+    MajorService majorService;
 
     /**
      * 定时更新文章浏览数
@@ -58,6 +61,20 @@ public class ScheduleTask {
             t.setHeat(Integer.valueOf(redisUtils.hget("tag_"+t.getId(), "heat")));
             t.setNumber(Integer.valueOf(redisUtils.hget("tag_"+t.getId(), "number")));
             tagService.updateById(t);
+        });
+    }
+
+    /**
+     * 持久化学科热度
+     */
+    @Scheduled(cron = "0 0 0/2 * * ?")
+    public void persistMajor(){
+        List<Integer> allId = majorService.findAllId();
+        allId.forEach(id -> {
+            String pop = redisUtils.hget("major", String.valueOf(id));
+            if (pop != null){
+                majorService.updatePopular(String.valueOf(id), pop);
+            }
         });
     }
 }

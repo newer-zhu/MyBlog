@@ -64,6 +64,7 @@ public class WebSocketController{
             clients.put(userId, session);
             log.info("有新连接加入：{}，当前连接为：{}", userId, onlineCount);
             List<RequestVo> requests = projectService.findRequestsByUserId(userId);
+            System.out.println(requests.get(0));
             this.sendMessage(userId, JSONUtil.toJsonStr(requests));
         }
     }

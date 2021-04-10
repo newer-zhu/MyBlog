@@ -3,45 +3,47 @@
         <div>
             <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" background-color="#409dfe"
                      text-color="#fff" active-text-color="#ffd04b">
-                <el-menu-item index="1" style="margin-left: 550px">首页</el-menu-item>
-                <el-submenu index="2">
-                    <template slot="title">发布</template>
-                    <el-menu-item @click="writeBlog" index="2-1">写笔记</el-menu-item>
+                <el-menu-item index="1" style="margin-left: 550px; width: 100px"><div class="el-icon-s-home">首页</div></el-menu-item>
+                <el-submenu style="width: 100px" index="2">
+                    <template slot="title"><div class="el-icon-thumb">发布</div></template>
+                    <el-menu-item @click="writeBlog" index="2-1"><div class="el-icon-edit">写笔记</div></el-menu-item>
                     <router-link :to="{name: 'StartProject'}">
-                        <el-menu-item index="2-2">发起项目</el-menu-item>
+                        <el-menu-item index="2-2"><div class="el-icon-edit-outline" >发起项目</div></el-menu-item>
                     </router-link>
                 </el-submenu>
-                <el-menu-item @click="connect" index="3" style="margin-bottom: 0px">
-                    <el-badge v-if="requests.requestMessages.length != 0" :value="requests.requestMessages.length">
-                        <div style="line-height: 30px">
-                            消息中心
-                        </div>
-                    </el-badge>
-                    <div v-else>
-                        消息中心
+                <el-menu-item @click="connect" index="3" style="margin-bottom: 0px; width: 100px">
+                    <div v-if="requests.requestMessages.length != 0" class="el-icon-message" style="line-height: 30px">
+                        <el-badge  :value="requests.requestMessages.length">
+                            <div style="margin-bottom: 3px">消息</div>
+                        </el-badge>
+                    </div>
+                    <div class="el-icon-message" v-else>
+                        消息
                     </div>
                 </el-menu-item>
-                <el-menu-item index="4" @click="drawer = !drawer">个人中心</el-menu-item>
-                <el-menu-item index="6" style="float: right; right: 50px" @click="logOut">退出</el-menu-item>
+                <el-menu-item index="4" style="width: 100px" @click="drawer = !drawer"><div class="el-icon-user">个人</div></el-menu-item>
+                <el-menu-item index="6" style="float: right; right: 50px;width: 100px;" @click="logOut"><div class="el-icon-s-promotion">退出</div></el-menu-item>
             </el-menu>
             <el-drawer
                     :visible.sync="message"
-                    size="30%"
+                    size="25%"
                     direction="ltr"
                     :with-header="false"
             >
-                <div>
-                    <div v-show="requests.requestMessages.length == 0">
-                        <p style="color: #474747;font-size: 20px; text-align: center">暂时还没有消息哦</p>
-                    </div>
-                    <div v-for="(r, i) in requests.requestMessages" :key="r.id">
-                        <el-card>
-                            <p>{{'"'+r.username+'"' + "申请成为项目:《"+r.projectName+"》的贡献者"}}</p>
-                            <div style="float: right; margin-bottom: 3px">
-                                <el-button size="small" @click="deal(r.projectId, r.contributorId, 1, i)" icon="el-icon-check" type="primary">同意</el-button>
-                                <el-button size="small" @click="deal(r.projectId, r.contributorId, 0, i)" icon="el-icon-close" type="danger">拒绝</el-button>
-                            </div>
-                        </el-card>
+                <div class="message">
+                    <div >
+                        <div v-show="requests.requestMessages.length == 0">
+                            <p style="color: #f7f5f6;font-size: 20px; text-align: center">暂时还没有消息哦</p>
+                        </div>
+                        <div v-for="(r, i) in requests.requestMessages" :key="r.id">
+                            <el-card>
+                                <p>{{'"'+r.username+'"' + "申请成为项目:《"+r.projectName+"》的贡献者"}}</p>
+                                <div style="float: right; margin-bottom: 3px">
+                                    <el-button size="small" @click="deal(r.projectId, r.contributorId, 1, i)" icon="el-icon-check" type="primary">同意</el-button>
+                                    <el-button size="small" @click="deal(r.projectId, r.contributorId, 0, i)" icon="el-icon-close" type="danger">拒绝</el-button>
+                                </div>
+                            </el-card>
+                        </div>
                     </div>
                 </div>
             </el-drawer>
@@ -112,6 +114,7 @@
                     };
                     that.global.ws.onmessage = e => {
                         let reqs = JSON.parse(e.data);
+                        console.log(reqs);
                         for (let r in reqs){
                             reqs[r].id = this.requests.nextId++;
                             this.requests.requestMessages.push(reqs[r]);
@@ -120,10 +123,6 @@
                     that.global.ws.onclose = function () {
                         // 关闭 websocket
                         console.log("连接已关闭...");
-                        //断线重新连接
-                        setTimeout(() => {
-                            that.localSocket();
-                        }, 2000);
                     };
                 } else {
                     // 浏览器不支持 WebSocket
@@ -148,7 +147,7 @@
             deal(projectId,contributorId,res, index){
                 this.$axios.get("/project/deal/"+contributorId+"/"+projectId+"?res="+res);
                 this.requests.requestMessages.splice(index, 1);
-                console.log(this.requests.requestMessages);
+                // console.log(this.requests.requestMessages);
             }
         },
         created(){
@@ -169,5 +168,16 @@
         margin: 0 auto;
         text-align: center;
         padding: 12px;
+    }
+    .message{
+        background-image: url("../../assets/img/messageBack.jpg");
+        /*-moz-background-size:100% 100%; background-size:100% 100%;*/
+        height: 100%;
+    }
+    .el-menu--horizontal>.el-submenu .el-submenu__icon-arrow{
+        margin-left: 25px;
+        position: static;
+        vertical-align: middle;
+        margin-top: -3px;
     }
 </style>

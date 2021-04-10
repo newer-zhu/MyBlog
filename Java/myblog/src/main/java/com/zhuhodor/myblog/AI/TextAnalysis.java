@@ -103,4 +103,19 @@ public class TextAnalysis {
             return null;
         }
     }
+
+    //相似词
+    public static String[] similarWords(String text){
+        SimilarWordsRequest req = new SimilarWordsRequest();
+        req.setText(text);
+        req.setWordNumber(8L);
+        try {
+            SimilarWordsResponse resp = client.SimilarWords(req);
+            String[] similarWords = resp.getSimilarWords();
+            return similarWords;
+        } catch (TencentCloudSDKException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

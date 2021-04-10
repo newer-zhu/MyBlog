@@ -11,12 +11,17 @@
             <el-row>
                 <div>
                     <h3 class="el-icon-search" style="padding-left: 10%; font-weight: bold; color: rgba(133,72,66,0.99)">热搜词榜</h3>
-                    <div @click="searchHeat(w.value)" style="padding-left: 50px" v-for="(w, i) in hotWords">
+                    <div @click="searchHeat(w.value)" style="padding-left: 50px; cursor: pointer" v-for="(w, i) in hotWords">
                         <el-row>
-                            <el-col :span="16" >
-                                <p style="font-size: 17px">{{w.value}}</p>
+                            <el-col :span="15" >
+                                <p class="hot_search_list">{{w.value}}</p>
                             </el-col>
-                            <el-col :span="4"><el-tag style="margin-top: 10px">{{Math.round(w.score * 100) / 100}}</el-tag></el-col>
+                            <el-col :span="5">
+                                <div style="margin-top: 30px">
+                                    <img style="height: 15px; width: 15px;" :src="require('../../assets/icon/hot.png')">
+                                    <div style="color:#ff3c41; display: inline; margin-left: 4px;">{{Math.round(w.score * 100) / 100}}</div>
+                                </div>
+                            </el-col>
                         </el-row>
                         <div class="link-top"></div>
                     </div>
@@ -65,5 +70,12 @@
         width: 90%;
         height: 1px;
         border-top: solid #ACC0D8 1px;
+    }
+</style>
+
+<style>
+    .hot_search_list{
+        font-size: 17px;
+        margin: 20px 0px 5px 15px
     }
 </style>

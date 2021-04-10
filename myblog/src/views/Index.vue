@@ -2,12 +2,6 @@
   <div>
     <el-container>
       <el-header style="height: 5%; ">
-<!--        <el-image :src="headImg" style="height: 150px;">-->
-<!--          <div slot="placeholder" class="image-slot">-->
-<!--            加载中<span class="dot">...</span>-->
-<!--          </div>-->
-<!--        </el-image>-->
-<!--        <div class="line"></div>-->
         <Navibar></Navibar>
       </el-header>
 
@@ -29,7 +23,7 @@
                 <!--                                右侧列表-->
                 <el-col :span="8">
                   <div style="padding-bottom: 3px">
-                    <el-card shadow="never">
+                    <el-card shadow="never" style="">
                       <div slot="header" class="clearfix">
                         <span><i style="font-size: 20px" class="el-icon-notebook-2"></i> 文章分类</span>
                         <el-button @click="createCol" style="padding: 3px; margin-left: 100px; font-size: 16px"
@@ -41,7 +35,7 @@
                         <el-button v-else @click="changeDelCol" style="float: right; padding: 3px 0" type="text">取消
                         </el-button>
                       </div>
-                      <div>
+                      <div style="">
                         <el-row type="flex" style="line-height: 1px; height: 15px">
                           <el-col :span="18">
                             <router-link :to="{name: 'ListDetail', params: {columnId: -1}}">
@@ -63,7 +57,7 @@
                             </el-button>
                           </el-col>
                         </el-row>
-                        <el-divider/>
+                        <el-divider style="margin-top: 2px;"/>
                       </div>
                     </el-card>
                   </div>
@@ -97,13 +91,13 @@
                 <el-backtop :right="320" :bottom="50">
                   <div
                     style="{
-                                    height: 100%;
-                                    width: 100%;
-                                    background-color: #f2f5f6;
-                                    box-shadow: 0 0 5px rgba(0,0,0, .12);
-                                    text-align: center;
-                                    line-height: 40px;
-                                    color: #fa0e17;
+                              height: 100%;
+                              width: 100%;
+                              background-color: #f2f5f6;
+                              box-shadow: 0 0 6px rgba(0,0,0, .12);
+                              text-align: center;
+                              line-height: 40px;
+                              color: #1989fa;
                                   }"
                   >
                     UP
@@ -148,32 +142,8 @@
         headImg: require('../assets/img/head.png'),
         //轮流榜
         config: {
-          data: [
-            {
-              name: '软件工程',
-              value: 55
-            },
-            {
-              name: '金融工程',
-              value: 120
-            },
-            {
-              name: '机器人工程',
-              value: 78
-            },
-            {
-              name: '高能物理',
-              value: 66
-            },
-            {
-              name: '计算机科学与技术',
-              value: 80
-            },
-            {
-              name: '土木工程',
-              value: 68
-            }
-          ]
+          data: [],
+          unit: '热度'
         },
         userId: 0,
         columns: [],
@@ -292,10 +262,21 @@
           this.columns = res.data.data;
         });
       },
-
+      loadMajors(){
+        const { config } = this;
+        this.$axios.get("/major/top").then(res => {
+          let majors = res.data.data;
+          for (let i in majors){
+            let m = {name: majors[i].label, value: majors[i].popular};
+            this.config.data.push(m);
+            this.config= {...this.config}
+          }
+        })
+      }
     },
     created() {
       const _this = this;
+      this.loadMajors();
       this.userId = this.$store.getters.getUser.id;
       this.isShowList = this.$route.path === '/home';
       console.log(this.$route.path);
@@ -327,7 +308,13 @@
     line-height: 150px;
     margin: 0;
   }
-
+  .el-divider--horizontal{
+    margin-top: 24px;
+    margin-bottom: 12px;
+    height: 1px;
+    display: block;
+    width: 100%;
+  }
   .el-carousel__item h3 {
     color: #475669;
     font-size: 14px;
@@ -335,7 +322,6 @@
     line-height: 200px;
     margin: 0;
   }
-
   .el-carousel__item:nth-child(2n) {
     background-color: #99a9bf;
   }

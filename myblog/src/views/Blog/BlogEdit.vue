@@ -12,12 +12,14 @@
                             <el-row style="margin-left: 25px">
                                 <el-col :span="20">
                                     <el-form-item label="标题" prop="title">
-                                        <el-input  v-model = "blogForm.title"></el-input>
+                                        <el-input placeholder="请输入标题" v-model = "blogForm.title"></el-input>
                                     </el-form-item>
                                     <el-row>
                                         <el-col :span="22">
                                             <el-form-item label="摘要" prop="summary">
-                                                <el-input type="textarea" autosize
+                                                <el-input type="textarea"
+                                                          placeholder="请输入摘要"
+                                                          :autosize="{ minRows: 2, maxRows: 4}"
                                                           v-model="blogForm.summary"></el-input>
                                             </el-form-item>
                                         </el-col>

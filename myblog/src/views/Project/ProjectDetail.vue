@@ -50,7 +50,7 @@
                 </el-row>
                 <el-divider/>
                 <!--            主体-->
-                <el-row>
+                <el-row gutter="30">
                     <el-col :span="16">
                         <el-row>
                             <div v-if="project.pictures.length == 0 && userId == project.startUser">
@@ -176,7 +176,7 @@
                             </el-col>
                         </el-row>
                     </el-col>
-                    <el-col :span="7" :offset="1">
+                    <el-col :span="7" >
                         <el-collapse v-model="activeItem">
                             <el-collapse-item v-for="(item, index) in project.overview" :title="item.title" :name="index">
                                 <div style="font-size: 14px">{{item.content}}</div>
@@ -385,9 +385,6 @@
             },
         },
         methods: {
-            load(){
-
-            },
             loadList(current){
                 this.$axios.get("/project/blogs/"+this.project.id+"?page="+current).then(res => {
                     if (res.data.data.total != 0){
@@ -507,12 +504,36 @@
                     this.isComment = false;
                 });
             },
+            localSocket() {
+                let that = this;
+                if ("WebSocket" in window) {
+                    let ws = new WebSocket("ws://localhost:8081/pro/"+that.$store.getters.getUser.id);
+                    that.global.setWs(ws);
+                    that.global.ws.onopen = function() {
+                        console.log('websocket连接成功');
+                    };
+                    that.global.ws.onclose = function () {
+                        // 关闭 websocket
+                        console.log("连接已关闭...");
+                        //断线重新连接
+                        setTimeout(() => {
+                            that.localSocket();
+                        }, 2000);
+                    };
+                } else {
+                    // 浏览器不支持 WebSocket
+                    console.log("您的浏览器不支持 WebSocket!");
+                    this.openNotificationWithIcon('error', '浏览器', '您的浏览器不支持显示消息请更换', 1,1)
+                }
+            },
             request(){
                 let _this = this;
                 this.$axios.get("/project/request/"+this.userId+"/"+this.project.id).then(res => {
                     _this.$message.success(res.data.msg);
                     if (res.data.code == 200 && this.global.ws.readyState == 1){
                         _this.global.ws.send(this.project.id);
+                    }else {
+                        console.log("未连接websocket");
                     }
                 });
             },

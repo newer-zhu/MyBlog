@@ -1,12 +1,20 @@
 <template>
     <div>
-        <div v-if="this.page.projects.length === 0">
-            <el-image :src="nothing">
+        <el-row gutter="90">
+            <el-col :span="2">
+                <div style="padding-bottom: 10px">
+                    <el-button type="primary" v-if="!isShowDelPro" @click="changeIsShowDelPro" class="el-icon-delete">管理</el-button>
+                    <el-button type="info" class="el-icon-circle-close" v-else @click="changeIsShowDelPro">取消</el-button>
+                </div>
+            </el-col>
+            <el-col :span="20">
+                <el-image :src="require('../../assets/img/longback.png')" style="height: 40px; width: 640px; border-radius: 2px">
+                </el-image>
+            </el-col>
+        </el-row>
+        <div v-show="this.page.projects.length === 0">
+            <el-image :src="nothing" class="empty">
             </el-image>
-        </div>
-        <div style="padding-bottom: 10px">
-            <el-button type="primary" v-if="!isShowDelPro" @click="changeIsShowDelPro" class="el-icon-delete">管理</el-button>
-            <el-button type="info" class="el-icon-circle-close" v-else @click="changeIsShowDelPro">取消</el-button>
         </div>
         <div v-for="(pro,index) in this.page.projects" style="padding-bottom: 5px;">
             <el-card shadow="hover" style="height: 125px;  border-color: #8c939d">
@@ -42,7 +50,7 @@
         name: "ProjectList",
         data(){
             return {
-                nothing: require("../../assets/img/nothing.webp"),
+                nothing: require("../../assets/img/empty.png"),
                 page: {
                     projects: [],
                     total: 1,
@@ -118,6 +126,11 @@
     }
 </script>
 
+<style>
+    .empty{
+        height: 550px;
+    }
+</style>
 <style scoped>
 
 </style>

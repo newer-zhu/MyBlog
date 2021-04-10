@@ -1,6 +1,11 @@
 package com.zhuhodor.myblog.test;
 
+import com.zhuhodor.myblog.Entity.Project;
 import com.zhuhodor.myblog.Entity.Tag;
+import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
+import com.zhuhodor.myblog.elasticsearch.Service.EsProjectRepository;
+import com.zhuhodor.myblog.service.ProjectService;
+import net.bytebuddy.asm.Advice;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -15,17 +20,34 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EsTest {
     @Autowired
     private RestHighLevelClient restHighLevelClient;
+
+    @Autowired
+    ProjectService projectService;
+    @Autowired
+    EsProjectRepository esProjectRepository;
+
+    @Test
+    public void testBulk(){
+        List<Project> list = projectService.list();
+        list.forEach(l -> {
+            EsProject esProject = new EsProject();
+            BeanUtils.copyProperties(l, esProject);
+            esProjectRepository.save(esProject);
+        });
+    }
 
 
     @Test

@@ -23,7 +23,10 @@
                                     <el-col :span="14" :offset="1">
                                         <div style="">
                                             <el-link :underline="false" target="_blank" :href="attach.Foundin[0].Name"style="font-size: 35px; color: #303133">{{'# '+tag.tagName}}</el-link>
-                                            <p style="display: inline; color: #606266; font-size: 20px; float: right">约 {{tag.number == null? 0:tag.number}} 篇</p>
+<!--                                            <p style="display: inline; color: #606266; font-size: 20px; float: right">约 {{tag.number == null? 0:tag.number}} 篇</p>-->
+                                            <div style="display: inline; color: #606266; font-size: 20px; margin: 0px 0px 5px 15px">{{attach.英文名[0].Name}}</div>
+                                            <p style="display: inline; color: #606266; font-size: 16px; float: right">热度：{{attach.Popular[0].Name}}</p>
+<!--                                            <div v-show="attach.解释 != null" style="color: #8f9298; margin-top: 5px">{{attach.解释[0].Name}}</div>-->
                                             <div style="" v-show="attach != null">
                                                 <h5 style="color: #8f9298">相关标签</h5>
                                                 <el-tag @click="toTag(t.Name)" type="info" v-for="(t, i) in attach.Extra" style="margin: 0px 10px 5px 0px">
@@ -118,7 +121,7 @@
                     this.tag = res.data.data;
                     this.$axios.get("/tag/relative/"+this.tag.tagName).then(res => {
                         this.attach = JSON.parse(res.data.data);
-                        // console.log(this.attach);
+                        console.log(this.attach);
                     });
                     this.loadPage(1);
                 });
@@ -160,6 +163,7 @@
     }
     .my-main {
         background-image: url("../assets/img/tagBack.jpg");
+        background-attachment: fixed;
         height: 100%;
     }
 </style>
