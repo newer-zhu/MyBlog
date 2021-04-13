@@ -3,9 +3,13 @@
         <el-aside class="aside" width="350px">
             <el-row>
                 <el-col :span="23" :offset="1">
-                    <el-input placeholder="请输入搜索内容" v-model="querystr">
+                    <el-autocomplete placeholder="请输入搜索内容" v-model="querystr" @keyup.enter.native="search"
+                                     :fetch-suggestions="querySearch"
+                                     @select="handleSelect"
+                                     class="search_box"
+                                     :trigger-on-focus="false">
                         <el-button @click="search"  style="color: #409EFF" slot="append" icon="el-icon-search"></el-button>
-                    </el-input>
+                    </el-autocomplete>
                 </el-col>
             </el-row>
             <el-row>
@@ -58,6 +62,24 @@
             },
             searchHeat(word){
                 this.querystr = word;
+                this.search();
+            },
+            //单词联想
+            querySearch(queryString, cb){
+                let sug = [];
+                if (queryString){
+                    this.$axios.get("/AI/similar/"+queryString).then(res => {
+                        let re = res.data.data;
+                        for (let i in re){
+                            let v = {value: re[i]};
+                            sug.push(v);
+                        };
+                    });
+                    cb(sug);
+                }
+            },
+            handleSelect(item) {
+                this.querystr = item.value;
                 this.search();
             }
         }

@@ -4,7 +4,6 @@
       <el-header style="height: 5%; ">
         <Navibar></Navibar>
       </el-header>
-
       <el-container class="main">
         <el-main>
           <el-row>
@@ -21,73 +20,109 @@
                   <router-view name="projectList"/>
                 </el-col>
                 <!--                                右侧列表-->
-                <el-col :span="8">
-                  <div style="padding-bottom: 3px">
-                    <el-card shadow="never" style="">
-                      <div slot="header" class="clearfix">
-                        <span><i style="font-size: 20px" class="el-icon-notebook-2"></i> 文章分类</span>
-                        <el-button @click="createCol" style="padding: 3px; margin-left: 100px; font-size: 16px"
-                                   class="el-icon-document-add" type="text">新建
-                        </el-button>
-                        <el-button v-if="!isShowDelCol" @click="changeDelCol" style="float: right; padding: 3px 0; font-size: 16px"
-                                   class="el-icon-delete" type="text">删除
-                        </el-button>
-                        <el-button v-else @click="changeDelCol" style="float: right; padding: 3px 0" type="text">取消
-                        </el-button>
-                      </div>
-                      <div style="">
-                        <el-row type="flex" style="line-height: 1px; height: 15px">
-                          <el-col :span="18">
-                            <router-link :to="{name: 'ListDetail', params: {columnId: -1}}">
-                              <h2 style="color: rgba(35,133,124,0.99)">{{"我的文章"}}</h2>
-                            </router-link>
-                          </el-col>
-                        </el-row>
-                        <el-divider/>
-                      </div>
-                      <div v-for="(column, index) in this.columns" :key="column.c_name" class="text item">
-                        <el-row type="flex" style="line-height: 1px; height: 15px">
-                          <el-col :span="18">
-                            <router-link :to="{name: 'ListDetail', params: {columnId: column.id}}">
-                              <h2 style="color: #3449bf">{{column.cname+' ('+column.count+')'}}</h2>
-                            </router-link>
-                          </el-col>
-                          <el-col :span="6">
-                            <el-button type="danger" size="small" @click="delCol(column.id)" v-show="isShowDelCol">删除
-                            </el-button>
-                          </el-col>
-                        </el-row>
-                        <el-divider style="margin-top: 2px;"/>
-                      </div>
-                    </el-card>
-                  </div>
-
-                  <div style="padding-bottom: 3px">
-                    <router-link :to="{path: '/home/projectList/'+this.userId+'/n'}">
-                      <el-card shadow="hover">
-                        <div>
-                          <span><i style="font-size: 20px" class="el-icon-folder-opened"></i> 项目集</span>
-                        </div>
-                      </el-card>
-                    </router-link>
-                  </div>
-
-                  <div>
-                    <router-link :to="{path: '/home/projectList/'+this.userId+'/y'}">
-                      <el-card shadow="hover">
-                        <div>
-                          <span><i style="font-size: 20px" class="el-icon-collection"></i> 收藏项目</span>
-                        </div>
-                      </el-card>
-                    </router-link>
-                  </div>
-                </el-col>
                 <transition name="el-fade-in-linear">
-                  <el-col :span="16" v-if="$route.path == '/home'">
-                    <h2 style="margin: 1px 0px 0px 10px" class="el-icon-s-order">排行榜</h2>
-                    <dv-scroll-ranking-board :config="config" class="range-flow"/>
+                  <el-col :span="8">
+                    <div style="padding-bottom: 3px">
+                      <el-card shadow="never" style="">
+                        <div slot="header" class="clearfix">
+                          <span><i style="font-size: 20px" class="el-icon-notebook-2"></i> 文章分类</span>
+                          <el-button @click="createCol" style="padding: 3px; margin-left: 100px; font-size: 16px"
+                                     class="el-icon-document-add" type="text">新建
+                          </el-button>
+                          <el-button v-if="!isShowDelCol" @click="changeDelCol" style="float: right; padding: 3px 0; font-size: 16px"
+                                     class="el-icon-delete" type="text">删除
+                          </el-button>
+                          <el-button v-else @click="changeDelCol" style="float: right; padding: 3px 0" type="text">取消
+                          </el-button>
+                        </div>
+                        <div style="">
+                          <el-row type="flex" style="line-height: 1px; height: 15px">
+                            <el-col :span="18">
+                              <router-link :to="{name: 'ListDetail', params: {columnId: -1}}">
+                                <h2 style="color: rgba(35,133,124,0.99)">{{"我的文章"}}</h2>
+                              </router-link>
+                            </el-col>
+                          </el-row>
+                          <el-divider/>
+                        </div>
+                        <div v-for="(column, index) in this.columns" :key="column.c_name" class="text item">
+                          <el-row type="flex" style="line-height: 1px; height: 15px">
+                            <el-col :span="18">
+                              <router-link :to="{name: 'ListDetail', params: {columnId: column.id}}">
+                                <h2 style="color: #3449bf">{{column.cname+' ('+column.count+')'}}</h2>
+                              </router-link>
+                            </el-col>
+                            <el-col :span="6">
+                              <el-button type="danger" size="small" @click="delCol(column.id)" v-show="isShowDelCol">删除
+                              </el-button>
+                            </el-col>
+                          </el-row>
+                          <el-divider style="margin-top: 2px;"/>
+                        </div>
+                      </el-card>
+                    </div>
+
+                    <div style="padding-bottom: 3px">
+                      <router-link :to="{path: '/home/projectList/'+this.userId+'/n'}">
+                        <el-card shadow="hover">
+                          <div>
+                            <span><i style="font-size: 20px" class="el-icon-folder-opened"></i> 项目集</span>
+                          </div>
+                        </el-card>
+                      </router-link>
+                    </div>
+
+                    <div>
+                      <router-link :to="{path: '/home/projectList/'+this.userId+'/y'}">
+                        <el-card shadow="hover">
+                          <div>
+                            <span><i style="font-size: 20px" class="el-icon-collection"></i> 收藏项目</span>
+                          </div>
+                        </el-card>
+                      </router-link>
+                    </div>
                   </el-col>
                 </transition>
+                <el-col :span="16" v-if="$route.path == '/home'">
+                  <el-tabs v-model="active" type="border-card" @tab-click="handleClick">
+                    <el-tab-pane name="first">
+                      <span slot="label"><h3 class="el-icon-more">本专业</h3></span>
+                      <div style="padding: 5px" class="source">
+                        <div>
+                          <ul class="infinite-list" style="overflow:auto">
+                            <li class="infinite-list-item" v-for="su in suggest.suggestions">
+                              <div>
+                                <div>
+                                  <router-link :to="{name: 'BlogDetail', params: {blogId: su.id}}">
+                                    <div style="font-size: 25px; color: #303133; display: inline">
+                                      {{su.title}}
+                                    </div>
+                                  </router-link>
+                                  <div style="display: inline; color: #8c939d; float:right;">{{su.createdAt}}</div>
+                                  <p style="color: #8c939d">{{su.summary.slice(0, 40)+'...'}}</p>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <el-pagination
+                        style="text-align: center; padding-top: 25px"
+                        background
+                        @current-change="handCurrentChange"
+                        :current-page="suggest.currentPage"
+                        layout="prev, pager, next"
+                        :page-count="suggest.total">
+                      </el-pagination>
+                    </el-tab-pane>
+                    <el-tab-pane name="second">
+                      <span slot="label"><h3 class="el-icon-s-order">排行榜</h3></span>
+                      <div style="height: 450px; width: 100%" v-if="rank">
+                        <dv-scroll-ranking-board :config="config" class="range-flow"/>
+                      </div>
+                    </el-tab-pane>
+                  </el-tabs>
+                </el-col>
                 <el-backtop :right="320" :bottom="50">
                   <div
                     style="{
@@ -145,6 +180,7 @@
           data: [],
           unit: '热度'
         },
+        rank: false,
         userId: 0,
         columns: [],
         projects: [],
@@ -158,18 +194,16 @@
           color: this.getColor(),
           fontSize: '20px'
         },
-        page: {
-          blogs: [],
-          total: 1,
-          currentPage: 1,
-        }
+        active: 'first',
+        suggest:{
+            suggestions: [],
+            total: 0
+        },
       }
     },
     methods: {
       handCurrentChange(current) {
-        this.$axios.get("/blog/getpagesbyuserid/" + this.userId + "?page=" + current).then(res => {
-          this.page.blogs = res.data.data.blogList;
-        })
+        this.loadSuggestion(current);
       },
       getColor() {
         let r = Math.floor(Math.random() * 255);
@@ -272,7 +306,20 @@
             this.config= {...this.config}
           }
         })
-      }
+      },
+      handleClick(tab, event) {
+        if (tab.index == 0){
+          // this.loadSuggestion(1);
+        }else if (tab.index == 1){
+          this.rank = true;
+        }
+      },
+      loadSuggestion(page){
+        this.$axios.get("/major/name/"+this.$store.getters.getUser.major+'?page='+page).then(res => {
+          this.suggest.suggestions = res.data.data.blogList;
+          this.suggest.total = res.data.data.total;
+        })
+      },
     },
     created() {
       const _this = this;
@@ -281,6 +328,7 @@
       this.isShowList = this.$route.path === '/home';
       console.log(this.$route.path);
       this.loadColumn();
+      this.loadSuggestion(1);
     },
     watch: {
       '$route'(path) {

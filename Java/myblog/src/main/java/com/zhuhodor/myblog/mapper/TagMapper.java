@@ -27,5 +27,6 @@ public interface TagMapper extends BaseMapper<Tag> {
     @Select("SELECT b.* FROM `blog` b, `blog_tag` bt WHERE bt.blog_id = b.id AND bt.tag_id = #{tagId}")
     List<Blog> findBlogsByTagId(String tagId);
 
-
+    @Select("SELECT b.id FROM `blog` b, `blog_tag` bt WHERE bt.blog_id = b.id AND bt.tag_id = #{tagId}")
+    List<Integer> countBlogs(Integer id);
 }

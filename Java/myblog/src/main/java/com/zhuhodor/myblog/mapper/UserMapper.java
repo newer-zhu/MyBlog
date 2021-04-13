@@ -17,11 +17,6 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select * from user where id = #{id}")
     User findUserById(int id);
 
-    @Insert("insert into user (username,password,email,create_at,college,major,grade,description,salt,avatar) " +
-            "values (#{username},#{password},#{email},#{createAt},#{college},#{major},#{grade},#{description},#{salt},#{avatar}) ")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    void creatUser(User user);
-
     @Select("select * from user where username = #{username}")
     User findUserByName(String username);
 

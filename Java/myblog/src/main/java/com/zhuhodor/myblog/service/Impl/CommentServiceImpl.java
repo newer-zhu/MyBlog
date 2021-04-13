@@ -2,7 +2,6 @@ package com.zhuhodor.myblog.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhuhodor.myblog.Entity.BlogModule.BlogComment;
-import com.zhuhodor.myblog.Entity.ProjectComment;
 import com.zhuhodor.myblog.mapper.CommentMapper;
 import com.zhuhodor.myblog.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;

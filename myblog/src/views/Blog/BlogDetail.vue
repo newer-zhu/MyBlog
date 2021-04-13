@@ -4,6 +4,7 @@
 
         <el-main>
             <el-row :gutter="30">
+                <UserInfo :user="subUser" :drawer.sync="drawer"></UserInfo>
                 <el-col :span="18" >
                     <div class="blogDetail">
                         <el-row>
@@ -26,7 +27,7 @@
                                 </el-col>
                             </el-row>
                         </el-row>
-                        <h3 v-show="blog.isFile == 0">{{blog.summary}}</h3>
+                        <h3 style="color: #606266" v-show="blog.isFile == 0">{{blog.summary}}</h3>
                         <el-divider/>
                         <el-row>
 <!--                            文件显示-->
@@ -43,7 +44,7 @@
                                         </el-card>
                                     </el-col>
                                     <el-col :span="10" style="">
-                                        <h2>{{blog.summary}}</h2>
+                                        <h3 style="color: #606266">{{blog.summary}}</h3>
                                     </el-col>
                                 </el-row>
                             </div>
@@ -89,11 +90,10 @@
                 </el-col>
                 <el-col :span="6">
                     <div  style="margin-left: 20px">
-                        <div @click="drawer = !drawer" style="text-align: center">
+                        <div @click="openInfo(blog.user, false)" style="text-align: center">
                             <el-avatar :src="blog.user.avatar" :size="60" />
                             <p class="el-icon-user-solid" style="font-size: 20px; color: #303133; display: block">{{blog.user.username}}</p>
                         </div>
-                        <UserInfo :user="blog.user" :drawer.sync="drawer"></UserInfo>
                         <div style="background-color: #faeaef; width: 100%;border-radius: 5px" >
                             <el-link v-for="(t, i) in blog.tags" :underline="false">
                                 <router-link :to="{name: 'TagDetail', params: {tagId: t.id}}">
@@ -122,6 +122,27 @@
                                 </el-row>
                             </el-card>
                         </router-link>
+                    </div>
+                    <div style="margin-left: 20px; margin-top: 5px">
+                        <h3 style="color: #909399">相关笔记</h3>
+                        <div v-for="s in suggestions">
+                            <div class="suggestion">
+                                <router-link :to="{name: 'BlogDetail', params:{blogId: s.id}}">
+                                    <div v-html="s.title" v-if="blog.tags.length == 0" style="font-size: 20px; font-weight: 600;color: #565655;">
+                                        <i style="font-size: 18px; margin-left: 10px" :class="s.isFile ? 'el-icon-folder':'el-icon-document'"></i>
+                                    </div>
+                                    <div v-else style="font-size: 20px; font-weight: 600;color: #565655;">
+                                        {{s.title}} <i style="font-size: 18px; margin-left: 10px" :class="s.isFile ? 'el-icon-folder':'el-icon-document'"></i>
+                                    </div>
+                                </router-link>
+                                <p style="color: #83878f">{{s.summary.slice(0, 35) + '...'}}</p>
+                                <div>
+                                    <el-link @click="openInfo(s.user, true)" :underline="false" style="font-size: 18px;">{{s.user.username}}</el-link>
+                                    <div style="color: #909399; display: inline; margin-left: 50px">{{s.createdAt.slice(0, 11)}}</div>
+                                    <div class="el-icon-view" style="font-size: 18px; color: #8c939d;margin-left: 10px">{{s.visitors}}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </el-col>
             </el-row>
@@ -162,7 +183,9 @@
                 commentNum: 0,
                 ownBlog: true,
                 tagColor: ['', 'info', 'success', 'warning', 'danger'],
-                drawer: false
+                drawer: false,
+                suggestions: [],
+                subUser: {}
             }
         },
         computed: {
@@ -170,9 +193,22 @@
                 return "http://localhost:8081/media/filedownload/" + this.blog.id
             },
         },
-        mounted(){
+        watch: {
+            '$route'(to, from){
+                this.init();
+            }
         },
         methods: {
+            openInfo(user, load){
+                if (load == true){
+                    this.$axios.get("/user/"+user.id).then(res => {
+                        this.subUser = res.data.data;
+                    })
+                }else {
+                    this.subUser = user;
+                }
+                this.drawer = ! this.drawer;
+            },
             delBlog(){
                 this.$confirm('确定删除这篇博客吗？', '提示', {
                     confirmButtonText: '确定',
@@ -248,30 +284,44 @@
                         this.commentNum += this.commentList[i]['childrenList'].length + 1;
                     }
                 })
+            },
+            loadRelative(arr){
+                this.$axios.post("/blog/relative/"+this.blog.id, arr).then(res => {
+                    this.suggestions = res.data.data;
+                    console.log(res.data.data);
+                })
+            },
+            init(){
+                let _this = this;
+                this.checkUserId = this.$store.getters.getUser.id;
+                const blogId = this.$route.params.blogId;//请求路径上的blogId参数值
+                if (blogId != undefined){
+                    this.$axios.get('/blog/' + blogId).then(res => {
+                        this.blog = res.data.data;
+                        //加载推荐
+                        let arr = [];
+                        for (let i in this.blog.tags){
+                            arr.push(this.blog.tags[i].id);
+                        }
+                        this.loadRelative(arr);
+                        //加载评论
+                        this.$axios.get("/comment/getlistbyblogid/" + this.blog.id).then(res => {
+                            this.commentList = res.data.data;
+                            for(let i in this.commentList){
+                                this.commentNum += this.commentList[i]['childrenList'].length + 1;
+                            }
+                        });
+                    });
+                    // 把md格式的数据渲染成css
+                    let  MarkDown = require("markdown-loader");
+                    let md = new MarkDown();
+                    let  re = md.render(_this.blog.content);
+                    this.blog.content = re;
+                }
             }
         },
         created(){
-            let _this = this;
-            this.checkUserId = this.$store.getters.getUser.id;
-            const blogId = this.$route.params.blogId;//请求路径上的blogId参数值
-            if (blogId != undefined){
-                this.$axios.get('/blog/' + blogId).then(res => {
-                    this.blog = res.data.data;
-                    console.log(this.blog);
-                    this.$axios.get("/comment/getlistbyblogid/" + this.blog.id).then(res => {
-                        this.commentList = res.data.data;
-                        for(let i in this.commentList){
-                            this.commentNum += this.commentList[i]['childrenList'].length + 1;
-                        }
-                    });
-                });
-                // 把md格式的数据渲染成css
-                let  MarkDown = require("markdown-loader");
-                let md = new MarkDown();
-                let  re = md.render(_this.blog.content);
-                this.blog.content = re;
-
-            }
+            this.init();
         }
     }
 </script>
@@ -294,5 +344,13 @@
     }
     .markdown-body{
         font-size: 20px;
+    }
+    .suggestion{
+        background-color: #fff;
+        font-style: normal;
+        margin-left: 15px;
+        padding: 10px 10px 12px 5px;
+        border-top: 1px solid #DCDFE6;
+        border-radius: 2px
     }
 </style>

@@ -1,12 +1,11 @@
 package com.zhuhodor.myblog.controller;
 
 import cn.hutool.core.map.MapUtil;
-import com.github.houbb.segment.support.segment.result.impl.SegmentResultHandler;
 import com.github.houbb.segment.support.segment.result.impl.SegmentResultHandlers;
 import com.github.houbb.segment.util.SegmentHelper;
-import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
 import com.zhuhodor.myblog.common.Result;
-import com.zhuhodor.myblog.vo.searchRequest;
+import com.zhuhodor.myblog.vo.SearchRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +18,7 @@ import java.util.Map;
 public class SearchController extends BaseController {
 
     @PostMapping("/query")
-    public Result search(@RequestBody searchRequest query){
+    public Result search(@RequestBody SearchRequest query){
         log.info("搜索条件为===={}====", query.getQuerystr());
         List<String> segment = SegmentHelper.segment(query.getQuerystr(), SegmentResultHandlers.word());
         segment.forEach(word -> {

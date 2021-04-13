@@ -1,5 +1,6 @@
 package com.zhuhodor.myblog.service.Impl;
 
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.mapper.MajorMapper;
 import com.zhuhodor.myblog.service.MajorService;
 import com.zhuhodor.myblog.util.RedisUtils;
@@ -28,9 +29,9 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public boolean insert(String blogId, String majorId) {
         if (!redisUtils.hexists("major", majorId)){
-            redisUtils.hset("major", majorId, 1);
+            redisUtils.hset("major", majorId, String.valueOf(1));
         }else {
-            redisUtils.hincrby("major", majorId, 1);
+            redisUtils.hincrby("major", majorId, 1L);
         }
         majorMapper.releaseMajor(blogId);
         return majorMapper.insert(blogId, majorId);
@@ -49,5 +50,10 @@ public class MajorServiceImpl implements MajorService {
     @Override
     public void updatePopular(String id, String popular) {
         majorMapper.updatePopular(id, popular);
+    }
+
+    @Override
+    public List<Blog> majorBlog(String name) {
+        return majorMapper.majorBlog(name);
     }
 }

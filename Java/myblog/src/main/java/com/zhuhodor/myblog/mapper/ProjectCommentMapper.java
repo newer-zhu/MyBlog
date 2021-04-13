@@ -1,7 +1,7 @@
 package com.zhuhodor.myblog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zhuhodor.myblog.Entity.ProjectComment;
+import com.zhuhodor.myblog.Entity.ProjectModule.ProjectComment;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -15,4 +15,9 @@ public class AIController extends BaseController{
     public Result getSummary(@RequestBody Blog blog){
         return Result.success(TextAnalysis.autoSummary(blog.getContent()));
     }
+
+    @GetMapping("/similar/{text}")
+    public Result similarWords(@PathVariable String text){
+        return Result.success(TextAnalysis.similarWords(text));
+    }
 }

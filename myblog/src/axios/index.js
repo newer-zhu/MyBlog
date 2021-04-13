@@ -6,6 +6,9 @@ axios.defaults.baseURL = 'http://localhost:8081'; // 请求的默认域名
 // 添加一个请求拦截器
 axios.interceptors.request.use(config => {
         config.headers.languagetype = 'CN'; // 举例，加上一个公共头部
+        // if (this.$store.getters.getToken){
+        //     console.log(this.$store.getters.getToken);
+        // }
         return config;
     },
     err => {

@@ -1,15 +1,13 @@
 <template>
     <div>
         <div style="padding-bottom: 10px">
-            <el-row gutter="90">
+            <el-row :gutter=90>
                 <el-col :span="2">
                     <el-button type="primary" v-if="!isShowDelCol" @click="changeShowDelCol" class="el-icon-delete">管理</el-button>
                     <el-button type="info" class="el-icon-circle-close" v-else @click="changeShowDelCol">取消</el-button>
                 </el-col>
-                <el-col :span="20">
-                    <el-image :src="require('../../assets/img/longback.png')" style="height: 40px; width: 640px; border-radius: 2px">
-                    </el-image>
-                </el-col>
+                <el-image :src="require('../../assets/img/longback.png')" style="height: 40px; width: 640px; border-radius: 2px;margin-left: 45px">
+                </el-image>
             </el-row>
         </div>
         <div v-show="page.blogs.length == 0">
@@ -26,7 +24,7 @@
                         </el-col>
                     </router-link>
                     <el-col style="color: #8c939d" :span="7">
-                        <el-link type="danger" v-show="isShowDelCol" @click="delCol(card.id)" style="float: right">删除</el-link>
+                        <el-link type="danger" v-show="isShowDelCol" @click="delBlog(card.id)" style="float: right">删除</el-link>
                         <p>{{card.createdAt}}</p>
                         <i style="font-size: 25px" :class="card.isFile ? 'el-icon-folder':'el-icon-document'">
                             <router-link v-if="card.project != null" :to="{name: 'ProjectDetail', params:{projectId:card.project.id}}">
@@ -36,7 +34,18 @@
                     </el-col>
                 </el-row>
             </el-card>
+            <el-dialog
+              title="提示"
+              :visible.sync="isDelBlog"
+              width="30%">
+                <span>确认删除吗？</span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="isDelBlog = false">取 消</el-button>
+                    <el-button type="primary" @click="delCol()">确 定</el-button>
+                </span>
+            </el-dialog>
         </div>
+
         <el-pagination
                 style="text-align: center; padding-top: 25px"
                 background
@@ -63,10 +72,16 @@
                 },
                 userId: 0,
                 columnId: 0,
-                isShowDelCol: false
+                isShowDelCol: false,
+                isDelBlog: false,
+                delBlogId: 0
             }
         },
         methods: {
+            delBlog(id){
+                this.delBlogId = id;
+                this.isDelBlog = true;
+            },
             handCurrentChange(current){
                 //全部文章
                 if (this.$route.params.columnId === -1){
@@ -89,7 +104,6 @@
                 if (this.columnId == -1){
                     this.$axios("/blog/getpagesbyuserid/"+this.userId).then((res) => {
                         this.page.blogs = res.data.data.blogList;
-                        console.log(this.page.blogs);
                         this.page.total = res.data.data.total;
                     });
                 }else {
@@ -100,8 +114,8 @@
                 }
             },
             delCol(blogId){
-                if (this.columnId == -1){
-                    this.$axios.get("/blog/delblogbyid?blogId="+blogId).then(res => {
+                if (this.columnId == -1 || blogId == null){
+                    this.$axios.get("/blog/delblogbyid?blogId="+this.delBlogId).then(res => {
                         this.$message({
                             message: '删除成功'
                         });
@@ -139,5 +153,8 @@
     .box-card {
         width: 480px;
         margin: 0 auto;
+    }
+    /deep/ .el-card__body{
+        padding: 12px;
     }
 </style>

@@ -174,8 +174,8 @@
         /*-moz-background-size:100% 100%; background-size:100% 100%;*/
         height: 100%;
     }
-    .el-menu--horizontal>.el-submenu .el-submenu__icon-arrow{
-        margin-left: 25px;
+    /deep/ .el-menu--horizontal>.el-submenu .el-submenu__icon-arrow{
+        margin-left: 26px;
         position: static;
         vertical-align: middle;
         margin-top: -3px;

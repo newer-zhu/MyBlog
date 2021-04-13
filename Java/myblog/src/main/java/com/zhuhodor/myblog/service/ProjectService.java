@@ -2,11 +2,9 @@ package com.zhuhodor.myblog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
-import com.zhuhodor.myblog.Entity.Project;
-import com.zhuhodor.myblog.vo.ProjectVo;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
 import com.zhuhodor.myblog.vo.RequestVo;
 import com.zhuhodor.myblog.vo.TableVo;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;

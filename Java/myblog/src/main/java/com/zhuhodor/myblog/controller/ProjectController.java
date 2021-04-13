@@ -5,10 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
-import com.zhuhodor.myblog.Entity.Project;
-import com.zhuhodor.myblog.Entity.ProjectComment;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
+import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.common.Result;
-import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
 import com.zhuhodor.myblog.vo.OverviewVo;
 import com.zhuhodor.myblog.vo.PictureVo;
 import com.zhuhodor.myblog.vo.ProjectVo;
@@ -53,7 +52,7 @@ public class ProjectController extends BaseController{
         return Result.success(MapUtil.builder()
                 .put("id", project.getId())
                 .put("startUser", project.getStartUser())
-                .put("projectUser", userService.findUserById(project.getStartUser()))
+                .put("projectUser", userService.getOne(new QueryWrapper<User>().eq("id", project.getStartUser())))
                 .put("overview", vos)
                 .put("rates",project.getRates())
                 .put("projectName", project.getProjectName())
@@ -64,7 +63,6 @@ public class ProjectController extends BaseController{
                 .map());
     }
 
-
     /**
      * 根据用户Id分页获取项目集
      * @param userId
@@ -74,7 +72,7 @@ public class ProjectController extends BaseController{
     public Result getProjectByUserId(@PathVariable("userId") String userId, @RequestParam(value = "page", defaultValue = "1", required = false) Integer page){
         log.info("分页获取userId={}的项目集", userId);
         PageHelper.startPage(page, 6);
-        List<Project> projects = projectService.list(new QueryWrapper<Project>().eq("start_user", userId));
+        List<Project> projects = projectService.list(new QueryWrapper<Project>().eq("start_user", userId).orderByDesc("create_at"));
         PageInfo<Project> pageInfo = new PageInfo<>(projects);
         return Result.success(MapUtil.builder().put("projectList", projects)
         .put("total", pageInfo.getPages()).map());

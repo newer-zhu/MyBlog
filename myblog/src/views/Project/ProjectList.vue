@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-row gutter="90">
+        <el-row :gutter="90">
             <el-col :span="2">
                 <div style="padding-bottom: 10px">
                     <el-button type="primary" v-if="!isShowDelPro" @click="changeIsShowDelPro" class="el-icon-delete">管理</el-button>

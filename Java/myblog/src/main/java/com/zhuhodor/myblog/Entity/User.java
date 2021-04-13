@@ -1,6 +1,8 @@
 package com.zhuhodor.myblog.Entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -28,7 +30,7 @@ import java.util.List;
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
+    @TableId(type = IdType.AUTO)
     private Integer id;
     private String salt;
     @NotBlank(message = "昵称不能为空")
@@ -43,6 +45,7 @@ public class User implements Serializable {
     private String college;
     private String description;
     private String grade;
+    private int coins;
 
     @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8",shape = JsonFormat.Shape.STRING)
     @PastOrPresent

@@ -1,90 +1,89 @@
 <template>
     <div>
-        <el-header>
+<!--        <el-header>-->
             <Navibar/>
-        </el-header>
+<!--        </el-header>-->
 
         <el-container>
-            <el-main>
-                <el-form @submit.native.prevent :model="blogForm" :rules="this.rules" ref="blogForm" label-width="100px" class="blog-form">
-                    <el-row>
-                        <el-col :span="16">
-                            <el-row style="margin-left: 25px">
-                                <el-col :span="20">
-                                    <el-form-item label="标题" prop="title">
-                                        <el-input placeholder="请输入标题" v-model = "blogForm.title"></el-input>
-                                    </el-form-item>
-                                    <el-row>
-                                        <el-col :span="22">
-                                            <el-form-item label="摘要" prop="summary">
-                                                <el-input type="textarea"
-                                                          placeholder="请输入摘要"
-                                                          :autosize="{ minRows: 2, maxRows: 4}"
-                                                          v-model="blogForm.summary"></el-input>
-                                            </el-form-item>
-                                        </el-col>
-                                        <el-col :span="2">
-                                            <el-button @click="getSummary" type="success" class="el-icon-help" style="font-size: 15px; margin-left: 15px;margin-bottom: 0px" round>
-                                                {{'一键生成'}}</el-button>
-                                        </el-col>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-switch
-                              style="display: block;"
-                              v-model="type"
-                              active-color="yellow"
-                              inactive-color="blue"
-                              active-text="文件"
-                              inactive-text="文章">
-                            </el-switch>
-                        </el-col>
-                    </el-row>
-
-                    <el-row>
-<!--                        文件上传-->
-                        <el-form-item v-if="type">
-                            <el-upload
-                              name="file"
-                              class="upload-demo"
-                              drag
-                              action="http://localhost:8081/media/fileupload/"
-                              :on-success="uploadSuccess"
-                              :on-remove="removeFile"
-                              :on-error="error"
-                              multiple>
-                                <i class="el-icon-upload"></i>
-                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                                <div class="el-upload__tip" slot="tip">文件大小不超过100mb，多文件上传请压缩</div>
-                            </el-upload>
+          <div class="my_back">
+            <el-main >
+              <el-form @submit.native.prevent :model="blogForm" :rules="this.rules" ref="blogForm" label-width="100px" class="blog-form">
+                <el-row>
+                  <el-col :span="16">
+                    <el-row style="margin-left: 25px">
+                      <el-col :span="20">
+                        <el-form-item class="EDItem" label="标题" prop="title">
+                          <el-input placeholder="请输入标题" v-model = "blogForm.title"></el-input>
                         </el-form-item>
-<!--                      文章上传-->
-                        <el-form-item prop="content" v-else>
-                            <mavon-editor
-                              :toolbars="markdownOption"
-                              v-model="blogForm.content"
-                              @imgAdd = "handleImgAdd"
-                              @imgDel = "imgDel"
-                              ref=md
-                              :ishljs = "true"
-                            />
-                        </el-form-item>
-                    </el-row>
-                    <div style="text-align: center;margin-bottom: 50px">
-                        <el-button type="primary" @click="updateBlog('blogForm')">立即发布</el-button>
-                        <el-button @click="resetForm('blogForm')">重置</el-button>
-                    </div>
-
-                    <!--                额外表单-->
-                    <el-dialog
-                      title="提示"
-                      :visible.sync="dialogVisible"
-                      width="30%"
-                    >
-                        <span style="color: #409EFF; padding-bottom: 10px" class="el-icon-question">标签可多选，学科仅能选一类</span>
                         <el-row>
+                            <el-form-item label="摘要" class="EDItem" prop="summary" style="width: 800px">
+                              <el-input type="textarea"
+                                        placeholder="请输入摘要"
+                                        :autosize="{ minRows: 2, maxRows: 4}"
+                                        v-model="blogForm.summary"></el-input>
+                            </el-form-item>
+
+                        </el-row>
+                      </el-col>
+                    </el-row>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-switch
+                      style="display: block;"
+                      v-model="type"
+                      active-color="yellow"
+                      inactive-color="blue"
+                      active-text="文件"
+                      inactive-text="文章">
+                    </el-switch>
+
+                    <el-button @click="getSummary" type="success" class="el-icon-help" style="font-size: 15px; margin: 45px 0px 0px 0px" round>
+                      {{'一键生成'}}</el-button>
+                  </el-col>
+                </el-row>
+
+                <el-row>
+                  <!--                        文件上传-->
+                  <el-form-item v-if="type">
+                    <el-upload
+                      name="file"
+                      class="upload-demo"
+                      drag
+                      action="http://localhost:8081/media/fileupload/"
+                      :on-success="uploadSuccess"
+                      :on-remove="removeFile"
+                      :on-error="error"
+                      multiple>
+                      <i class="el-icon-upload"></i>
+                      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                      <div class="el-upload__tip" slot="tip">文件大小不超过100mb，多文件上传请压缩</div>
+                    </el-upload>
+                  </el-form-item>
+                  <!--                      文章上传-->
+                  <el-form-item prop="content" v-else>
+                    <mavon-editor
+                      :toolbars="markdownOption"
+                      v-model="blogForm.content"
+                      @imgAdd = "handleImgAdd"
+                      @imgDel = "imgDel"
+                      ref=md
+                      :ishljs = "true"
+                    />
+                  </el-form-item>
+                </el-row>
+                <div style="text-align: center;margin-bottom: 50px">
+                  <el-button type="primary" @click="updateBlog('blogForm')">立即发布</el-button>
+                  <el-button @click="resetForm('blogForm')">重置</el-button>
+                </div>
+
+                <!--                额外表单-->
+                <el-dialog
+                  title="提示"
+                  :visible.sync="dialogVisible"
+                  width="30%"
+                >
+                  <span style="color: #409EFF; padding-bottom: 10px" class="el-icon-question">标签可多选，关联标签越多相关推荐越多!</span>
+                  <el-row>
                         <span>
                         加入个人分栏(可选)
                           <el-select v-model="selectColumn" placeholder="请选择">
@@ -96,9 +95,9 @@
                             </el-option>
                           </el-select>
                         </span>
-                        </el-row>
-                        <br>
-                        <el-row>
+                  </el-row>
+                  <br>
+                  <el-row>
                         <span>
                         标签(可自定义)
                          <el-select v-model="tags"
@@ -108,40 +107,42 @@
                                     multiple
                                     placeholder="输入自定义标签">
                             <el-option
-                              v-for="(item, index) in pushTags"
-                              :key="index"
-                              :label="item"
-                              :value="item">
-                            </el-option>
+                                                         v-for="(item, index) in pushTags"
+                                                         :key="index"
+                                                         :label="item"
+                                                         :value="item">
+                                                       </el-option>
                           </el-select>
                         </span>
-                        </el-row>
-                        <br>
-                        <span>
+                  </el-row>
+                  <br>
+                  <span>
                     请选择所属学科(可选)
                      <el-cascader
                        v-model="option"
                        :options="options"
                      ></el-cascader>
                     </span>
-                        <span slot="footer" class="dialog-footer">
+                  <span slot="footer" class="dialog-footer">
                         <el-button @click="cancel">算了</el-button>
                         <el-button type="primary" @click="submitForm('blogForm')">确 定</el-button>
                     </span>
-                    </el-dialog>
-                </el-form>
+                </el-dialog>
+              </el-form>
             </el-main>
+            <Footer/>
+          </div>
         </el-container>
     </div>
-
 </template>
 
 <script>
     import Navibar from 'components/common/Navibar'
     import 'mavon-editor/dist/markdown/github-markdown.min.css'
+    import Footer from "../../components/common/Footer";
     export default {
         name: "BlogEdit",
-        components: {Navibar},
+        components: {Footer, Navibar},
         data() {
             return {
                 type: false,//类型，默认文章
@@ -350,4 +351,20 @@
     .blog-form{
         margin-top: 50px;
     }
+   .my_back{
+      background-image: url("../../assets/img/snow.jpg");
+      background-attachment: fixed;
+     -moz-background-size:100% 100%;
+     background-size:100% 100%;
+     height: 100%;
+      width: 100%;
+   }
+</style>
+
+<style>
+  .EDItem .el-form-item__label{
+    color: #00001b;
+    font-weight: bold;
+    font-size: 24px;
+  }
 </style>

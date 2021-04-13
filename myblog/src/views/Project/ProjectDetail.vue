@@ -50,7 +50,7 @@
                 </el-row>
                 <el-divider/>
                 <!--            主体-->
-                <el-row gutter="30">
+                <el-row :gutter="30">
                     <el-col :span="16">
                         <el-row>
                             <div v-if="project.pictures.length == 0 && userId == project.startUser">
@@ -60,9 +60,9 @@
                             <el-carousel v-show="project.pictures.length != 0" :interval="4000" type="card" height="200px">
                                 <el-carousel-item v-for="item in project.pictures" :key="item.name">
                                     <el-image
-                                      style=""
+                                      style="height: 100%;"
                                       :src="item.url"
-                                      fit="scale-down"
+                                      fit="contain"
                                     >
                                     </el-image>
                                 </el-carousel-item>
@@ -70,20 +70,12 @@
                             <!--评论侧边-->
                             <el-col :span="6">
                                 <h3 class="el-icon-s-comment" style="font-size: 25px; color: #56595f; font-weight: bold">项目评论</h3>
-                                    <div v-for="(co, i) in project.comments">
-                                        <el-link style="color: #606266; font-size: 18px">{{co.user.username}}</el-link> <div style="font-size: 12px; color: #8f9298">{{co.time}}</div>
-                                        <p style="color: #303133">{{co.comment}}</p>
-                                    </div>
-<!--                                <div class="infinite-list"-->
-<!--                                     v-infinite-scroll="load"-->
-<!--                                     style="overflow: auto;">-->
-<!--                                    <div class="infinite-list-item" v-for="p in 10"-->
-<!--                                      style="border-bottom: 2px solid palevioletred;">-->
-<!--                                        <div>-->
-<!--                                            <el-link style="color: #606266; font-size: 16px">用户拉拉</el-link> <div style="font-size: 12px; color: #8f9298">2020-10-30 11:03:01</div>-->
-<!--                                            <p style="color: #303133">牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛牛你你你你你你你</p> <i class="el-icon-caret-top"></i>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
+                                <div v-for="(co, i) in comments">
+                                    <el-link style="color: #606266; font-size: 18px">{{co.user.username}}</el-link> <div style="font-size: 12px; color: #8f9298">{{co.time}}</div>
+                                    <p style="color: #303133">{{co.comment}}</p>
+                                </div>
+<!--                                <div style="height: 500px;width: 200px; overflow: hidden">-->
+
 <!--                                </div>-->
                             </el-col>
                             <el-col :span="18" >
@@ -200,12 +192,8 @@
                             <el-tab-pane label="标签一览" name="second">
                                 <div style="padding-top: 10px" v-for="(n, i) in tags">
                                     <el-row>
-                                        <el-col :span="6">
-                                            <el-tag>{{n}}</el-tag>
-                                        </el-col>
-                                        <el-col :span="18">
-                                            <el-progress :percentage="per[i]"></el-progress>
-                                        </el-col>
+                                        <el-tag>{{n}}</el-tag>
+                                        <el-progress :percentage="parseInt(per[i])"></el-progress>
                                     </el-row>
                                 </div>
                             </el-tab-pane>
@@ -214,10 +202,10 @@
                                   :data="project.contributors"
                                   height="250"
                                   border
-                                  style="width: 100%">
+                                  style="">
                                     <el-table-column
                                       prop="date"
-                                      label="日期"
+                                      label="加入日期"
                                       width="150">
                                     </el-table-column>
                                     <el-table-column
@@ -235,6 +223,7 @@
                                     </el-table-column>
                                     <el-table-column
                                       prop="number"
+                                      width="77"
                                       label="次数">
                                     </el-table-column>
                                 </el-table>
@@ -326,10 +315,11 @@
 
 <script>
     import Navibar from "components/common/Navibar";
+    import vueInfiniteAutoScroll from 'vue-infinite-auto-scroll'
     const UserInfo = () => import('../../components/common/UserInfo');
     export default {
         name: "ProjectDetail",
-        components: {Navibar, UserInfo},
+        components: {Navibar, UserInfo, vueInfiniteAutoScroll},
         data(){
             return{
                 userId: 0,
@@ -340,11 +330,11 @@
                     projectName: '项目标题',
                     rates: 5,
                     favorite: 0,
-                    comments: [],
                     overview: [{title: '', content: ''}],
                     contributors: [],
                     pictures: [{projectId: '',name: '', url: ''}]
                 },
+                comments: [],
                 tags: [],
                 tagNum: 0,//标签总数
                 comment: '',
@@ -395,7 +385,8 @@
             },
             loadComments(){
                 this.$axios.get("/comment/project/"+this.project.id).then(res => {
-                    this.project.comments = res.data.data;
+                    this.comments = res.data.data;
+                    console.log(this.comments);
                 })
             },
             getBlogTime(){
@@ -432,7 +423,7 @@
                 this.$axios.get("/project/rates/"+this.userId+"/"+this.project.id+"/"+r).then(res => {
                     this.isRate = true;
                     this.success(res.data.data);
-                })
+                });
                 this.isComment = true;
             },
             success(msg) {
@@ -482,12 +473,6 @@
                     }
                 })
             },
-            // removeDomain(item) {
-            //     let index = this.project.overview.indexOf(item)
-            //     if (index !== -1) {
-            //         this.project.overview.splice(index, 1)
-            //     }
-            // },
             delProject(){
                 this.$axios.get("/project/delete/"+this.project.id).then(res => {
                     this.$message.success(res.data.data);
@@ -503,28 +488,7 @@
                     this.$message.success(res.data.data);
                     this.isComment = false;
                 });
-            },
-            localSocket() {
-                let that = this;
-                if ("WebSocket" in window) {
-                    let ws = new WebSocket("ws://localhost:8081/pro/"+that.$store.getters.getUser.id);
-                    that.global.setWs(ws);
-                    that.global.ws.onopen = function() {
-                        console.log('websocket连接成功');
-                    };
-                    that.global.ws.onclose = function () {
-                        // 关闭 websocket
-                        console.log("连接已关闭...");
-                        //断线重新连接
-                        setTimeout(() => {
-                            that.localSocket();
-                        }, 2000);
-                    };
-                } else {
-                    // 浏览器不支持 WebSocket
-                    console.log("您的浏览器不支持 WebSocket!");
-                    this.openNotificationWithIcon('error', '浏览器', '您的浏览器不支持显示消息请更换', 1,1)
-                }
+                this.loadComments();
             },
             request(){
                 let _this = this;
@@ -569,7 +533,6 @@
             }
         },
         created(){
-            let _this = this;
             this.userId = this.$store.getters.getUser.id;
             this.$axios.get("/project/"+this.$route.params.projectId+"?userId="+this.userId).then(res => {
                 this.project = res.data.data;
@@ -586,9 +549,8 @@
                     else
                         this.isFavorite = 'info';
                 });
-                _this.loadComments();
+                this.loadComments();
             });
-            console.log(this.project.comments);
         }
     }
 </script>
@@ -596,6 +558,9 @@
 <style scoped>
     .el-carousel__item:nth-child(2n) {
         background-color: #99a9bf;
+    }
+    .el-carousel__item:nth-child(n) {
+
     }
 
     .el-carousel__item:nth-child(2n+1) {

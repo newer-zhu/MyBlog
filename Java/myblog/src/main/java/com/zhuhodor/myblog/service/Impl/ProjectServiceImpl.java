@@ -1,27 +1,17 @@
 package com.zhuhodor.myblog.service.Impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
-import com.zhuhodor.myblog.Entity.Project;
-import com.zhuhodor.myblog.Entity.User;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
 import com.zhuhodor.myblog.mapper.ProjectMapper;
 import com.zhuhodor.myblog.service.ProjectService;
-import com.zhuhodor.myblog.service.UserService;
-import com.zhuhodor.myblog.util.MailUtil;
-import com.zhuhodor.myblog.vo.ProjectVo;
 import com.zhuhodor.myblog.vo.RequestVo;
 import com.zhuhodor.myblog.vo.TableVo;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;

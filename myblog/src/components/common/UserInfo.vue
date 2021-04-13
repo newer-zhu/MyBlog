@@ -32,6 +32,12 @@
                 <div style="text-align: center">
                     <p class="el-icon-message" style="font-size: 20px; color: #020209">{{'邮箱： ' + user.email}}</p>
                 </div>
+                <div style="margin: 0px 0px 0px 190px">
+                    <el-tag class="el-icon-coin" style="font-size: 20px; margin-right: 10px;"
+                            effect="dark" type="warning">
+                        {{user.coins}}
+                    </el-tag>
+                </div>
             </div>
         </el-drawer>
     </div>

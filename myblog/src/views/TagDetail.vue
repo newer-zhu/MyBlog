@@ -5,8 +5,8 @@
                 <NaviBar/>
             </el-header>
             <el-main>
-                <div  class="my-main">
-                    <div style="width: 60%; margin: 0 auto; padding: 10px 0 30px 0">
+                <div class="my-main">
+                    <div style="height: 1250px; width: 60%; margin: 0 auto; padding: 10px 0 30px 0">
                         <div>
                             <!--                            页头-->
                             <el-card >
@@ -46,7 +46,7 @@
                                 </div>
                                 <div v-for="b in page.list">
                                     <el-row>
-                                        <div v-for="i in 5" style="border-bottom: 1px solid #efefef; height: 100%">
+                                        <div style="border-bottom: 1px solid #efefef; height: 100%">
                                             <el-row>
                                                 <router-link :to="{name: 'BlogDetail', params:{blogId:b.id}}">
                                                     <el-col :span="18"><h2 style="margin-left: 8px;">{{b.title}}</h2></el-col>
@@ -55,7 +55,6 @@
                                             </el-row>
                                             <el-row>
                                                 <p style="margin: 2px 15px;">{{b.summary}}</p>
-                                                <!--                                                <el-col :span="6">{{b.user.username}}</el-col>-->
                                             </el-row>
                                         </div>
                                     </el-row>
@@ -80,9 +79,10 @@
 
 <script>
     import NaviBar from  "../components/common/Navibar"
+    import Footer from "../components/common/Footer";
     export default {
         name: "TagDetail",
-        components: {NaviBar},
+        components: {Footer, NaviBar},
         data(){
             return {
                 tag: {},
@@ -164,6 +164,9 @@
     .my-main {
         background-image: url("../assets/img/tagBack.jpg");
         background-attachment: fixed;
+        -moz-background-size:100% 100%;
+        background-size:100% 100%;
         height: 100%;
+        width: 100%;
     }
 </style>

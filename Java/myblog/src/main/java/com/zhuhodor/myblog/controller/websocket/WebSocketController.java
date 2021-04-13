@@ -1,14 +1,9 @@
 package com.zhuhodor.myblog.controller.websocket;
 
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
-import com.tencentcloudapi.hcm.v20181106.models.EvaluationRequest;
-import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
 import com.zhuhodor.myblog.Entity.User;
-import com.zhuhodor.myblog.controller.BaseController;
 import com.zhuhodor.myblog.service.ProjectService;
 import com.zhuhodor.myblog.service.UserService;
 import com.zhuhodor.myblog.vo.RequestVo;
@@ -64,7 +59,6 @@ public class WebSocketController{
             clients.put(userId, session);
             log.info("有新连接加入：{}，当前连接为：{}", userId, onlineCount);
             List<RequestVo> requests = projectService.findRequestsByUserId(userId);
-            System.out.println(requests.get(0));
             this.sendMessage(userId, JSONUtil.toJsonStr(requests));
         }
     }

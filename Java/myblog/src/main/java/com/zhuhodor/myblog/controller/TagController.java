@@ -89,7 +89,7 @@ public class TagController extends BaseController{
     @GetMapping("/blogs/{tagId}")
     public Result getBlogsByTagId(@PathVariable("tagId") String tagId, @RequestParam("page") Integer page){
         log.info("获取标签={}的博客", tagId);
-        PageHelper.startPage(page, 1);
+        PageHelper.startPage(page, 7);
         List<Blog> list = tagService.findBlogsByTagId(tagId);
         PageInfo<Blog> pageInfo = new PageInfo<>(list);
         return Result.success(MapUtil.builder()

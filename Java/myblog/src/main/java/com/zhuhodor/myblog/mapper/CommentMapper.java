@@ -2,7 +2,7 @@ package com.zhuhodor.myblog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zhuhodor.myblog.Entity.BlogModule.BlogComment;
-import com.zhuhodor.myblog.Entity.ProjectComment;
+import com.zhuhodor.myblog.Entity.ProjectModule.ProjectComment;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

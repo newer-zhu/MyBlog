@@ -8,10 +8,6 @@ export default new Vuex.Store({
     //localStorage是永久的， SessionStorage随着窗口消灭消失
     token: localStorage.getItem("token"),
     userInfo: JSON.parse(sessionStorage.getItem("userInfo")),
-    requests:{
-      nextId: 0,
-      requestMessages: []
-    }
   },
   mutations: {
     SET_TOKEN: (state,token) => {
@@ -39,6 +35,9 @@ export default new Vuex.Store({
     getUser: state => {
       return state.userInfo
     },
+    getToken: state => {
+      return state.token
+    }
     // getWs: state => {
     //   return state.ws
     // }

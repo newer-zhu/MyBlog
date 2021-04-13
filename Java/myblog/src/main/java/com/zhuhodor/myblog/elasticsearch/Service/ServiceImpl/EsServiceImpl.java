@@ -1,13 +1,13 @@
 package com.zhuhodor.myblog.elasticsearch.Service.ServiceImpl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
-import com.zhuhodor.myblog.Entity.Project;
-import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
+import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.elasticsearch.Service.EsService;
 import com.zhuhodor.myblog.service.UserService;
-import com.zhuhodor.myblog.vo.searchRequest;
+import com.zhuhodor.myblog.vo.SearchRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -38,8 +38,8 @@ public class EsServiceImpl implements EsService {
 
     private static final Integer LIMIT = 7;
     @Override
-    public Map<String, Object> searchBlog(searchRequest query) {
-        SearchRequest searchRequest = new SearchRequest("blog");
+    public Map<String, Object> searchBlog(SearchRequest query) {
+        org.elasticsearch.action.search.SearchRequest searchRequest = new org.elasticsearch.action.search.SearchRequest("blog");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query.getQuerystr(), "title", "content"))
                 .sort(new ScoreSortBuilder().order(SortOrder.DESC))
@@ -102,8 +102,8 @@ public class EsServiceImpl implements EsService {
     }
 
     @Override
-    public List<Project> searchProject(searchRequest query) {
-        SearchRequest searchRequest = new SearchRequest("project");
+    public List<Project> searchProject(SearchRequest query) {
+        org.elasticsearch.action.search.SearchRequest searchRequest = new org.elasticsearch.action.search.SearchRequest("project");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query.getQuerystr(), "projectName", "overview"))
                 .sort(new ScoreSortBuilder().order(SortOrder.DESC))
@@ -141,9 +141,14 @@ public class EsServiceImpl implements EsService {
                     pro.setProjectName((String) sourceAsMap.get("projectName"));
                 }
                 pro.setId((Integer) sourceAsMap.get("id"));
-                pro.setProjectUser(userService.findUserById((Integer) sourceAsMap.get("startUser")));
+                pro.setProjectUser(userService.getOne(new QueryWrapper<User>()
+                        .eq("id", (Integer) sourceAsMap.get("startUser"))
+                        .select("id", "username")));
                 pro.setCreateAt(new SimpleDateFormat("yyyy-MM-dd").parse((String) sourceAsMap.get("createAt")));
-                pro.setRates(Float.valueOf(String.valueOf(sourceAsMap.get("rates"))));
+                String s = String.valueOf(sourceAsMap.get("rates"));
+                if (s.equals(null)){
+                    pro.setRates(Float.valueOf(s));
+                }
                 resPros.add(pro);
             }
         } catch (Exception e) {

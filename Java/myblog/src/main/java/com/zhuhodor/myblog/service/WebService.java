@@ -25,8 +25,6 @@ public class WebService {
     private String fileStorePath;
     private Object lock = new Object();
 
-
-
     public Result upload(MultipartFile avatar, HttpServletRequest request){
         String realPath = request.getSession().getServletContext().getRealPath("/avatarImgs");
         String filePath;

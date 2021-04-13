@@ -9,28 +9,28 @@ import java.util.List;
 
 @Component
 public interface BlogMapper extends BaseMapper<Blog> {
-    @Select("SELECT * FROM blog WHERE userId = #{userId} order by createdAt DESC")
+    @Select("SELECT * FROM blog WHERE user_id = #{userId} order by created_at DESC")
     List<Blog> findBlogsByUserId(String userId);
 
     @Delete("DELETE FROM blog WHERE id = #{blogId}")
     boolean delBlog(String blogId);
 
-    @Insert("INSERT INTO blog (userId, title, summary, content, createdAt, is_file, visitors)" +
+    @Insert("INSERT INTO blog (user_id, title, summary, content, created_at, is_file, visitors)" +
             " VALUES(#{userId},#{title},#{summary},#{content},#{createdAt}, #{isFile}, #{visitors})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     boolean saveBlog(Blog blog);
 
     @Update("UPDATE blog SET title = #{title}, summary = #{summary}, content = #{content}, " +
-            "createdAt = #{createdAt}, is_file = #{isFile}, visitors = #{visitors} WHERE id = #{id}")
+            "created_at = #{createdAt}, is_file = #{isFile}, visitors = #{visitors} WHERE id = #{id}")
     boolean editBlog(Blog blog);
 
     @Select("Select * from blog where id = #{id}")
     Blog findBlogById(String id);
 
-    @Select("SELECT count(*) FROM blog where userId = #{userId}")
+    @Select("SELECT count(*) FROM blog where user_id = #{userId}")
     int getPagesByUserId(String userId);
 
-    @Select("SELECT b.* FROM blog b, blog_with_column bwc WHERE b.id = bwc.blog_id AND bwc.column_id = #{columnId} order by createdAt DESC")
+    @Select("SELECT b.* FROM blog b, blog_with_column bwc WHERE b.id = bwc.blog_id AND bwc.column_id = #{columnId} order by created_at DESC")
     List<Blog> getPagesByColumnId(String columnId);
 
     @Insert("INSERT INTO project_blog(project_id, blog_id) VALUES(#{projectId}, #{blogId})")

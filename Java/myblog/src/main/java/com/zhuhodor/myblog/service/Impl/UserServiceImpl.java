@@ -40,7 +40,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setSalt(salt);
         Md5Hash md5Hash = new Md5Hash(user.getPassword(), salt);
         user.setPassword(md5Hash.toHex());
-        userMapper.creatUser(user);
+        userMapper.insert(user);
     }
 
     @Override

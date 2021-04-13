@@ -2,7 +2,6 @@ package com.zhuhodor.myblog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhuhodor.myblog.Entity.BlogModule.BlogComment;
-import com.zhuhodor.myblog.Entity.ProjectComment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

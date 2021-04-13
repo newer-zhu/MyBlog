@@ -70,4 +70,9 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         }
         return false;
     }
+
+    @Override
+    public List<Integer> countBlogs(Integer id) {
+        return tagMapper.countBlogs(id);
+    }
 }

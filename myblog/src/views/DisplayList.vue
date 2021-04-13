@@ -10,9 +10,14 @@
             <el-aside class="aside" width="400px">
                 <el-row>
                     <el-col :span="23" :offset="1">
-                        <el-input placeholder="请输入搜索内容" v-model="searchRequest.querystr">
-                            <el-button @click="search(searchRequest.current)"  style="color: #409EFF" slot="append" icon="el-icon-search"></el-button>
-                        </el-input>
+                        <el-autocomplete style="margin-top: 10px" placeholder="请输入搜索内容" v-model="searchRequest.querystr"
+                                         class="search_box"
+                                         :fetch-suggestions="querySearch"
+                                         :trigger-on-focus="false"
+                                         @select="handleSelect"
+                                         @keyup.enter.native = "search(searchRequest.current)">
+                            <el-button @click="search(searchRequest.current)"  style="color: #409EFF;" slot="append" icon="el-icon-search"></el-button>
+                        </el-autocomplete>
                     </el-col>
                     <el-checkbox style="padding: 15px 190px 5px 20px" v-model="onlySelf">仅自己</el-checkbox>
                     时间范围
@@ -51,10 +56,10 @@
                 </el-row>
             </el-aside>
 
-            <el-main>
+            <el-main class="content">
                 <el-row :gutter="10">
                     <el-alert style="height: 40px"
-                            :title="'共找到文章'+page.total+'条,'+'有关项目'+page.projects.length+'条'"
+                            :title="'共找到文章'+page.blogs.length+'条,'+'有关项目'+page.projects.length+'条'"
                             type="success" effect="dark" :closable="false"
                             show-icon>
                     </el-alert>
@@ -82,7 +87,7 @@
                                     <el-col style="color: #8c939d" :span="7">
                                         <p>{{b.createdAt.slice(0, 11)}}</p>
                                         <span style="font-size: 25px" :class="b.isFile ? 'el-icon-folder':'el-icon-document'"></span>
-                                        作者：<el-link @click="getUserInfo(b.user)" v-if="b.user != null" style="display: inline; margin-left: 10px">{{b.user.username}}</el-link>
+                                        作者：<el-link @click="getUserInfo(b.user.id)" v-if="b.user != null" style="display: inline; margin-left: 10px">{{b.user.username}}</el-link>
                                     </el-col>
                                 </el-row>
 
@@ -102,7 +107,7 @@
                                         <router-link :to="{name: 'ProjectDetail', params:{projectId:p.id}}">
                                             <h3 style="color: #303133" v-html="p.projectName"></h3>
                                         </router-link>
-                                        作者：<el-link @click="getUserInfo(p.projectUser)" v-if="p.projectUser != null" style="display: inline; margin-left: 10px">{{p.projectUser.username}}</el-link>
+                                        作者：<el-link @click="getUserInfo(p.projectUser.id)" v-if="p.projectUser != null" style="display: inline; margin-left: 10px">{{p.projectUser.username}}</el-link>
                                     </el-col>
                                     <el-col style="color: #8c939d" :span="8">
                                         <p>{{p.createAt.slice(0, 11)}}</p>
@@ -113,16 +118,21 @@
                             </div>
                         </div>
                     </el-col>
-                    <el-pagination
-                            hide-on-single-page
-                            @current-change="handCurrentChange"
-                            style="text-align: center"
-                            layout="prev, pager, next"
-                            :page-size="7"
-                            :total="page.total"
-                            :current-page="page.currentPage"
-                    >
-                    </el-pagination>
+                </el-row>
+                <el-row>
+                    <div style="font-size: 30px">
+                        <el-pagination
+                          background
+                          hide-on-single-page
+                          @current-change="handCurrentChange"
+                          style="margin: 15px 0px 0px 250px;"
+                          layout="prev, pager, next"
+                          :page-size="7"
+                          :total="page.total"
+                          :current-page="page.currentPage"
+                        >
+                        </el-pagination>
+                    </div>
                 </el-row>
                 <UserInfo :user="subUser" :drawer.sync="drawer"></UserInfo>
             </el-main>
@@ -193,7 +203,7 @@
                     projects: []
                 },
                 hotWords: [],
-                subUser: {}
+                subUser: {},
             }
         },
         watch: {
@@ -228,9 +238,29 @@
             handCurrentChange(current){
                 this.search(current);
             },
-            getUserInfo(user){
-                this.subUser = user;
+            getUserInfo(userId){
+                this.$axios.get("/user/"+userId).then(res =>{
+                    this.subUser = res.data.data;
+                });
                 this.drawer = !this.drawer;
+            },
+            //单词联想
+            querySearch(queryString, cb){
+                let sug = [];
+                if (queryString){
+                    this.$axios.get("/AI/similar/"+queryString).then(res => {
+                        let re = res.data.data;
+                        for (let i in re){
+                            let v = {value: re[i]};
+                            sug.push(v);
+                        };
+                    });
+                    cb(sug);
+                }
+            },
+            handleSelect(item) {
+                this.querystr = item.value;
+                this.search();
             }
         },
         created() {
@@ -253,5 +283,19 @@
         width: 90%;
         height: 1px;
         border-top: solid #ACC0D8 1px;
+    }
+</style>
+
+<style>
+    .search_box{
+        width: 320px
+    }
+    .aside{
+        background-color: #f1f5fb;
+        border: 1px solid #f8f9ff;
+        border-radius: 3px;
+    }
+    .content{
+        background-color: #fdfdfe;
     }
 </style>

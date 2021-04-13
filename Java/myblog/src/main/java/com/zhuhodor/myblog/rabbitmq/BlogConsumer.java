@@ -1,7 +1,7 @@
 package com.zhuhodor.myblog.rabbitmq;
 
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
-import com.zhuhodor.myblog.Entity.Project;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
 import com.zhuhodor.myblog.elasticsearch.Entity.EsBlog;
 import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
 import com.zhuhodor.myblog.elasticsearch.Service.EsBlogRepository;
@@ -62,33 +62,5 @@ public class BlogConsumer {
         EsBlog esBlog = new EsBlog();
         BeanUtils.copyProperties(blog, esBlog);
         esBlogRepository.save(esBlog);
-    }
-
-    @RabbitListener(bindings = {
-            @QueueBinding(value = @Queue, exchange = @Exchange(value = "project", type = "topic"), key = "project.save")
-    })
-    public void esSaveProject(Message message){
-        Project project = (Project) rabbitTemplate.getMessageConverter().fromMessage(message);
-        EsProject esProject = new EsProject();
-        BeanUtils.copyProperties(project, esProject);
-        esProjectRepository.save(esProject);
-    }
-
-    @RabbitListener(bindings = {
-            @QueueBinding(value = @Queue, exchange = @Exchange(value = "project", type = "topic"), key = "project.del")
-    })
-    public void delEsProject(String message){
-        EsProject esProject = new EsProject(Integer.parseInt(message));
-        esProjectRepository.delete(esProject);
-    }
-
-    @RabbitListener(bindings = {
-            @QueueBinding(value = @Queue, exchange = @Exchange(value = "project", type = "topic"), key = "project.upgrade")
-    })
-    public void upgradeEsProject(Message message){
-        Project project = (Project) rabbitTemplate.getMessageConverter().fromMessage(message);
-        EsProject esProject = new EsProject();
-        BeanUtils.copyProperties(project, esProject);
-        esProjectRepository.save(esProject);
     }
 }

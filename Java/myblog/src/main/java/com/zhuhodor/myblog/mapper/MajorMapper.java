@@ -1,5 +1,6 @@
 package com.zhuhodor.myblog.mapper;
 
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
 import com.zhuhodor.myblog.vo.MajorOpVo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -32,6 +33,9 @@ public interface MajorMapper {
     @Update("UPDATE university_major SET popular = #{popular} where id = #{id} ")
     void updatePopular(String id, String popular);
 
-    @Delete("DELETE FROM university_major where blog_id = #{blogId}")
+    @Delete("DELETE FROM blog_major where blog_id = #{blogId}")
     void releaseMajor(String blogId);
+
+    @Select("SELECT b.* FROM blog b, blog_major bm, university_major um WHERE b.id = bm.blog_id AND bm.major_id = um.id AND um.name = #{name}")
+    List<Blog> majorBlog(String name);
 }

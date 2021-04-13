@@ -2,12 +2,10 @@ package com.zhuhodor.myblog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zhuhodor.myblog.Entity.BlogModule.Blog;
-import com.zhuhodor.myblog.Entity.Project;
-import com.zhuhodor.myblog.Entity.User;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
 import com.zhuhodor.myblog.vo.RequestVo;
 import com.zhuhodor.myblog.vo.TableVo;
 import org.apache.ibatis.annotations.*;
-import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.List;
 public interface ProjectMapper extends BaseMapper<Project> {
 
     @Select("SELECT b.* from blog b, project_blog pb WHERE b.id = pb.blog_id " +
-            "AND pb.project_id = #{projectId} order by createdAt DESC")
+            "AND pb.project_id = #{projectId} order by created_at DESC")
     List<Blog> findBlogsByProjectId(String projectId);
 
     @Insert("INSERT INTO favorite_project(user_id, project_id, time) VALUES(#{userId}, #{projectId}, #{time})")
@@ -37,7 +35,7 @@ public interface ProjectMapper extends BaseMapper<Project> {
     @Select("SELECT p.* FROM project p, project_blog pb WHERE p.id = pb.project_id and pb.blog_id = #{blogId}")
     Project getProjectByBlogId(String blogId);
 
-    @Select("SELECT b.createdAt FROM blog b, project_blog pb WHERE b.id = pb.blog_id AND pb.project_id = #{projectId} order by b.createdAt DESC")
+    @Select("SELECT b.created_at FROM blog b, project_blog pb WHERE b.id = pb.blog_id AND pb.project_id = #{projectId} order by b.created_at DESC")
     List<Date> getBlogTime(String projectId);
 
     /**
@@ -109,7 +107,7 @@ public interface ProjectMapper extends BaseMapper<Project> {
      * @param userId
      * @return
      */
-    @Select("SELECT count(*) FROM project_blog pb, blog b WHERE pb.project_id = #{projectId} AND pb.blog_id = b.id AND b.userId = #{userId}")
+    @Select("SELECT count(*) FROM project_blog pb, blog b WHERE pb.project_id = #{projectId} AND pb.blog_id = b.id AND b.user_id = #{userId}")
     Integer countNumber(String projectId, String userId);
 
 }

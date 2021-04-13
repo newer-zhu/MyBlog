@@ -1,9 +1,12 @@
 package com.zhuhodor.myblog.test;
 
-import com.zhuhodor.myblog.Entity.Project;
-import com.zhuhodor.myblog.Entity.Tag;
+import com.zhuhodor.myblog.Entity.BlogModule.Blog;
+import com.zhuhodor.myblog.Entity.ProjectModule.Project;
+import com.zhuhodor.myblog.elasticsearch.Entity.EsBlog;
 import com.zhuhodor.myblog.elasticsearch.Entity.EsProject;
+import com.zhuhodor.myblog.elasticsearch.Service.EsBlogRepository;
 import com.zhuhodor.myblog.elasticsearch.Service.EsProjectRepository;
+import com.zhuhodor.myblog.service.BlogService;
 import com.zhuhodor.myblog.service.ProjectService;
 import net.bytebuddy.asm.Advice;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -12,8 +15,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,15 +38,27 @@ public class EsTest {
     ProjectService projectService;
     @Autowired
     EsProjectRepository esProjectRepository;
+    @Autowired
+    BlogService blogService;
+    @Autowired
+    EsBlogRepository esBlogRepository;
 
     @Test
     public void testBulk(){
-        List<Project> list = projectService.list();
+        List<Blog> list = blogService.list();
         list.forEach(l -> {
-            EsProject esProject = new EsProject();
-            BeanUtils.copyProperties(l, esProject);
-            esProjectRepository.save(esProject);
+            EsBlog es = new EsBlog();
+            BeanUtils.copyProperties(l, es);
+            esBlogRepository.save(es);
         });
+    }
+
+    @Test
+    public void testBulk2(){
+        Project p = projectService.getById(11);
+        EsProject esProject = new EsProject();
+        BeanUtils.copyProperties(p, esProject);
+        esProjectRepository.save(esProject);
     }
 
 

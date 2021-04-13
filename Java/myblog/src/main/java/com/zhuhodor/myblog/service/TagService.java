@@ -19,4 +19,6 @@ public interface TagService extends IService<Tag> {
     List<Blog> findBlogsByTagId(String tagId);
 
     boolean setBlog2Tags(String blogId, List<String> tags);
+
+    List<Integer> countBlogs(Integer id);
 }

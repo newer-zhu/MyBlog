@@ -3,13 +3,15 @@ package com.zhuhodor.myblog.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class searchRequest {
+public class SearchRequest {
     //搜索框内容
     private String querystr;
     //时间范围

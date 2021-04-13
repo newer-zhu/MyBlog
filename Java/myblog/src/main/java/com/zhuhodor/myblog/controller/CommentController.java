@@ -3,7 +3,7 @@ package com.zhuhodor.myblog.controller;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zhuhodor.myblog.Entity.BlogModule.BlogComment;
-import com.zhuhodor.myblog.Entity.ProjectComment;
+import com.zhuhodor.myblog.Entity.ProjectModule.ProjectComment;
 import com.zhuhodor.myblog.Entity.User;
 import com.zhuhodor.myblog.common.Result;
 import com.zhuhodor.myblog.vo.CommentVo;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

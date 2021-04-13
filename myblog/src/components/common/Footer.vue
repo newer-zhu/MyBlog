@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="footer">
-            <p class="words">测试期间，多有bug</p>
+            <p class="words">笔记，且不仅是笔记</p>
             <p style="font-size: 15px;display: inline; position: absolute; right: 10px; bottom: 0px;">copyright@zhuhodor</p>
         </div>
     </div>
