@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="footer">
-            <p class="words">笔记，且不仅是笔记</p>
-            <p style="font-size: 15px;display: inline; position: absolute; right: 10px; bottom: 0px;">copyright@zhuhodor</p>
+            <p class="words">笔记，不止于笔记</p>
+            <p style="font-size: 15px;display: inline; position: absolute; right: 10px; bottom: 0px;color: #909399">copyright@zhuhodor</p>
         </div>
     </div>
 </template>

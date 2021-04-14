@@ -487,8 +487,8 @@
                 this.$axios.post("/comment/projectComment", c).then(res => {
                     this.$message.success(res.data.data);
                     this.isComment = false;
+                    this.loadComments();
                 });
-                this.loadComments();
             },
             request(){
                 let _this = this;

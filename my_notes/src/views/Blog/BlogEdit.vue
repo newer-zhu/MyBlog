@@ -22,7 +22,6 @@
                                         :autosize="{ minRows: 2, maxRows: 4}"
                                         v-model="blogForm.summary"></el-input>
                             </el-form-item>
-
                         </el-row>
                       </el-col>
                     </el-row>

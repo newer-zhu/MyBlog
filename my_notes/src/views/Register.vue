@@ -46,20 +46,24 @@
                         <el-form-item label="密码" class="LRItem" prop="password">
                             <el-input type="password" v-model="form.password"></el-input>
                         </el-form-item>
-                        <el-form-item label="邮箱" class="LRItem" prop="email">
-                            <el-input type="email" v-model="form.email"></el-input>
-                        </el-form-item>
                         <el-form-item prop="college" class="LRItem" label="学校">
                             <el-input v-model="form.college"></el-input>
                         </el-form-item>
                         <el-form-item prop="major" class="LRItem" label="专业">
-                            <el-input v-model="form.major"></el-input>
+                            <el-cascader
+                              style="width: 460px"
+                              @change="handleChange"
+                              :options="options"
+                            ></el-cascader>
                         </el-form-item>
                         <el-form-item prop="grade" class="LRItem" label="年级">
-                            <el-input v-model="form.grade"></el-input>
+                            <el-input placeholder=" (选填) " v-model="form.grade"></el-input>
+                        </el-form-item>
+                        <el-form-item label="邮箱" class="LRItem" prop="email">
+                            <el-input type="email" placeholder=" (选填) " v-model="form.email"></el-input>
                         </el-form-item>
                         <el-form-item label="自我介绍" class="LRItem" prop="description">
-                            <el-input type="textarea" v-model="form.description" placeholder="（可选）"></el-input>
+                            <el-input type="textarea" v-model="form.description" placeholder="（选填）"></el-input>
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="submitForm('form')">创建</el-button>
@@ -98,7 +102,7 @@
                         { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
                     ],
                     birthday: [
-                        {  required: true, message: '请选择日期', trigger: 'change' }
+                        {  required: false, message: '请选择日期', trigger: 'change' }
                     ],
                     description: [
                         { required: false, message: '请填写个人简介', trigger: 'blur' }
@@ -110,13 +114,14 @@
                         { required: true, message: '请填写专业', trigger: 'blur' }
                     ],
                     grade: [
-                        { required: true, message: '请填写年级', trigger: 'blur' }
+                        { required: false, message: '请填写年级', trigger: 'blur' }
                     ],
                     email: [
                         { required: false, message: '请输入邮箱', trigger: 'blur' },
                         { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
                     ]
-                }
+                },
+                options: [],
             };
         },
         methods: {
@@ -153,6 +158,16 @@
                 }
                 return isJPG && isLt10M;
             },
+            handleChange(value){
+                this.$axios.get("/major/getNameById/"+value[1]).then(res => {
+                    this.form.major = res.data.data;
+                });
+            }
+        },
+        created(){
+            this.$axios.get("/major").then(res => {
+                this.options = res.data.data;
+            });
         }
     }
 </script>

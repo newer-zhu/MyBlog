@@ -109,7 +109,7 @@
                                 </router-link>
                             </el-link>
                         </div>
-                        <router-link v-if="blog.project != null" replace :to="{name: 'ProjectDetail', params:{projectId:blog.project.id}}">
+                        <router-link v-if="blog.project != null" push :to="{name: 'ProjectDetail', params:{projectId:blog.project.id}}">
                             <el-card shadow="hover" style="border-radius: 4px; margin-top: 5px;">
                                 <el-row>
                                     <el-col :span="16">
